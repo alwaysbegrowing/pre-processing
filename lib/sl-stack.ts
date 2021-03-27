@@ -46,6 +46,7 @@ export class SlStack extends Stack {
       },
     });
 
+    messageStoreBucket.grantRead(clipFinder);
 
     new S3EventSource(messageStoreBucket, { events: [EventType.OBJECT_CREATED] }).bind(downloadLambda);
   }
