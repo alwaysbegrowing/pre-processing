@@ -1,0 +1,211 @@
+Resources:
+  MessageStore60E7AFC8:
+    Type: AWS::S3::Bucket
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: SlStack/MessageStore/Resource
+  DownloadHandlerServiceRole4B8FD2FF:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: SlStack/DownloadHandler/ServiceRole/Resource
+  DownloadHandlerServiceRoleDefaultPolicy4A78C071:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:DeleteObject*
+              - s3:PutObject
+              - s3:Abort*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - MessageStore60E7AFC8
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - MessageStore60E7AFC8
+                        - Arn
+                    - /*
+        Version: "2012-10-17"
+      PolicyName: DownloadHandlerServiceRoleDefaultPolicy4A78C071
+      Roles:
+        - Ref: DownloadHandlerServiceRole4B8FD2FF
+    Metadata:
+      aws:cdk:path: SlStack/DownloadHandler/ServiceRole/DefaultPolicy/Resource
+  DownloadHandler09CC40DB:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Ref: AssetParameters39842058b9c271f79e1d7d69219c4cf987846de869fc8782e015ad1bbac839bdS3Bucket3966BCDC
+        S3Key:
+          Fn::Join:
+            - ""
+            - - Fn::Select:
+                  - 0
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters39842058b9c271f79e1d7d69219c4cf987846de869fc8782e015ad1bbac839bdS3VersionKey5E68832D
+              - Fn::Select:
+                  - 1
+                  - Fn::Split:
+                      - "||"
+                      - Ref: AssetParameters39842058b9c271f79e1d7d69219c4cf987846de869fc8782e015ad1bbac839bdS3VersionKey5E68832D
+      Role:
+        Fn::GetAtt:
+          - DownloadHandlerServiceRole4B8FD2FF
+          - Arn
+      Environment:
+        Variables:
+          BUCKET:
+            Ref: MessageStore60E7AFC8
+      Handler: downloads.main
+      MemorySize: 128
+      Runtime: nodejs14.x
+      Timeout: 900
+    DependsOn:
+      - DownloadHandlerServiceRoleDefaultPolicy4A78C071
+      - DownloadHandlerServiceRole4B8FD2FF
+    Metadata:
+      aws:cdk:path: SlStack/DownloadHandler/Resource
+      aws:asset:path: /Users/russell/pillar/sl/lambdas/downloader
+      aws:asset:property: Code
+  DownloadHandlerAllowInvokeSlStackReadyForDownloads8DCF2BE93A9C74E7:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - DownloadHandler09CC40DB
+          - Arn
+      Principal: sns.amazonaws.com
+      SourceArn:
+        Ref: ReadyForDownloadsEEACEEFF
+    Metadata:
+      aws:cdk:path: SlStack/DownloadHandler/AllowInvoke:SlStackReadyForDownloads8DCF2BE9
+  DownloadHandlerReadyForDownloadsE6380D4D:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: lambda
+      TopicArn:
+        Ref: ReadyForDownloadsEEACEEFF
+      Endpoint:
+        Fn::GetAtt:
+          - DownloadHandler09CC40DB
+          - Arn
+    Metadata:
+      aws:cdk:path: SlStack/DownloadHandler/ReadyForDownloads/Resource
+  ReadyForDownloadsEEACEEFF:
+    Type: AWS::SNS::Topic
+    Metadata:
+      aws:cdk:path: SlStack/ReadyForDownloads/Resource
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Analytics: v2:deflate64:H4sIAAAAAAAAE1VQQU4DMQx8C3evy1L1wA2o1PNq4QOp11TubpIqTlqhKH9nkwqpnDzjGY9s9/i6w+enN3PTjqZ5k8kHxvwZDc2w905jSBThXZXj2jyJO8HI6lMghv23G0wwliOHSh6FdXaSKN4VqNlZt5g/Es0cq3pHBRZjj5PBfEiOqrlqj3jgYEW1xYixmEe/tPhWB78I/TRfQwV025m6qmLbGNTpekw6KgW5/IX+41/+IlS7DZRSwPmJ8ayba7/D/mV9zllFupBcFMs43usvRP5mXjgBAAA=
+    Metadata:
+      aws:cdk:path: SlStack/CDKMetadata/Default
+    Condition: CDKMetadataAvailable
+Parameters:
+  AssetParameters39842058b9c271f79e1d7d69219c4cf987846de869fc8782e015ad1bbac839bdS3Bucket3966BCDC:
+    Type: String
+    Description: S3 bucket for asset "39842058b9c271f79e1d7d69219c4cf987846de869fc8782e015ad1bbac839bd"
+  AssetParameters39842058b9c271f79e1d7d69219c4cf987846de869fc8782e015ad1bbac839bdS3VersionKey5E68832D:
+    Type: String
+    Description: S3 key for asset version "39842058b9c271f79e1d7d69219c4cf987846de869fc8782e015ad1bbac839bd"
+  AssetParameters39842058b9c271f79e1d7d69219c4cf987846de869fc8782e015ad1bbac839bdArtifactHashCAA57A14:
+    Type: String
+    Description: Artifact hash for asset "39842058b9c271f79e1d7d69219c4cf987846de869fc8782e015ad1bbac839bd"
+  uploadBucketName:
+    Type: String
+    Description: The name of the Amazon S3 bucket where uploaded files will be stored.
+Conditions:
+  CDKMetadataAvailable:
+    Fn::Or:
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - af-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-northeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ap-southeast-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - ca-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - cn-northwest-1
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-central-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-north-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-2
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - eu-west-3
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - me-south-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - sa-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-east-2
+      - Fn::Or:
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-1
+          - Fn::Equals:
+              - Ref: AWS::Region
+              - us-west-2
+
