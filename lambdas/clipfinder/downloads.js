@@ -1,4 +1,4 @@
-const AWS = require("aws-sdk");
+const AWS = require('aws-sdk');
 const S3 = new AWS.S3();
 
 // this algorithm is trash and needs improved ASAP
@@ -14,7 +14,7 @@ const basicClipAlgorithm = (allMessages, numberOfClips) => {
       const messageCount = currentIndex - lastIndex;
       clipCounts.push({
         startTime: endTime - 60,
-        endTime: endTime,
+        endTime,
         messageCount,
       });
       lastIndex = currentIndex;
@@ -25,12 +25,12 @@ const basicClipAlgorithm = (allMessages, numberOfClips) => {
   return clipCounts.slice(0, numberOfClips);
 };
 
-exports.main = async function (event) {
+exports.main = async (event) => {
   const { name } = event.Records[0].s3.bucket;
   const { key } = event.Records[0].s3.object;
   try {
     const { Body } = await S3.getObject({ Bucket: name, Key: key }).promise();
-    const allMessages = JSON.parse(Body.toString("utf-8"));
+    const allMessages = JSON.parse(Body.toString('utf-8'));
     const clips = basicClipAlgorithm(allMessages, 5);
     return clips;
   } catch (error) {

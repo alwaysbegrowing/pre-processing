@@ -1,16 +1,7 @@
-/* 
-This code uses callbacks to handle asynchronous function responses.
-It currently demonstrates using an async-await pattern. 
-AWS supports both the async-await and promises patterns.
-For more information, see the following: 
-https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
-https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises
-https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/calling-services-asynchronously.html
-https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-handler.html 
-*/
-const AWS = require("aws-sdk");
+const AWS = require('aws-sdk');
+
 const S3 = new AWS.S3();
-const fetch = require("node-fetch");
+const fetch = require('node-fetch');
 
 const bucketName = process.env.BUCKET;
 
@@ -19,10 +10,10 @@ const getMessages = async (videoId) => {
 
   const callTwitch = async (cursor = null) => {
     // use public client id thats used on twitch.tv - we could switch this to ours
-    const headers = { "client-id": "kimne78kx3ncx6brgo4mv6wki5h1ko" };
-    const url =
-      `https://api.twitch.tv/v5/videos/${videoId}/comments` +
-      (cursor ? `?cursor=${cursor}` : "");
+    const headers = { 'client-id': 'kimne78kx3ncx6brgo4mv6wki5h1ko' };
+    const url = `https://api.twitch.tv/v5/videos/${videoId}/comments${
+      cursor ? `?cursor=${cursor}` : ''
+    }`;
     const resp = await fetch(url, { headers });
     const { _next, comments } = await resp.json();
     allMessages.push(...comments);
@@ -36,7 +27,7 @@ const getMessages = async (videoId) => {
   return allMessages;
 };
 
-exports.main = async function (event, context) {
+exports.main = async (event) => {
   const videoId = event.Records[0].Sns.MessageAttributes.VideoId.Value;
   console.log({ bucketName, videoId });
   try {
