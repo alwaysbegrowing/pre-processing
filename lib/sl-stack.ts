@@ -1,6 +1,6 @@
 // import * as apigateway from "@aws-cdk/aws-apigateway";
 import { Function, Runtime, Code } from "@aws-cdk/aws-lambda";
-import { Duration, Stack, Construct, StackProps } from "@aws-cdk/core";
+import { Duration, Stack, Construct, StackProps, CfnParameter } from "@aws-cdk/core";
 import { Bucket, EventType } from "@aws-cdk/aws-s3";
 import { Topic } from "@aws-cdk/aws-sns";
 import {
@@ -11,7 +11,7 @@ export class SlStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const bucket = new Bucket(this, "MessageStore");
+    const messageStoreBucket = new Bucket(this, "MessageStore");
 
     const downloadLambda = new Function(this, "DownloadHandler", {
       runtime: Runtime.NODEJS_14_X,
@@ -20,11 +20,14 @@ export class SlStack extends Stack {
       timeout: Duration.seconds(900),
       handler: "downloads.main",
       environment: {
-        BUCKET: bucket.bucketName,
+        BUCKET: messageStoreBucket.bucketName,
       },
     });
 
-    bucket.grantWrite(downloadLambda);
+    
+
+
+    messageStoreBucket.grantWrite(downloadLambda);
 
     const readyForDownloadsTopic = new Topic(this, "ReadyForDownloads");
 
@@ -32,18 +35,18 @@ export class SlStack extends Stack {
 
 
 
-    // const clipFinder = new Function(this, "ClipFinder", {
-    //   runtime: Runtime.NODEJS_14_X,
-    //   code: Code.fromAsset("lambdas/clipfinder"),
-    //   memorySize: 128,
-    //   timeout: Duration.seconds(900),
-    //   handler: "downloads.main",
-    //   environment: {
-    //     BUCKET: bucket.bucketName,
-    //   },
-    // });
+    const clipFinder = new Function(this, "ClipFinder", {
+      runtime: Runtime.NODEJS_14_X,
+      code: Code.fromAsset("lambdas/clipfinder"),
+      memorySize: 128,
+      timeout: Duration.seconds(900),
+      handler: "downloads.main",
+      environment: {
+        BUCKET: messageStoreBucket.bucketName,
+      },
+    });
 
 
-    new S3EventSource(bucket, { events: [EventType.OBJECT_CREATED] }).bind(downloadLambda);
+    new S3EventSource(messageStoreBucket, { events: [EventType.OBJECT_CREATED] }).bind(downloadLambda);
   }
 }
