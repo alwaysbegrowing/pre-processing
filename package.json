@@ -13,11 +13,11 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.95.0",
+    "@aws-cdk/assert": "1.95.1",
     "@aws-cdk/yaml-cfn": "^1.95.1",
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
-    "aws-cdk": "1.95.0",
+    "aws-cdk": "1.95.1",
     "aws-sdk": "^2.874.0",
     "cdk-assets": "^1.95.1",
     "eslint": "^7.23.0",
@@ -29,14 +29,15 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "^1.95.0",
-    "@aws-cdk/aws-lambda-event-sources": "^1.95.0",
-    "@aws-cdk/aws-lambda-nodejs": "^1.95.0",
-    "@aws-cdk/aws-s3": "^1.95.0",
-    "@aws-cdk/aws-secretsmanager": "^1.95.0",
-    "@aws-cdk/aws-sns-subscriptions": "^1.95.0",
-    "@aws-cdk/core": "1.95.0",
-    "fetch": "^2.6.1",
+    "@aws-cdk/aws-apigateway": "^1.95.1",
+    "@aws-cdk/aws-events-targets": "^1.95.1",
+    "@aws-cdk/aws-lambda-event-sources": "^1.95.1",
+    "@aws-cdk/aws-lambda-nodejs": "^1.95.1",
+    "@aws-cdk/aws-s3": "^1.95.1",
+    "@aws-cdk/aws-secretsmanager": "^1.95.1",
+    "@aws-cdk/aws-sns-subscriptions": "^1.95.1",
+    "@aws-cdk/core": "1.95.1",
+    "fetch": "^1.1.0",
     "source-map-support": "^0.5.16"
   }
 }

@@ -28,13 +28,9 @@ const basicClipAlgorithm = (allMessages, numberOfClips) => {
 exports.main = async (event) => {
   const { name } = event.Records[0].s3.bucket;
   const { key } = event.Records[0].s3.object;
-  try {
-    const { Body } = await S3.getObject({ Bucket: name, Key: key }).promise();
-    const allMessages = JSON.parse(Body.toString('utf-8'));
-    const clips = basicClipAlgorithm(allMessages, 5);
-    return clips;
-  } catch (error) {
-    const body = error.stack || JSON.stringify(error, null, 2);
-    return body;
-  }
+  const { Body } = await S3.getObject({ Bucket: name, Key: key }).promise();
+  const allMessages = JSON.parse(Body.toString('utf-8'));
+  const clips = basicClipAlgorithm(allMessages, 5);
+  console.log(clips);
+  return clips;
 };

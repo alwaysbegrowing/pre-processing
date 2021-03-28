@@ -4,7 +4,9 @@ import { Duration, Stack, Construct, StackProps, CfnParameter } from '@aws-cdk/c
 import { Bucket, EventType } from '@aws-cdk/aws-s3';
 import { Topic } from '@aws-cdk/aws-sns';
 import { SnsEventSource, S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
-import { ResourcePolicy, Secret } from '@aws-cdk/aws-secretsmanager';
+import { Secret } from '@aws-cdk/aws-secretsmanager';
+import { Rule, Schedule } from '@aws-cdk/aws-events';
+import { LambdaFunction } from '@aws-cdk/aws-events-targets';
 
 // const { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, MONGODB_FULL_URI,  } = process.env;
 const TWITCH_CLIENT_ID = '2nakqoqdxka9v5oekyo6742bmnxt2o';
@@ -14,6 +16,7 @@ export class SlStack extends Stack {
 
     const messageStoreBucket = new Bucket(this, 'MessageStore');
     const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
+
 
 
     const vodPoller = new Function(this, 'VodPoller', {
@@ -28,6 +31,12 @@ export class SlStack extends Stack {
         TOPIC: readyForDownloadsTopic.topicArn
       },
     });
+
+    new Rule(this, 'CheckForVods', {
+      schedule: Schedule.cron({ minute: '*/5', hour: '*', day: '*' }),
+      targets: [new LambdaFunction(vodPoller)],
+     });
+     
 
     messageStoreBucket.grantRead(vodPoller)
     // follow below link on how to add new secrets
