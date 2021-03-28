@@ -13,6 +13,7 @@ export class SlStack extends Stack {
     super(scope, id, props);
 
     const messageStoreBucket = new Bucket(this, 'MessageStore');
+    const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
 
 
     const vodPoller = new Function(this, 'VodPoller', {
@@ -24,9 +25,11 @@ export class SlStack extends Stack {
       environment: {
         BUCKET: messageStoreBucket.bucketName,
         TWITCH_CLIENT_ID,
+        TOPIC: readyForDownloadsTopic.topicArn
       },
     });
 
+    messageStoreBucket.grantRead(vodPoller)
     // follow below link on how to add new secrets
     // https://docs.aws.amazon.com/cdk/latest/guide/get_secrets_manager_value.html
     const twitchSecret = Secret.fromSecretAttributes(this, 'TWITCH_CLIENT_SECRET', {
@@ -55,8 +58,8 @@ export class SlStack extends Stack {
 
     
 
-    const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
 
+    readyForDownloadsTopic.grantPublish(vodPoller)
     new SnsEventSource(readyForDownloadsTopic).bind(downloadLambda);
 
     const clipFinder = new Function(this, 'ClipFinder', {
@@ -69,11 +72,12 @@ export class SlStack extends Stack {
         BUCKET: messageStoreBucket.bucketName,
       },
     });
+    messageStoreBucket.grantWrite(downloadLambda);
 
     messageStoreBucket.grantRead(clipFinder);
 
     new S3EventSource(messageStoreBucket, { events: [EventType.OBJECT_CREATED] }).bind(
-      downloadLambda
+      clipFinder
     );
   }
 }

@@ -43,6 +43,10 @@ Resources:
           - Arn
     Metadata:
       aws:cdk:path: SlStack/MessageStore/AllowBucketNotificationsToSlStackDownloadHandler93BB4D31
+  ReadyForDownloadsEEACEEFF:
+    Type: AWS::SNS::Topic
+    Metadata:
+      aws:cdk:path: SlStack/ReadyForDownloads/Resource
   VodPollerServiceRole369446BC:
     Type: AWS::IAM::Role
     Properties:
@@ -61,12 +65,52 @@ Resources:
               - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
     Metadata:
       aws:cdk:path: SlStack/VodPoller/ServiceRole/Resource
+  VodPollerServiceRoleDefaultPolicy1E3562C9:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - MessageStore60E7AFC8
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - MessageStore60E7AFC8
+                        - Arn
+                    - /*
+          - Action:
+              - secretsmanager:GetSecretValue
+              - secretsmanager:DescribeSecret
+            Effect: Allow
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
+          - Action:
+              - secretsmanager:GetSecretValue
+              - secretsmanager:DescribeSecret
+            Effect: Allow
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt
+          - Action: sns:Publish
+            Effect: Allow
+            Resource:
+              Ref: ReadyForDownloadsEEACEEFF
+        Version: "2012-10-17"
+      PolicyName: VodPollerServiceRoleDefaultPolicy1E3562C9
+      Roles:
+        - Ref: VodPollerServiceRole369446BC
+    Metadata:
+      aws:cdk:path: SlStack/VodPoller/ServiceRole/DefaultPolicy/Resource
   VodPoller741EDAA0:
     Type: AWS::Lambda::Function
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParameters9faf4a2e9e23d7c99f598a2cee9743b3e97e406bf342999af601f2990e907147S3Bucket1545CFDC
+          Ref: AssetParametersc065f3cbf3f9777a5fcf9ccafd1326f57570dd94c50bfe8a583defe914fef0faS3Bucket54DC094F
         S3Key:
           Fn::Join:
             - ""
@@ -74,12 +118,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters9faf4a2e9e23d7c99f598a2cee9743b3e97e406bf342999af601f2990e907147S3VersionKey3025D34E
+                      - Ref: AssetParametersc065f3cbf3f9777a5fcf9ccafd1326f57570dd94c50bfe8a583defe914fef0faS3VersionKeyE1F8C9A5
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters9faf4a2e9e23d7c99f598a2cee9743b3e97e406bf342999af601f2990e907147S3VersionKey3025D34E
+                      - Ref: AssetParametersc065f3cbf3f9777a5fcf9ccafd1326f57570dd94c50bfe8a583defe914fef0faS3VersionKeyE1F8C9A5
       Role:
         Fn::GetAtt:
           - VodPollerServiceRole369446BC
@@ -89,11 +133,14 @@ Resources:
           BUCKET:
             Ref: MessageStore60E7AFC8
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
+          TOPIC:
+            Ref: ReadyForDownloadsEEACEEFF
       Handler: handler.main
       MemorySize: 128
       Runtime: nodejs14.x
       Timeout: 900
     DependsOn:
+      - VodPollerServiceRoleDefaultPolicy1E3562C9
       - VodPollerServiceRole369446BC
     Metadata:
       aws:cdk:path: SlStack/VodPoller/Resource
@@ -117,32 +164,6 @@ Resources:
               - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
     Metadata:
       aws:cdk:path: SlStack/DownloadHandler/ServiceRole/Resource
-  DownloadHandlerServiceRoleDefaultPolicy4A78C071:
-    Type: AWS::IAM::Policy
-    Properties:
-      PolicyDocument:
-        Statement:
-          - Action:
-              - s3:DeleteObject*
-              - s3:PutObject
-              - s3:Abort*
-            Effect: Allow
-            Resource:
-              - Fn::GetAtt:
-                  - MessageStore60E7AFC8
-                  - Arn
-              - Fn::Join:
-                  - ""
-                  - - Fn::GetAtt:
-                        - MessageStore60E7AFC8
-                        - Arn
-                    - /*
-        Version: "2012-10-17"
-      PolicyName: DownloadHandlerServiceRoleDefaultPolicy4A78C071
-      Roles:
-        - Ref: DownloadHandlerServiceRole4B8FD2FF
-    Metadata:
-      aws:cdk:path: SlStack/DownloadHandler/ServiceRole/DefaultPolicy/Resource
   DownloadHandler09CC40DB:
     Type: AWS::Lambda::Function
     Properties:
@@ -175,7 +196,6 @@ Resources:
       Runtime: nodejs14.x
       Timeout: 900
     DependsOn:
-      - DownloadHandlerServiceRoleDefaultPolicy4A78C071
       - DownloadHandlerServiceRole4B8FD2FF
     Metadata:
       aws:cdk:path: SlStack/DownloadHandler/Resource
@@ -206,10 +226,6 @@ Resources:
           - Arn
     Metadata:
       aws:cdk:path: SlStack/DownloadHandler/ReadyForDownloads/Resource
-  ReadyForDownloadsEEACEEFF:
-    Type: AWS::SNS::Topic
-    Metadata:
-      aws:cdk:path: SlStack/ReadyForDownloads/Resource
   ClipFinderServiceRole28A544E9:
     Type: AWS::IAM::Role
     Properties:
@@ -410,20 +426,20 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAAE1VQS04DMQw9C3uPy1B1wQ6o1HU1cIHUYyp3JkkVJyAU5e4kqYrEys/W+9ge8XmHjw8v5lsHmpdNJh8Y83s0tMDeO40hUYT9p5tYfQrE8KrKsRLO4s7wN62MownGcuTQmqqdJYp3BZp31i3mt0QLd7MbKrAae5oN5qbmYEW1KuCQHDVpY95xATEW8+TXntXr0a9CPz26owK6HUxbT7FvCeq0HpNOSkGud8t//Ye/CrVpB6UUcH5mvOjma9zh+FSfc1GRISQXxTJOt/oLL6Z5SjgBAAA=
+      Analytics: v2:deflate64:H4sIAAAAAAAAE01QQW7DMAx7y+6KuqzoYbdtBXYu0n3AVbRCTWIXlt1iMPz32Q467ESKIAlJPb7u8Pnpzdy1o3HaJHKeMR2DoQn2zmrwkQLsv+3A6qInhndVDsVwFnuGP7U4DsabhQP7OpTsKEGczVC7k24xfUSauJWtLMNsltNoMNU0+0VUSwI+o6Uarc4Hz6BWMX25q1DVV3KMJyUv14f7/5xBzIJpcHPbruHBzUI/bdnGSuu2M/UgxXZXzmDdyHjRza3fYf9SnnNRkc5HG2RhHFb8BZ1JSuo4AQAA
     Metadata:
       aws:cdk:path: SlStack/CDKMetadata/Default
     Condition: CDKMetadataAvailable
 Parameters:
-  AssetParameters9faf4a2e9e23d7c99f598a2cee9743b3e97e406bf342999af601f2990e907147S3Bucket1545CFDC:
+  AssetParametersc065f3cbf3f9777a5fcf9ccafd1326f57570dd94c50bfe8a583defe914fef0faS3Bucket54DC094F:
     Type: String
-    Description: S3 bucket for asset "9faf4a2e9e23d7c99f598a2cee9743b3e97e406bf342999af601f2990e907147"
-  AssetParameters9faf4a2e9e23d7c99f598a2cee9743b3e97e406bf342999af601f2990e907147S3VersionKey3025D34E:
+    Description: S3 bucket for asset "c065f3cbf3f9777a5fcf9ccafd1326f57570dd94c50bfe8a583defe914fef0fa"
+  AssetParametersc065f3cbf3f9777a5fcf9ccafd1326f57570dd94c50bfe8a583defe914fef0faS3VersionKeyE1F8C9A5:
     Type: String
-    Description: S3 key for asset version "9faf4a2e9e23d7c99f598a2cee9743b3e97e406bf342999af601f2990e907147"
-  AssetParameters9faf4a2e9e23d7c99f598a2cee9743b3e97e406bf342999af601f2990e907147ArtifactHashFF6EE0B5:
+    Description: S3 key for asset version "c065f3cbf3f9777a5fcf9ccafd1326f57570dd94c50bfe8a583defe914fef0fa"
+  AssetParametersc065f3cbf3f9777a5fcf9ccafd1326f57570dd94c50bfe8a583defe914fef0faArtifactHashA06EDA54:
     Type: String
-    Description: Artifact hash for asset "9faf4a2e9e23d7c99f598a2cee9743b3e97e406bf342999af601f2990e907147"
+    Description: Artifact hash for asset "c065f3cbf3f9777a5fcf9ccafd1326f57570dd94c50bfe8a583defe914fef0fa"
   AssetParametersb9ba1297b6c0c5415a0c53d8a98dc2351065c3f1f718e770a02231dba8f50543S3Bucket9FC5CCE8:
     Type: String
     Description: S3 bucket for asset "b9ba1297b6c0c5415a0c53d8a98dc2351065c3f1f718e770a02231dba8f50543"

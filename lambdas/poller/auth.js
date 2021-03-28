@@ -1,5 +1,8 @@
 const fetch = require('node-fetch');
+const { SecretsManager } = require('aws-sdk');
 
+const secretName = 'TWITCH_CLIENT_SECRET';
+let cachedTwitchSecret;
 let cachedAccessToken;
 
 /**
@@ -22,15 +25,20 @@ async function isAccessTokenValid() {
  * This function performs the necessary handling to return a valid access token
  * @returns app access token
  */
-async function getToken() {
+async function getAccessToken() {
   if (cachedAccessToken) {
     const isValid = await isAccessTokenValid();
     if (isValid) {
       return cachedAccessToken;
     }
   }
+  if (!cachedTwitchSecret) {
+    const client = new SecretsManager();
+    const { SecretString } = await client.getSecretValue({ SecretId: secretName }).promise();
+    cachedTwitchSecret = SecretString;
+  }
 
-  const url = `https://id.twitch.tv/oauth2/token?client_id=${process.env.TWITCH_CLIENT_ID}&client_secret=${process.env.TWITCH_CLIENT_SECRET}&grant_type=client_credentials`;
+  const url = `https://id.twitch.tv/oauth2/token?client_id=${process.env.TWITCH_CLIENT_ID}&client_secret=${cachedTwitchSecret}&grant_type=client_credentials`;
   try {
     // get a new app access token from twitch
     const tokenData = await fetch(url, {
@@ -45,4 +53,4 @@ async function getToken() {
   }
 }
 
-exports.getToken = getToken;
+exports.getAccessToken = getAccessToken;
