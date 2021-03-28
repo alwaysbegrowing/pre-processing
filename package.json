@@ -8,13 +8,18 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
+    "synth": "cdk synth --no-staging > template.yaml",
+    "poller": "sam local invoke VodPoller741EDAA0 --env-vars env.json --no-event",
     "cdk": "cdk"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.95.0",
+    "@aws-cdk/yaml-cfn": "^1.95.1",
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
     "aws-cdk": "1.95.0",
+    "aws-sdk": "^2.874.0",
+    "cdk-assets": "^1.95.1",
     "eslint": "^7.23.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
@@ -28,8 +33,10 @@
     "@aws-cdk/aws-lambda-event-sources": "^1.95.0",
     "@aws-cdk/aws-lambda-nodejs": "^1.95.0",
     "@aws-cdk/aws-s3": "^1.95.0",
+    "@aws-cdk/aws-secretsmanager": "^1.95.0",
     "@aws-cdk/aws-sns-subscriptions": "^1.95.0",
     "@aws-cdk/core": "1.95.0",
+    "node-fetch": "^2.6.1",
     "source-map-support": "^0.5.16"
   }
 }

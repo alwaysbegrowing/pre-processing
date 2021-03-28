@@ -1,0 +1,15 @@
+{
+  "name": "poller",
+  "version": "1.0.0",
+  "description": "Polls for new Vods",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rodney Morgan",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^3.6.5",
+    "node-fetch": "^2.6.1"
+  }
+}
