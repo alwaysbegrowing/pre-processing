@@ -16,7 +16,7 @@ const getUsersToPoll = async () => {
     const usersToMonitor = await db
       .collection('users')
       .find({
-        isMonitoring: true,
+        // isMonitoring: true,
       })
       .project({ twitch_id: 1, _id: 0 })
       .toArray();
