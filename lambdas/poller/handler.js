@@ -87,7 +87,7 @@ const sendSnsMessages = async (missingVideoIds) => {
 };
 
 exports.main = async () => {
-  const videoIds = await getVodsToDownload(10);
+  const videoIds = await getVodsToDownload(100);
   const resp = await sendSnsMessages(videoIds);
   console.log({ resp });
   return resp;
