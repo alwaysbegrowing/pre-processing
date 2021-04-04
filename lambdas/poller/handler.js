@@ -30,10 +30,11 @@ const getUsersToPoll = async () => {
 const checkS3forMessages = async (videoIds) => {
   const checkingS3Buckets = videoIds.map(async (videoId) => {
     try {
-      await S3.getObject({ Bucket: BUCKET, Key: videoId }).promise();
+      await S3.headObject({ Bucket: BUCKET, Key: videoId }).promise();
+
       return null;
     } catch (err) {
-      if (err.code === 'NoSuchKey') {
+      if (err.code === 'NotFound') {
         return videoId;
       }
     }
@@ -89,6 +90,6 @@ const sendSnsMessages = async (missingVideoIds) => {
 exports.main = async () => {
   const videoIds = await getVodsToDownload(20);
   const resp = await sendSnsMessages(videoIds);
-  console.log({ resp });
-  return resp;
+  console.log({ length: resp.length, resp });
+  return resp.length;
 };
