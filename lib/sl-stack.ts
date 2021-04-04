@@ -57,7 +57,7 @@ export class SlStack extends Stack {
     const downloadLambda = new Function(this, 'DownloadHandler', {
       runtime: Runtime.NODEJS_14_X,
       code: Code.fromAsset('lambdas/downloader'),
-      memorySize: 500,
+      memorySize: 10240,
       timeout: Duration.seconds(900),
       handler: 'handler.main',
       environment: {
@@ -74,7 +74,7 @@ export class SlStack extends Stack {
     const clipFinder = new Function(this, 'ClipFinder', {
       runtime: Runtime.NODEJS_14_X,
       code: Code.fromAsset('lambdas/clipfinder'),
-      memorySize: 10240,
+      memorySize: 500,
       timeout: Duration.seconds(900),
       handler: 'handler.main',
       environment: {
