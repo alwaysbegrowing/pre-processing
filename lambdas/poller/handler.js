@@ -16,7 +16,7 @@ const getUsersToPoll = async () => {
     const usersToMonitor = await db
       .collection('users')
       .find({
-        // isMonitoring: true,
+        twitch_id: { $ne: null },
       })
       .project({ twitch_id: 1, _id: 0 })
       .toArray();
@@ -87,7 +87,7 @@ const sendSnsMessages = async (missingVideoIds) => {
 };
 
 exports.main = async () => {
-  const videoIds = await getVodsToDownload(100);
+  const videoIds = await getVodsToDownload(20);
   const resp = await sendSnsMessages(videoIds);
   console.log({ resp });
   return resp;
