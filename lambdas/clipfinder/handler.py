@@ -29,7 +29,6 @@ def handler(event, context):
 
     obj = s3.get_object(Bucket=bucket, Key=key)
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
-    print(len(all_messages))
     algo1_result = algo1.run(all_messages)
     algo2_result = algo2.run(all_messages)
     algo3 = algo3_0.run(all_messages)
