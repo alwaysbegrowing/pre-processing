@@ -1,10 +1,9 @@
 import boto3
 import json
 
-from twitch_chat_analysis.algo1 import run as algo1Runner
-from twitch_chat_analysis.algo2 import run as algo2Runner
-from twitch_chat_analysis.algo3_5 import run as algo3_5Runner
-from twitch_chat_analysis.algo3_0 import run as algo3_0Runner
+from pillaralgos import algo1,algo2,algo3_0,algo3_5
+
+
 from db import connect_to_db
 s3 = boto3.client('s3')
 
@@ -30,10 +29,11 @@ def handler(event, context):
 
     obj = s3.get_object(Bucket=bucket, Key=key)
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
-    algo1 = algo1Runner(all_messages, sort_by='rel', min_=2),
-    algo2 = algo2Runner(all_messages, min_=2)
-    algo3 = algo3_0Runner(all_messages, min_=2, min_words=5)
-    algo4 = algo3_5Runner(all_messages, goal='num_words', min_=2)
-    clips = {"algo1": algo1, "algo2": algo2, "algo3": algo3, algo4: 'algo4'}
+    print(len(all_messages))
+    algo1_result = algo1.run(all_messages)
+    algo2_result = algo2.run(all_messages)
+    algo3 = algo3_0.run(all_messages)
+    algo4 = algo3_5.run(all_messages)
+    clips = {"algo1": algo1_result, "algo2": algo2_result, "algo3": algo3, "algo4": algo4}
     store_in_db(key, clips)
     return clips

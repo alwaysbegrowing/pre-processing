@@ -1,5 +1,4 @@
-pandas
-numpy
 datetime
 boto3
 pymongo[srv]
+pillaralgos==1.0.7

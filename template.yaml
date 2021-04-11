@@ -335,7 +335,7 @@ Resources:
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParameters17e7709f913e6dfd3a184ed04ee474b7ec5b9a25a811305e12902d12c7f5701aS3Bucket0690763B
+          Ref: AssetParameters3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51S3Bucket669A7AEB
         S3Key:
           Fn::Join:
             - ""
@@ -343,12 +343,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters17e7709f913e6dfd3a184ed04ee474b7ec5b9a25a811305e12902d12c7f5701aS3VersionKeyA52D0428
+                      - Ref: AssetParameters3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51S3VersionKeyEE3B1C00
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters17e7709f913e6dfd3a184ed04ee474b7ec5b9a25a811305e12902d12c7f5701aS3VersionKeyA52D0428
+                      - Ref: AssetParameters3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51S3VersionKeyEE3B1C00
       Role:
         Fn::GetAtt:
           - ClipFinderServiceRole28A544E9
@@ -366,7 +366,7 @@ Resources:
       - ClipFinderServiceRole28A544E9
     Metadata:
       aws:cdk:path: SlStack/ClipFinder/Resource
-      aws:asset:path: /Users/russell/pillar/sl/cdk.out/asset.17e7709f913e6dfd3a184ed04ee474b7ec5b9a25a811305e12902d12c7f5701a
+      aws:asset:path: /Users/russell/pillar/sl/cdk.out/asset.3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51
       aws:asset:property: Code
   BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC:
     Type: AWS::IAM::Role
@@ -509,15 +509,15 @@ Parameters:
   AssetParameters79f614ef9cfe6e50566b6e3611849d0e41d6a370dd644e4bd0053fee569e00ceArtifactHash243BF3D6:
     Type: String
     Description: Artifact hash for asset "79f614ef9cfe6e50566b6e3611849d0e41d6a370dd644e4bd0053fee569e00ce"
-  AssetParameters17e7709f913e6dfd3a184ed04ee474b7ec5b9a25a811305e12902d12c7f5701aS3Bucket0690763B:
+  AssetParameters3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51S3Bucket669A7AEB:
     Type: String
-    Description: S3 bucket for asset "17e7709f913e6dfd3a184ed04ee474b7ec5b9a25a811305e12902d12c7f5701a"
-  AssetParameters17e7709f913e6dfd3a184ed04ee474b7ec5b9a25a811305e12902d12c7f5701aS3VersionKeyA52D0428:
+    Description: S3 bucket for asset "3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51"
+  AssetParameters3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51S3VersionKeyEE3B1C00:
     Type: String
-    Description: S3 key for asset version "17e7709f913e6dfd3a184ed04ee474b7ec5b9a25a811305e12902d12c7f5701a"
-  AssetParameters17e7709f913e6dfd3a184ed04ee474b7ec5b9a25a811305e12902d12c7f5701aArtifactHash1837DB81:
+    Description: S3 key for asset version "3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51"
+  AssetParameters3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51ArtifactHash3AFBC746:
     Type: String
-    Description: Artifact hash for asset "17e7709f913e6dfd3a184ed04ee474b7ec5b9a25a811305e12902d12c7f5701a"
+    Description: Artifact hash for asset "3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51"
 Conditions:
   CDKMetadataAvailable:
     Fn::Or:
