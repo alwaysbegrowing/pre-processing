@@ -1,4 +1,2 @@
-datetime
-boto3
-pymongo[srv]
-pillaralgos==1.0.7
+pymongo[srv]==3.11.3
+pillaralgos==1.0.8

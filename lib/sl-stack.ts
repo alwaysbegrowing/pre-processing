@@ -21,8 +21,8 @@ export class SlStack extends Stack {
     const vodPoller = new Function(this, 'VodPoller', {
       runtime: Runtime.NODEJS_14_X,
       code: Code.fromAsset('lambdas/poller'),
-      memorySize: 1000,
-      timeout: Duration.seconds(900),
+      memorySize: 256,
+      timeout: Duration.seconds(60),
       handler: 'handler.main',
       environment: {
         BUCKET: messageStoreBucket.bucketName,
