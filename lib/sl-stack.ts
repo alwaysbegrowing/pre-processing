@@ -70,7 +70,7 @@ export class SlStack extends Stack {
       handler: 'handler',
       index: 'handler.py',
       entry: './lambdas/clipfinder',
-      memorySize: 10240,
+      memorySize: 1256,
       timeout: Duration.seconds(900),
       environment: {
         BUCKET: messageStoreBucket.bucketName,
