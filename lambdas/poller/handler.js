@@ -44,6 +44,14 @@ const checkS3forMessages = async (videoIds) => {
   return missingVideos;
 };
 
+const isStreamerOnlineCheck = async (twitchId, headers) => {
+  const url = `https://api.twitch.tv/helix/streams?user_id=${twitchId}`;
+  const resp = await fetch(url, { headers });
+  const onlineStreams = await resp.json();
+  if (onlineStreams?.data?.[0]) return true;
+  return false;
+};
+
 const getVodsToDownload = async (numOfVodsPerStreamer) => {
   const usersToPoll = await getUsersToPoll();
   const appToken = await getAccessToken();
@@ -59,7 +67,14 @@ const getVodsToDownload = async (numOfVodsPerStreamer) => {
     const url = `https://api.twitch.tv/helix/videos?user_id=${twitchId}&type=archive&first=${numOfVodsPerStreamer}`;
     const resp = await fetch(url, { headers });
     const singleStreamersVideos = await resp.json();
-    singleStreamersVideos.data.forEach(({ id }) => {
+    const isStreamerOnline = await isStreamerOnlineCheck(twitchId, headers);
+    singleStreamersVideos.data.forEach(({ id }, i) => {
+      // this is fix https://github.com/pillargg/timestamps/issues/2
+      // we should not create clips for the vod if the user is still streaming
+      // if we did create clips, we would be missing most of the chat messages
+      if (i === 0 && isStreamerOnline) {
+        return;
+      }
       videoIds.push(id);
     });
     return singleStreamersVideos;

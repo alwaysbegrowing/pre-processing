@@ -110,7 +110,7 @@ Resources:
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParameters22b3b5d8beb116779d2d85bef34b1087eeb6032487a925cf0cf84b1e75edfb99S3Bucket08AC01C2
+          Ref: AssetParameters764884d6c964b895e2bdee3843c5fafc4aeb4b78eae9523f22f312b6ce5bdd6fS3Bucket6B039198
         S3Key:
           Fn::Join:
             - ""
@@ -118,12 +118,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters22b3b5d8beb116779d2d85bef34b1087eeb6032487a925cf0cf84b1e75edfb99S3VersionKey35D35EF2
+                      - Ref: AssetParameters764884d6c964b895e2bdee3843c5fafc4aeb4b78eae9523f22f312b6ce5bdd6fS3VersionKeyD6619D2B
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters22b3b5d8beb116779d2d85bef34b1087eeb6032487a925cf0cf84b1e75edfb99S3VersionKey35D35EF2
+                      - Ref: AssetParameters764884d6c964b895e2bdee3843c5fafc4aeb4b78eae9523f22f312b6ce5bdd6fS3VersionKeyD6619D2B
       Role:
         Fn::GetAtt:
           - VodPollerServiceRole369446BC
@@ -136,9 +136,9 @@ Resources:
           TOPIC:
             Ref: ReadyForDownloadsEEACEEFF
       Handler: handler.main
-      MemorySize: 1000
+      MemorySize: 256
       Runtime: nodejs14.x
-      Timeout: 900
+      Timeout: 60
     DependsOn:
       - VodPollerServiceRoleDefaultPolicy1E3562C9
       - VodPollerServiceRole369446BC
@@ -335,7 +335,7 @@ Resources:
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParameters3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51S3Bucket669A7AEB
+          Ref: AssetParameterse1573d049c1ebd18c504dd98cc8c6b72f3fa429b839df450045d35debc1d7cd9S3Bucket27AF1E8C
         S3Key:
           Fn::Join:
             - ""
@@ -343,12 +343,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51S3VersionKeyEE3B1C00
+                      - Ref: AssetParameterse1573d049c1ebd18c504dd98cc8c6b72f3fa429b839df450045d35debc1d7cd9S3VersionKey0CF9824B
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51S3VersionKeyEE3B1C00
+                      - Ref: AssetParameterse1573d049c1ebd18c504dd98cc8c6b72f3fa429b839df450045d35debc1d7cd9S3VersionKey0CF9824B
       Role:
         Fn::GetAtt:
           - ClipFinderServiceRole28A544E9
@@ -358,7 +358,7 @@ Resources:
           BUCKET:
             Ref: MessageStore60E7AFC8
       Handler: handler.handler
-      MemorySize: 500
+      MemorySize: 1256
       Runtime: python3.8
       Timeout: 900
     DependsOn:
@@ -366,7 +366,7 @@ Resources:
       - ClipFinderServiceRole28A544E9
     Metadata:
       aws:cdk:path: SlStack/ClipFinder/Resource
-      aws:asset:path: /Users/russell/pillar/sl/cdk.out/asset.3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51
+      aws:asset:path: /Users/russell/pillar/sl/cdk.out/asset.e1573d049c1ebd18c504dd98cc8c6b72f3fa429b839df450045d35debc1d7cd9
       aws:asset:property: Code
   BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC:
     Type: AWS::IAM::Role
@@ -491,15 +491,15 @@ Resources:
       aws:cdk:path: SlStack/CDKMetadata/Default
     Condition: CDKMetadataAvailable
 Parameters:
-  AssetParameters22b3b5d8beb116779d2d85bef34b1087eeb6032487a925cf0cf84b1e75edfb99S3Bucket08AC01C2:
+  AssetParameters764884d6c964b895e2bdee3843c5fafc4aeb4b78eae9523f22f312b6ce5bdd6fS3Bucket6B039198:
     Type: String
-    Description: S3 bucket for asset "22b3b5d8beb116779d2d85bef34b1087eeb6032487a925cf0cf84b1e75edfb99"
-  AssetParameters22b3b5d8beb116779d2d85bef34b1087eeb6032487a925cf0cf84b1e75edfb99S3VersionKey35D35EF2:
+    Description: S3 bucket for asset "764884d6c964b895e2bdee3843c5fafc4aeb4b78eae9523f22f312b6ce5bdd6f"
+  AssetParameters764884d6c964b895e2bdee3843c5fafc4aeb4b78eae9523f22f312b6ce5bdd6fS3VersionKeyD6619D2B:
     Type: String
-    Description: S3 key for asset version "22b3b5d8beb116779d2d85bef34b1087eeb6032487a925cf0cf84b1e75edfb99"
-  AssetParameters22b3b5d8beb116779d2d85bef34b1087eeb6032487a925cf0cf84b1e75edfb99ArtifactHash6C8D1C60:
+    Description: S3 key for asset version "764884d6c964b895e2bdee3843c5fafc4aeb4b78eae9523f22f312b6ce5bdd6f"
+  AssetParameters764884d6c964b895e2bdee3843c5fafc4aeb4b78eae9523f22f312b6ce5bdd6fArtifactHash024893C0:
     Type: String
-    Description: Artifact hash for asset "22b3b5d8beb116779d2d85bef34b1087eeb6032487a925cf0cf84b1e75edfb99"
+    Description: Artifact hash for asset "764884d6c964b895e2bdee3843c5fafc4aeb4b78eae9523f22f312b6ce5bdd6f"
   AssetParameters79f614ef9cfe6e50566b6e3611849d0e41d6a370dd644e4bd0053fee569e00ceS3Bucket9787875F:
     Type: String
     Description: S3 bucket for asset "79f614ef9cfe6e50566b6e3611849d0e41d6a370dd644e4bd0053fee569e00ce"
@@ -509,15 +509,15 @@ Parameters:
   AssetParameters79f614ef9cfe6e50566b6e3611849d0e41d6a370dd644e4bd0053fee569e00ceArtifactHash243BF3D6:
     Type: String
     Description: Artifact hash for asset "79f614ef9cfe6e50566b6e3611849d0e41d6a370dd644e4bd0053fee569e00ce"
-  AssetParameters3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51S3Bucket669A7AEB:
+  AssetParameterse1573d049c1ebd18c504dd98cc8c6b72f3fa429b839df450045d35debc1d7cd9S3Bucket27AF1E8C:
     Type: String
-    Description: S3 bucket for asset "3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51"
-  AssetParameters3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51S3VersionKeyEE3B1C00:
+    Description: S3 bucket for asset "e1573d049c1ebd18c504dd98cc8c6b72f3fa429b839df450045d35debc1d7cd9"
+  AssetParameterse1573d049c1ebd18c504dd98cc8c6b72f3fa429b839df450045d35debc1d7cd9S3VersionKey0CF9824B:
     Type: String
-    Description: S3 key for asset version "3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51"
-  AssetParameters3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51ArtifactHash3AFBC746:
+    Description: S3 key for asset version "e1573d049c1ebd18c504dd98cc8c6b72f3fa429b839df450045d35debc1d7cd9"
+  AssetParameterse1573d049c1ebd18c504dd98cc8c6b72f3fa429b839df450045d35debc1d7cd9ArtifactHash882D0DA0:
     Type: String
-    Description: Artifact hash for asset "3a072b866fcebc80534aff0bf5b4e9596cb93c755f78d02a55bbdc2b3ebabe51"
+    Description: Artifact hash for asset "e1573d049c1ebd18c504dd98cc8c6b72f3fa429b839df450045d35debc1d7cd9"
 Conditions:
   CDKMetadataAvailable:
     Fn::Or:
