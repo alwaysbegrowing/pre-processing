@@ -7,6 +7,7 @@ import { SnsEventSource, S3EventSource } from '@aws-cdk/aws-lambda-event-sources
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import { Rule, Schedule } from '@aws-cdk/aws-events';
 import { LambdaFunction } from '@aws-cdk/aws-events-targets';
+import { PythonFunction } from '@aws-cdk/aws-lambda-python';
 
 // const { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, MONGODB_FULL_URI,  } = process.env;
 const TWITCH_CLIENT_ID = '2nakqoqdxka9v5oekyo6742bmnxt2o';
@@ -17,28 +18,25 @@ export class SlStack extends Stack {
     const messageStoreBucket = new Bucket(this, 'MessageStore');
     const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
 
-
-
     const vodPoller = new Function(this, 'VodPoller', {
       runtime: Runtime.NODEJS_14_X,
       code: Code.fromAsset('lambdas/poller'),
-      memorySize: 1000,
-      timeout: Duration.seconds(900),
+      memorySize: 256,
+      timeout: Duration.seconds(60),
       handler: 'handler.main',
       environment: {
         BUCKET: messageStoreBucket.bucketName,
         TWITCH_CLIENT_ID,
-        TOPIC: readyForDownloadsTopic.topicArn
+        TOPIC: readyForDownloadsTopic.topicArn,
       },
     });
 
     new Rule(this, 'CheckForVods', {
       schedule: Schedule.cron({ minute: '*/5', hour: '*', day: '*' }),
       targets: [new LambdaFunction(vodPoller)],
-     });
-     
+    });
 
-    messageStoreBucket.grantRead(vodPoller)
+    messageStoreBucket.grantRead(vodPoller);
     // follow below link on how to add new secrets
     // https://docs.aws.amazon.com/cdk/latest/guide/get_secrets_manager_value.html
     const twitchSecret = Secret.fromSecretAttributes(this, 'TWITCH_CLIENT_SECRET', {
@@ -53,11 +51,10 @@ export class SlStack extends Stack {
     twitchSecret.grantRead(vodPoller);
     mongoSecret.grantRead(vodPoller);
 
-
     const downloadLambda = new Function(this, 'DownloadHandler', {
       runtime: Runtime.NODEJS_14_X,
       code: Code.fromAsset('lambdas/downloader'),
-      memorySize: 500,
+      memorySize: 1250,
       timeout: Duration.seconds(900),
       handler: 'handler.main',
       environment: {
@@ -65,18 +62,16 @@ export class SlStack extends Stack {
       },
     });
 
-    
-
-
-    readyForDownloadsTopic.grantPublish(vodPoller)
+    readyForDownloadsTopic.grantPublish(vodPoller);
     new SnsEventSource(readyForDownloadsTopic).bind(downloadLambda);
 
-    const clipFinder = new Function(this, 'ClipFinder', {
-      runtime: Runtime.NODEJS_14_X,
-      code: Code.fromAsset('lambdas/clipfinder'),
-      memorySize: 10240,
+    const clipFinder = new PythonFunction(this, 'ClipFinder', {
+      runtime: Runtime.PYTHON_3_8,
+      handler: 'handler',
+      index: 'handler.py',
+      entry: './lambdas/clipfinder',
+      memorySize: 1256,
       timeout: Duration.seconds(900),
-      handler: 'handler.main',
       environment: {
         BUCKET: messageStoreBucket.bucketName,
       },
@@ -86,10 +81,7 @@ export class SlStack extends Stack {
     messageStoreBucket.grantRead(clipFinder);
 
     mongoSecret.grantRead(clipFinder);
-
-
-    new S3EventSource(messageStoreBucket, { events: [EventType.OBJECT_CREATED] }).bind(
-      clipFinder
-    );
+    
+    new S3EventSource(messageStoreBucket, { events: [EventType.OBJECT_CREATED] }).bind(clipFinder);
   }
 }

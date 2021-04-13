@@ -30,10 +30,11 @@ const getUsersToPoll = async () => {
 const checkS3forMessages = async (videoIds) => {
   const checkingS3Buckets = videoIds.map(async (videoId) => {
     try {
-      await S3.getObject({ Bucket: BUCKET, Key: videoId }).promise();
+      await S3.headObject({ Bucket: BUCKET, Key: videoId }).promise();
+
       return null;
     } catch (err) {
-      if (err.code === 'NoSuchKey') {
+      if (err.code === 'NotFound') {
         return videoId;
       }
     }
@@ -41,6 +42,14 @@ const checkS3forMessages = async (videoIds) => {
   const existInS3Bucket = await Promise.all(checkingS3Buckets);
   const missingVideos = existInS3Bucket.filter((id) => id !== null);
   return missingVideos;
+};
+
+const isStreamerOnlineCheck = async (twitchId, headers) => {
+  const url = `https://api.twitch.tv/helix/streams?user_id=${twitchId}`;
+  const resp = await fetch(url, { headers });
+  const onlineStreams = await resp.json();
+  if (onlineStreams?.data?.[0]) return true;
+  return false;
 };
 
 const getVodsToDownload = async (numOfVodsPerStreamer) => {
@@ -58,7 +67,14 @@ const getVodsToDownload = async (numOfVodsPerStreamer) => {
     const url = `https://api.twitch.tv/helix/videos?user_id=${twitchId}&type=archive&first=${numOfVodsPerStreamer}`;
     const resp = await fetch(url, { headers });
     const singleStreamersVideos = await resp.json();
-    singleStreamersVideos.data.forEach(({ id }) => {
+    const isStreamerOnline = await isStreamerOnlineCheck(twitchId, headers);
+    singleStreamersVideos.data.forEach(({ id }, i) => {
+      // this is fix https://github.com/pillargg/timestamps/issues/2
+      // we should not create clips for the vod if the user is still streaming
+      // if we did create clips, we would be missing most of the chat messages
+      if (i === 0 && isStreamerOnline) {
+        return;
+      }
       videoIds.push(id);
     });
     return singleStreamersVideos;
@@ -89,6 +105,6 @@ const sendSnsMessages = async (missingVideoIds) => {
 exports.main = async () => {
   const videoIds = await getVodsToDownload(20);
   const resp = await sendSnsMessages(videoIds);
-  console.log({ resp });
-  return resp;
+  console.log({ length: resp.length, resp });
+  return resp.length;
 };
