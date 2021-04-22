@@ -74,6 +74,8 @@ export class SlStack extends Stack {
       timeout: Duration.seconds(900),
       environment: {
         BUCKET: messageStoreBucket.bucketName,
+        TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
+        TWITCH_CLIENT_SECRET_ARN: 'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V'
       },
     });
     messageStoreBucket.grantWrite(downloadLambda);
