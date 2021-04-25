@@ -40,7 +40,7 @@ def get_ccc(ccc_data):
     if type(ccc_data) is str:
         ccc_data = json.loads(ccc_data)
 
-    access_token = twitch_auth(TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET)
+    access_token = twitch_auth(TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET)['access_token']
 
     return_data = []
 
