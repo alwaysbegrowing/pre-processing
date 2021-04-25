@@ -1,2 +1,2 @@
 pymongo[srv]==3.11.3
-pillaralgos==1.0.9
+pillaralgos==1.0.12
