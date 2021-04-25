@@ -59,7 +59,7 @@ def handler(event, context):
     data = event['Records'][0]['s3']
     bucket = data['bucket']['name']
     key = data['object']['key']
-    ccc_data = data.get('ccc')
+    ccc_data = data['object'].get('ccc')
 
     obj = s3.get_object(Bucket=bucket, Key=key)
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
@@ -67,7 +67,7 @@ def handler(event, context):
     algo2_result = algo2.run(all_messages, min_=.5,  limit=10)
     algo3 = algo3_0.run(all_messages, min_=.5,  limit=10)
     algo4 = algo3_5.run(all_messages, min_=.5,  limit=10)
-    ccc = get_ccc(ccc)
+    ccc = get_ccc(ccc_data)
     clips = {
         "algo1": algo1_result, 
         "algo2": algo2_result, 
