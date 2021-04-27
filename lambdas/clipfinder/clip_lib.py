@@ -78,7 +78,7 @@ def get_ccc_start_end_times(twitch_client_id, twitch_client_secret, clip_slug):
         }
     }]
 
-    gql_headers = {  # we can probably delete most of this
+    gql_headers = {
         'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko'
     }
 
