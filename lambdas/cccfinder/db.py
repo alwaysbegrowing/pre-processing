@@ -20,21 +20,35 @@ def connect_to_db():
         )
         cached_uri = client.get_secret_value(
             SecretId=secret_name)['SecretString']
-    print(cached_uri)
     client = pymongo.MongoClient(cached_uri)
-    db = client['pillar']
+    db = client.pillar
     return db
 
 def input_ccc(key, ccc_data):
     db = connect_to_db()
     query = {'videoId': key}
-    db_obj = db['timestamps'].find_one(query)
-    clips = db_obj['clips']
-    clips['ccc'] = ccc_data
-    update = {
-        '$set': {
-            'clips': clips
-        },
-    }
-    result = db['timestamps'].update_one(query, update, upsert=True)
+    timestamps = db.timestamps
+    db_obj = timestamps.find_one(query)
+
+    result = None
+
+    if db_obj is None:
+        print('Not found in database, adding....')
+        clips = {
+            'videoId': key,
+            'clips': {
+                'ccc': ccc_data
+            }
+        }
+        result = timestamps.insert_one(clips)
+    else:
+        print('Updating existing record...')
+        clips = db_obj['clips']
+        clips['ccc'] = ccc_data
+        update = {
+            '$set': {
+                'clips': clips
+            },
+        }
+        result = timestamps.update_one(query, update, upsert=True)
     return result

@@ -24,9 +24,6 @@ def handler(event, context):
         start_time, end_time = get_ccc_start_end_times(clip)
         data.append({'startTime': start_time, 'endTime': end_time})
     
-    print(data)
-
-    # this part doesn't work
     input_ccc(video_id, data)
 
     return {}
