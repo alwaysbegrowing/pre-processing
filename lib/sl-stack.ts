@@ -78,6 +78,20 @@ export class SlStack extends Stack {
         TWITCH_CLIENT_SECRET_ARN: 'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V'
       },
     });
+
+    const cccFinder = new PythonFunction(this, 'CCCFinder', {
+      runtime: Runtime.PYTHON_3_8,
+      handler: 'handler',
+      index: 'handler.py',
+      entry: './lambdas/cccfinder',
+      memorySize: 1256,
+      timeout: Duration.seconds(900),
+      environment: {
+        TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
+        TWITCH_CLIENT_SECRET_ARN: 'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V'
+      },
+    });
+
     messageStoreBucket.grantWrite(downloadLambda);
 
     messageStoreBucket.grantRead(clipFinder);
