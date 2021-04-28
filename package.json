@@ -10,9 +10,9 @@
     "test": "jest",
     "synth": "cdk synth --no-staging > template.yaml",
     "poller": "sam local invoke VodPoller741EDAA0 --env-vars env.json --no-event",
-    "clipfinder": "sam local invoke ClipFinderA73374EE --env-vars env.json --event ./clipFinderEvent.json",
-    "downloader": "sam local invoke DownloadHandler09CC40DB --env-vars env.json --event ./event.json",
-    "cccfinder": "sam local invoke CCCFinder4C010E91 --env-vars env.json --event ./cccFinderEvent.json",
+    "clipfinder": "sam local invoke ClipFinderA73374EE --env-vars env.json --event ./events/clipFinderEvent.json",
+    "downloader": "sam local invoke DownloadHandler09CC40DB --env-vars env.json --event ./events/event.json",
+    "cccfinder": "sam local invoke CCCFinder4C010E91 --env-vars env.json --event ./events/cccFinderEvent.json",
     "cdk": "cdk"
   },
   "devDependencies": {
