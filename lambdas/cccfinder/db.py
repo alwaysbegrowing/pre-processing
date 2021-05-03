@@ -28,27 +28,12 @@ def input_ccc(key, ccc_data):
     db = connect_to_db()
     query = {'videoId': key}
     timestamps = db.timestamps
-    db_obj = timestamps.find_one(query)
+    
+    update = {
+        '$set': {
+            'clips.ccc': ccc_data
+        },
+    }
+    result = timestamps.update_one(query, update, upsert=True)
 
-    result = None
-
-    if db_obj is None:
-        print('Not found in database, adding....')
-        clips = {
-            'videoId': key,
-            'clips': {
-                'ccc': ccc_data
-            }
-        }
-        result = timestamps.insert_one(clips)
-    else:
-        print('Updating existing record...')
-        clips = db_obj['clips']
-        clips['ccc'] = ccc_data
-        update = {
-            '$set': {
-                'clips': clips
-            },
-        }
-        result = timestamps.update_one(query, update, upsert=True)
     return result
