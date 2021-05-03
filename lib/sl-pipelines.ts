@@ -26,7 +26,6 @@ export class PreProdPipeline extends Stack {
             synthAction: new SimpleSynthAction({
                 sourceArtifact: sourceArtifact,
                 cloudAssemblyArtifact: cloudAssemblyArtifact,
-                buildCommands: ['npm run build'],
                 synthCommand: 'cdk synth',
                 installCommands: ['npm i'],
                 environment: {privileged: true}
