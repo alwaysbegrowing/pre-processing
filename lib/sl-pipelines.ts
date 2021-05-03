@@ -56,7 +56,7 @@ export class ProdPipeline extends Stack {
                 oauthToken: SecretValue.secretsManager('github-token', {'jsonField': 'chand1012'}),
                 owner: 'pillargg',
                 repo: 'timestamps',
-                branch: 'develop'
+                branch: 'master'
             }),
 
             synthAction: new SimpleSynthAction({
