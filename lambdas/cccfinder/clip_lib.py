@@ -44,36 +44,6 @@ def get_video_ccc(twitch_client_id, access_token, twitch_id, video_id):
     return video_clips
 
 
-
-
-# def get_ccc_info(twitch_client_id, access_token, query):
-
-#     if not type(query) is dict:
-#         raise TypeError('Parameter "query" must be a dictionary!')
-
-#     headers = {
-#         'Client-Id': twitch_client_id,
-#         'Authorization': f'Bearer {access_token}'
-#     }
-
-#     resp = requests.get('https://api.twitch.tv/helix/clips',
-#                         headers=headers, params=query)
-
-#     return resp.json()
-
-    # this code can be used if we want to support
-    # "highlights", or clips that the streamer themselves
-    # created on their twitch VOD. For now this will remain commented out.
-    # clip_data = resp.json()
-
-    # if clip_data.get('data'):
-    #     return clip_data
-
-    # resp = requests.get('https://api.twitch.tv/helix/videos', headers=headers, params=queries)
-
-    # return resp.json()
-
-
 def twitch_time_to_seconds(duration):
     total = 0
 
