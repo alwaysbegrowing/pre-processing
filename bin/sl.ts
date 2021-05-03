@@ -2,6 +2,7 @@
 import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
 import { SlStack } from '../lib/sl-stack';
+import { PreProdPipeline } from '../lib/sl-pipelines';
 
 const app = new cdk.App();
 new SlStack(app, 'SlStack', {
@@ -19,3 +20,7 @@ new SlStack(app, 'SlStack', {
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
+
+new PreProdPipeline(app, 'PreProdTimestampsPipeline');
+
+app.synth();
