@@ -26,9 +26,9 @@ export class PreProdPipeline extends Stack {
             synthAction: new SimpleSynthAction({
                 sourceArtifact: sourceArtifact,
                 cloudAssemblyArtifact: cloudAssemblyArtifact,
-                buildCommands: ['npm i', 'npm run build'],
+                buildCommands: ['npm run build'],
                 synthCommand: 'cdk synth',
-                installCommands: ['npm i -g aws-cdk'],
+                installCommands: ['npm i -g npm@latest', 'npm i -g aws-cdk', 'npm i'],
                 environment: {privileged: true}
             })
         });
