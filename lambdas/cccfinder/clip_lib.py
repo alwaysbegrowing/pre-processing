@@ -15,7 +15,7 @@ def twitch_auth(client_id, client_secret):
     return resp.json()
 
 
-def get_video_ccc(twitch_client_id, access_token, twitch_id, video_id):
+def get_video_ccc(twitch_client_id, access_token, video_id):
     '''
     Gets last 100 user clips and check to make sure they are a part of the specified video
     '''
@@ -23,6 +23,16 @@ def get_video_ccc(twitch_client_id, access_token, twitch_id, video_id):
         'Client-Id': twitch_client_id,
         'Authorization': f'Bearer {access_token}'
     }
+
+    query = {
+        'id': video_id
+    }
+
+    resp = requests.get('https://api.twitch.tv/helix/videos', headers=headers, params=query)
+
+    data = resp.json()['data'][0]
+
+    twitch_id = data['user_id']
 
     query = {
         'broadcaster_id': twitch_id,
@@ -105,29 +115,3 @@ def get_ccc_start_end_times(clip_data):
     end_time = start_time + duration
 
     return start_time, end_time
-
-# def get_ccc(twitch_client_id, access_token, ccc_data):
-#     '''
-#     `ccc_data` should simply be a list of clip URLs
-
-#     outputs a list that looks like the following:
-#     [{'startTime': 50, 'endTime': 60}, {'startTime': 120, 'endTime': 155.1}]
-#     '''
-#     if ccc_data is None:
-#         return []
-
-#     if type(ccc_data) is str:
-#         ccc_data = json.loads(ccc_data)
-
-#     return_data = []
-
-#     for clip_url in ccc_data:
-#         clip_slug = clip_url.split('/')[-1]
-#         start_time, end_time = get_ccc_start_end_times(twitch_client_id, access_token, clip_slug)
-
-#         return_data.append({
-#             'startTime': start_time,
-#             'endTime': end_time
-#         })
-
-#     return return_data

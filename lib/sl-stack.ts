@@ -92,6 +92,8 @@ export class SlStack extends Stack {
       },
     });
 
+    new SnsEventSource(readyForDownloadsTopic).bind(cccFinder);
+
     messageStoreBucket.grantWrite(downloadLambda);
 
     messageStoreBucket.grantRead(clipFinder);

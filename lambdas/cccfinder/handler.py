@@ -14,9 +14,8 @@ def handler(event, context):
     access_token = twitch_auth(TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET)['access_token']
 
     video_id = event['Records'][0]['Sns']['MessageAttributes']['VideoId']['Value']
-    twitch_id = event['Records'][0]['Sns']['MessageAttributes']['TwitchId']['Value']
     
-    ccc_data = get_video_ccc(TWITCH_CLIENT_ID, access_token, twitch_id, video_id)
+    ccc_data = get_video_ccc(TWITCH_CLIENT_ID, access_token, video_id)
 
     data = []
 

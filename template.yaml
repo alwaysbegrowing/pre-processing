@@ -393,7 +393,7 @@ Resources:
     Properties:
       Code:
         S3Bucket:
-          Ref: AssetParameters522b8723df0b8fe2bd8fe34492289ef97f5f33147f4d747128e4eec67905cbe3S3Bucket01893E5B
+          Ref: AssetParameterse8de7788ef3b3b6b0f12ea1ca7285a9759743f5da09b6be555fd5f71018fc272S3Bucket2181B2DD
         S3Key:
           Fn::Join:
             - ""
@@ -401,12 +401,12 @@ Resources:
                   - 0
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters522b8723df0b8fe2bd8fe34492289ef97f5f33147f4d747128e4eec67905cbe3S3VersionKey4B349AFA
+                      - Ref: AssetParameterse8de7788ef3b3b6b0f12ea1ca7285a9759743f5da09b6be555fd5f71018fc272S3VersionKey1EC0A784
               - Fn::Select:
                   - 1
                   - Fn::Split:
                       - "||"
-                      - Ref: AssetParameters522b8723df0b8fe2bd8fe34492289ef97f5f33147f4d747128e4eec67905cbe3S3VersionKey4B349AFA
+                      - Ref: AssetParameterse8de7788ef3b3b6b0f12ea1ca7285a9759743f5da09b6be555fd5f71018fc272S3VersionKey1EC0A784
       Role:
         Fn::GetAtt:
           - CCCFinderServiceRoleCE3B78F6
@@ -423,8 +423,33 @@ Resources:
       - CCCFinderServiceRoleCE3B78F6
     Metadata:
       aws:cdk:path: SlStack/CCCFinder/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.522b8723df0b8fe2bd8fe34492289ef97f5f33147f4d747128e4eec67905cbe3
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.e8de7788ef3b3b6b0f12ea1ca7285a9759743f5da09b6be555fd5f71018fc272
       aws:asset:property: Code
+  CCCFinderAllowInvokeSlStackReadyForDownloads8DCF2BE926D4656E:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - CCCFinder4C010E91
+          - Arn
+      Principal: sns.amazonaws.com
+      SourceArn:
+        Ref: ReadyForDownloadsEEACEEFF
+    Metadata:
+      aws:cdk:path: SlStack/CCCFinder/AllowInvoke:SlStackReadyForDownloads8DCF2BE9
+  CCCFinderReadyForDownloadsC6EF4CA3:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: lambda
+      TopicArn:
+        Ref: ReadyForDownloadsEEACEEFF
+      Endpoint:
+        Fn::GetAtt:
+          - CCCFinder4C010E91
+          - Arn
+    Metadata:
+      aws:cdk:path: SlStack/CCCFinder/ReadyForDownloads/Resource
   BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC:
     Type: AWS::IAM::Role
     Properties:
@@ -575,15 +600,15 @@ Parameters:
   AssetParametersdb72087a7dc58b485dc8bbfdb9d27b281253817d36b3ec03724cbd6c315d4444ArtifactHash32876251:
     Type: String
     Description: Artifact hash for asset "db72087a7dc58b485dc8bbfdb9d27b281253817d36b3ec03724cbd6c315d4444"
-  AssetParameters522b8723df0b8fe2bd8fe34492289ef97f5f33147f4d747128e4eec67905cbe3S3Bucket01893E5B:
+  AssetParameterse8de7788ef3b3b6b0f12ea1ca7285a9759743f5da09b6be555fd5f71018fc272S3Bucket2181B2DD:
     Type: String
-    Description: S3 bucket for asset "522b8723df0b8fe2bd8fe34492289ef97f5f33147f4d747128e4eec67905cbe3"
-  AssetParameters522b8723df0b8fe2bd8fe34492289ef97f5f33147f4d747128e4eec67905cbe3S3VersionKey4B349AFA:
+    Description: S3 bucket for asset "e8de7788ef3b3b6b0f12ea1ca7285a9759743f5da09b6be555fd5f71018fc272"
+  AssetParameterse8de7788ef3b3b6b0f12ea1ca7285a9759743f5da09b6be555fd5f71018fc272S3VersionKey1EC0A784:
     Type: String
-    Description: S3 key for asset version "522b8723df0b8fe2bd8fe34492289ef97f5f33147f4d747128e4eec67905cbe3"
-  AssetParameters522b8723df0b8fe2bd8fe34492289ef97f5f33147f4d747128e4eec67905cbe3ArtifactHash65061F23:
+    Description: S3 key for asset version "e8de7788ef3b3b6b0f12ea1ca7285a9759743f5da09b6be555fd5f71018fc272"
+  AssetParameterse8de7788ef3b3b6b0f12ea1ca7285a9759743f5da09b6be555fd5f71018fc272ArtifactHash4923BD5A:
     Type: String
-    Description: Artifact hash for asset "522b8723df0b8fe2bd8fe34492289ef97f5f33147f4d747128e4eec67905cbe3"
+    Description: Artifact hash for asset "e8de7788ef3b3b6b0f12ea1ca7285a9759743f5da09b6be555fd5f71018fc272"
 Conditions:
   CDKMetadataAvailable:
     Fn::Or:
