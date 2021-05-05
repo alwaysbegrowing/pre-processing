@@ -1,12 +1,12 @@
-import boto3
 import json
+import os
 
-from pillaralgos import algo1,algo2,algo3_0,algo3_5
-
+import boto3
+from pillaralgos import algo1, algo2, algo3_0, algo3_5
 
 from db import connect_to_db
-s3 = boto3.client('s3')
 
+s3 = boto3.client('s3')
 
 def store_in_db(key, clip_timestamps):
     db = connect_to_db()
@@ -21,7 +21,6 @@ def store_in_db(key, clip_timestamps):
     print(result)
     return result
 
-
 def handler(event, context):
     data = event['Records'][0]['s3']
     bucket = data['bucket']['name']
@@ -33,6 +32,11 @@ def handler(event, context):
     algo2_result = algo2.run(all_messages, min_=.5,  limit=10)
     algo3 = algo3_0.run(all_messages, min_=.5,  limit=10)
     algo4 = algo3_5.run(all_messages, min_=.5,  limit=10)
-    clips = {"algo1": algo1_result, "algo2": algo2_result, "algo3": algo3, "algo4": algo4}
+    clips = {
+        "algo1": algo1_result, 
+        "algo2": algo2_result, 
+        "algo3": algo3, 
+        "algo4": algo4,
+    }
     store_in_db(key, clips)
     return clips
