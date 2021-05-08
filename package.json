@@ -8,7 +8,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "synth": "cdk synth --no-staging > template.yaml",
+    "synth": "cdk synth SlStack --no-staging > template.yaml",
     "poller": "sam local invoke VodPoller741EDAA0 --env-vars env.json --no-event",
     "clipfinder": "sam local invoke ClipFinderA73374EE --env-vars env.json --event ./events/clipFinderEvent.json",
     "downloader": "sam local invoke DownloadHandler09CC40DB --env-vars env.json --event ./events/event.json",
@@ -45,6 +45,9 @@
     "@aws-cdk/core": "1.95.1",
     "@aws-cdk/pipelines": "^1.95.1",
     "fetch": "^1.1.0",
+    "mongodb": "^3.6.6",
+    "mongodb-client-encryption": "^1.2.3",
+    "node-fetch": "^2.6.1",
     "source-map-support": "^0.5.16"
   }
 }
