@@ -24,7 +24,7 @@ export class SlStack extends Stack {
       entry: './lambdas/poller/handler.js',
       memorySize: 256,
       timeout: Duration.seconds(60),
-      handler: 'handler.main',
+      handler: 'main',
       environment: {
         BUCKET: messageStoreBucket.bucketName,
         TWITCH_CLIENT_ID,
@@ -57,7 +57,7 @@ export class SlStack extends Stack {
       entry: './lambdas/downloader/handler.js',
       memorySize: 1250,
       timeout: Duration.seconds(900),
-      handler: 'handler.main',
+      handler: 'main',
       environment: {
         BUCKET: messageStoreBucket.bucketName,
       },
