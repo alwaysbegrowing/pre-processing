@@ -8,6 +8,7 @@ import { Secret } from '@aws-cdk/aws-secretsmanager';
 import { Rule, Schedule } from '@aws-cdk/aws-events';
 import { LambdaFunction } from '@aws-cdk/aws-events-targets';
 import { PythonFunction } from '@aws-cdk/aws-lambda-python';
+import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs';
 
 // const { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, MONGODB_FULL_URI,  } = process.env;
 const TWITCH_CLIENT_ID = '2nakqoqdxka9v5oekyo6742bmnxt2o';
@@ -18,9 +19,9 @@ export class SlStack extends Stack {
     const messageStoreBucket = new Bucket(this, 'MessageStore');
     const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
 
-    const vodPoller = new Function(this, 'VodPoller', {
+    const vodPoller = new NodejsFunction(this, 'VodPoller', {
       runtime: Runtime.NODEJS_14_X,
-      code: Code.fromAsset('lambdas/poller'),
+      entry: './lambdas/poller/handler.js',
       memorySize: 256,
       timeout: Duration.seconds(60),
       handler: 'handler.main',
@@ -51,9 +52,9 @@ export class SlStack extends Stack {
     twitchSecret.grantRead(vodPoller);
     mongoSecret.grantRead(vodPoller);
 
-    const downloadLambda = new Function(this, 'DownloadHandler', {
+    const downloadLambda = new NodejsFunction(this, 'DownloadHandler', {
       runtime: Runtime.NODEJS_14_X,
-      code: Code.fromAsset('lambdas/downloader'),
+      entry: './lambdas/downloader/handler.js',
       memorySize: 1250,
       timeout: Duration.seconds(900),
       handler: 'handler.main',
