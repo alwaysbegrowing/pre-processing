@@ -57,7 +57,7 @@ export class SlStack extends Stack {
     const downloadLambda = new NodejsFunction(this, 'DownloadHandler', {
       runtime: Runtime.NODEJS_14_X,
       entry: './lambdas/downloader/handler.js',
-      memorySize: 1250,
+      memorySize: 3072,
       timeout: Duration.seconds(900),
       handler: 'main',
       environment: {
