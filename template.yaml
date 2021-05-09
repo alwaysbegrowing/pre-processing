@@ -89,12 +89,12 @@ Resources:
               - secretsmanager:GetSecretValue
               - secretsmanager:DescribeSecret
             Effect: Allow
-            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
           - Action:
               - secretsmanager:GetSecretValue
               - secretsmanager:DescribeSecret
             Effect: Allow
-            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB-6SPDyv
           - Action: sns:Publish
             Effect: Allow
             Resource:
@@ -213,7 +213,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: bdad041bf812c536fd7fb32c4c17fd86e8caabdc31cea4db47043eeda8f5dd26.zip
+        S3Key: 6567bd339c8b45bd26499d503413d7cfac40f63a8854ce96b740454bf0b2dc82.zip
       Role:
         Fn::GetAtt:
           - DownloadHandlerServiceRole4B8FD2FF
@@ -224,7 +224,7 @@ Resources:
             Ref: MessageStore60E7AFC8
           AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
       Handler: index.main
-      MemorySize: 1250
+      MemorySize: 3072
       Runtime: nodejs14.x
       Timeout: 900
     DependsOn:
@@ -232,7 +232,7 @@ Resources:
       - DownloadHandlerServiceRole4B8FD2FF
     Metadata:
       aws:cdk:path: SlStack/DownloadHandler/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.bdad041bf812c536fd7fb32c4c17fd86e8caabdc31cea4db47043eeda8f5dd26
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.6567bd339c8b45bd26499d503413d7cfac40f63a8854ce96b740454bf0b2dc82
       aws:asset:property: Code
   DownloadHandlerAllowInvokeSlStackReadyForDownloads8DCF2BE93A9C74E7:
     Type: AWS::Lambda::Permission
@@ -283,6 +283,11 @@ Resources:
       PolicyDocument:
         Statement:
           - Action:
+              - secretsmanager:GetSecretValue
+              - secretsmanager:DescribeSecret
+            Effect: Allow
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
+          - Action:
               - s3:GetObject*
               - s3:GetBucket*
               - s3:List*
@@ -301,7 +306,7 @@ Resources:
               - secretsmanager:GetSecretValue
               - secretsmanager:DescribeSecret
             Effect: Allow
-            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB-6SPDyv
         Version: "2012-10-17"
       PolicyName: ClipFinderServiceRoleDefaultPolicyAFBF3421
       Roles:
@@ -324,7 +329,7 @@ Resources:
           BUCKET:
             Ref: MessageStore60E7AFC8
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
-          TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
+          TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
       Handler: handler.handler
       MemorySize: 1256
       Runtime: python3.8
@@ -354,6 +359,22 @@ Resources:
               - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
     Metadata:
       aws:cdk:path: SlStack/CCCFinder/ServiceRole/Resource
+  CCCFinderServiceRoleDefaultPolicyED0B32B3:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - secretsmanager:GetSecretValue
+              - secretsmanager:DescribeSecret
+            Effect: Allow
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
+        Version: "2012-10-17"
+      PolicyName: CCCFinderServiceRoleDefaultPolicyED0B32B3
+      Roles:
+        - Ref: CCCFinderServiceRoleCE3B78F6
+    Metadata:
+      aws:cdk:path: SlStack/CCCFinder/ServiceRole/DefaultPolicy/Resource
   CCCFinder4C010E91:
     Type: AWS::Lambda::Function
     Properties:
@@ -368,12 +389,13 @@ Resources:
       Environment:
         Variables:
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
-          TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
+          TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
       Handler: handler.handler
       MemorySize: 256
       Runtime: python3.8
       Timeout: 60
     DependsOn:
+      - CCCFinderServiceRoleDefaultPolicyED0B32B3
       - CCCFinderServiceRoleCE3B78F6
     Metadata:
       aws:cdk:path: SlStack/CCCFinder/Resource
