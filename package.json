@@ -20,7 +20,7 @@
     "@aws-cdk/yaml-cfn": "^1.95.1",
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
-    "aws-cdk": "1.95.1",
+    "aws-cdk": "^1.102.0",
     "aws-sdk": "^2.874.0",
     "cdk-assets": "^1.95.1",
     "eslint": "^7.23.0",
