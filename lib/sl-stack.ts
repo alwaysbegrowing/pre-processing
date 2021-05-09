@@ -12,6 +12,8 @@ import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs';
 
 // const { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, MONGODB_FULL_URI,  } = process.env;
 const TWITCH_CLIENT_ID = '2nakqoqdxka9v5oekyo6742bmnxt2o';
+const TWITCH_CLIENT_SECRET_ARN = 'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu';
+const MONGODB_FULL_URI_ARN = 'arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB-6SPDyv';
 export class SlStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -42,12 +44,12 @@ export class SlStack extends Stack {
     // https://docs.aws.amazon.com/cdk/latest/guide/get_secrets_manager_value.html
     const twitchSecret = Secret.fromSecretAttributes(this, 'TWITCH_CLIENT_SECRET', {
       secretCompleteArn:
-        'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V',
+        TWITCH_CLIENT_SECRET_ARN,
     });
 
     const mongoSecret = Secret.fromSecretAttributes(this, 'MONGODB_FULL_URI', {
       secretCompleteArn:
-        'arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt',
+        MONGODB_FULL_URI_ARN,
     });
     twitchSecret.grantRead(vodPoller);
     mongoSecret.grantRead(vodPoller);
@@ -76,9 +78,11 @@ export class SlStack extends Stack {
       environment: {
         BUCKET: messageStoreBucket.bucketName,
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
-        TWITCH_CLIENT_SECRET_ARN: 'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V'
+        TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn
       },
     });
+
+    twitchSecret.grantRead(clipFinder)
 
     const cccFinder = new PythonFunction(this, 'CCCFinder', {
       runtime: Runtime.PYTHON_3_8,
@@ -89,9 +93,11 @@ export class SlStack extends Stack {
       timeout: Duration.seconds(60),
       environment: {
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
-        TWITCH_CLIENT_SECRET_ARN: 'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V'
+        TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn
       },
     });
+
+    twitchSecret.grantRead(cccFinder);
 
     new SnsEventSource(readyForDownloadsTopic).bind(cccFinder);
 
