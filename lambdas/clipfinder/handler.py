@@ -29,10 +29,10 @@ def handler(event, context):
     obj = s3.get_object(Bucket=bucket, Key=key)
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
 
-    brain = brain.run(all_messages, clip_length=.75)
+    brain_results = brain.run(all_messages, clip_length=.75)
 
     clips = {
-        "brain": brain, 
+        "brain": brain_results, 
     }
     
     store_in_db(key, clips)
