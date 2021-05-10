@@ -103,7 +103,7 @@ const sendSnsMessages = async (missingVideoIds) => {
 };
 
 exports.main = async () => {
-  const videoIds = await getVodsToDownload(20);
+  const videoIds = await getVodsToDownload(5);
   const resp = await sendSnsMessages(videoIds);
   console.log({ length: resp.length, resp });
   return resp.length;
