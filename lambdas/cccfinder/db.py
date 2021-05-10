@@ -31,7 +31,7 @@ def input_ccc(key, ccc_data):
     
     update = {
         '$set': {
-            'clips.ccc': ccc_data
+            'ccc': ccc_data
         },
     }
     result = timestamps.update_one(query, update, upsert=True)

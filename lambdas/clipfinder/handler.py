@@ -2,7 +2,7 @@ import json
 import os
 
 import boto3
-from pillaralgos import algo1, algo2, algo3_0, algo3_5
+from pillaralgos import algo1, algo2, algo3_0, algo3_5, brain
 
 from db import connect_to_db
 
@@ -28,15 +28,12 @@ def handler(event, context):
 
     obj = s3.get_object(Bucket=bucket, Key=key)
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
-    algo1_result = algo1.run(all_messages, min_=.5,  limit=10)
-    algo2_result = algo2.run(all_messages, min_=.5,  limit=10)
-    algo3 = algo3_0.run(all_messages, min_=.5,  limit=10)
-    algo4 = algo3_5.run(all_messages, min_=.5,  limit=10)
+
+    brain_results = brain.run(all_messages, clip_length=.75)
+
     clips = {
-        "algo1": algo1_result, 
-        "algo2": algo2_result, 
-        "algo3": algo3, 
-        "algo4": algo4,
+        "brain": brain_results, 
     }
+    
     store_in_db(key, clips)
     return clips

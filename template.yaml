@@ -89,12 +89,12 @@ Resources:
               - secretsmanager:GetSecretValue
               - secretsmanager:DescribeSecret
             Effect: Allow
-            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
           - Action:
               - secretsmanager:GetSecretValue
               - secretsmanager:DescribeSecret
             Effect: Allow
-            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB-6SPDyv
           - Action: sns:Publish
             Effect: Allow
             Resource:
@@ -111,7 +111,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: a40332604552d6a0ae0d36db813969d04d3d4b783fa38a6246102c0f56f97c57.zip
+        S3Key: 3213ede52bf7a82e281bde7547202a36f273430f7a2942c733838924a0d8898f.zip
       Role:
         Fn::GetAtt:
           - VodPollerServiceRole369446BC
@@ -124,7 +124,7 @@ Resources:
           TOPIC:
             Ref: ReadyForDownloadsEEACEEFF
           AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
-      Handler: index.handler.main
+      Handler: index.main
       MemorySize: 256
       Runtime: nodejs14.x
       Timeout: 60
@@ -133,7 +133,7 @@ Resources:
       - VodPollerServiceRole369446BC
     Metadata:
       aws:cdk:path: SlStack/VodPoller/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.a40332604552d6a0ae0d36db813969d04d3d4b783fa38a6246102c0f56f97c57
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.3213ede52bf7a82e281bde7547202a36f273430f7a2942c733838924a0d8898f
       aws:asset:property: Code
   CheckForVods8A3957E1:
     Type: AWS::Events::Rule
@@ -213,7 +213,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 140eb4a19c6f22a0e332fa485268ca19381b2fafe68e2c0bae5bd2e30cee8c42.zip
+        S3Key: 6567bd339c8b45bd26499d503413d7cfac40f63a8854ce96b740454bf0b2dc82.zip
       Role:
         Fn::GetAtt:
           - DownloadHandlerServiceRole4B8FD2FF
@@ -223,8 +223,8 @@ Resources:
           BUCKET:
             Ref: MessageStore60E7AFC8
           AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
-      Handler: index.handler.main
-      MemorySize: 1250
+      Handler: index.main
+      MemorySize: 3072
       Runtime: nodejs14.x
       Timeout: 900
     DependsOn:
@@ -232,7 +232,7 @@ Resources:
       - DownloadHandlerServiceRole4B8FD2FF
     Metadata:
       aws:cdk:path: SlStack/DownloadHandler/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.140eb4a19c6f22a0e332fa485268ca19381b2fafe68e2c0bae5bd2e30cee8c42
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.6567bd339c8b45bd26499d503413d7cfac40f63a8854ce96b740454bf0b2dc82
       aws:asset:property: Code
   DownloadHandlerAllowInvokeSlStackReadyForDownloads8DCF2BE93A9C74E7:
     Type: AWS::Lambda::Permission
@@ -283,6 +283,11 @@ Resources:
       PolicyDocument:
         Statement:
           - Action:
+              - secretsmanager:GetSecretValue
+              - secretsmanager:DescribeSecret
+            Effect: Allow
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
+          - Action:
               - s3:GetObject*
               - s3:GetBucket*
               - s3:List*
@@ -301,7 +306,7 @@ Resources:
               - secretsmanager:GetSecretValue
               - secretsmanager:DescribeSecret
             Effect: Allow
-            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB-6SPDyv
         Version: "2012-10-17"
       PolicyName: ClipFinderServiceRoleDefaultPolicyAFBF3421
       Roles:
@@ -324,7 +329,7 @@ Resources:
           BUCKET:
             Ref: MessageStore60E7AFC8
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
-          TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
+          TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
       Handler: handler.handler
       MemorySize: 1256
       Runtime: python3.8
@@ -354,6 +359,22 @@ Resources:
               - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
     Metadata:
       aws:cdk:path: SlStack/CCCFinder/ServiceRole/Resource
+  CCCFinderServiceRoleDefaultPolicyED0B32B3:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - secretsmanager:GetSecretValue
+              - secretsmanager:DescribeSecret
+            Effect: Allow
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
+        Version: "2012-10-17"
+      PolicyName: CCCFinderServiceRoleDefaultPolicyED0B32B3
+      Roles:
+        - Ref: CCCFinderServiceRoleCE3B78F6
+    Metadata:
+      aws:cdk:path: SlStack/CCCFinder/ServiceRole/DefaultPolicy/Resource
   CCCFinder4C010E91:
     Type: AWS::Lambda::Function
     Properties:
@@ -368,12 +389,13 @@ Resources:
       Environment:
         Variables:
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
-          TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
+          TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
       Handler: handler.handler
       MemorySize: 256
       Runtime: python3.8
       Timeout: 60
     DependsOn:
+      - CCCFinderServiceRoleDefaultPolicyED0B32B3
       - CCCFinderServiceRoleCE3B78F6
     Metadata:
       aws:cdk:path: SlStack/CCCFinder/Resource
@@ -522,7 +544,7 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAACk1Qy07DMBD8Fu7OlqiA1BtQqUcUpfyA6yxl87Ajr11UWf53bCelnGZ2NTP7qCHsnqF+eJU/XKlu2ARlLEI4OqkGsTeanfXKif2XbpGNtwrFGzO6JDiTPou/blIkeUeOjI4ixwXeQnj3asDiX1gUo5xOnYSQWg3aiZiTIwsOXqvFzZohfJqZVO4v5OhPrCzNblX/r2+hlTYd9gwfBW55guQEoTVjWbJgY0ZS11wuLI3cVjLfxVDOE3hBnYrQ+tWWMMYodi/weP9WxnX0fHXfRkNT4H5K3gh63lzqJ6izt2eiynrtaEJoF/wFrfezmoYBAAA=
+      Analytics: v2:deflate64:H4sIAAAAAAAACk1Qy07DMBD8Fu7OlqhQqTegEkcUpfyA6yxl87Ajr11UWfl3/Egpp5ldzcw+agj7Z6gfXuQPV6obNkEZixCOTqpBHIxmZ71y4vClW2TjrULxyowuCs6kz+KvGxVR3pEjoxeR4gJvIbx5NWD2F7aIUU6nTkKIrQbtRMzRkQTvXqviZs0QPs1MKvULOfoTK0uzW9X/61topU2HPcNHhlueIDlBaM2Yl8zYmJHUNZWFxZHbSqa7GPJ5Ai+oYxFav9oiLssi9jt4vH8r4Tp6vrpvo6HJcD8lbQQ9by71E9S7+OmeiSrrtaMJoS34C22Tm42GAQAA
     Metadata:
       aws:cdk:path: SlStack/CDKMetadata/Default
     Condition: CDKMetadataAvailable
