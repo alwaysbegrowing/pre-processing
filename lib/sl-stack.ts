@@ -14,8 +14,6 @@ import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs';
 const TWITCH_CLIENT_ID = '2nakqoqdxka9v5oekyo6742bmnxt2o';
 const TWITCH_CLIENT_SECRET_ARN_RUSSELL = 'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V';
 const MONGODB_FULL_URI_ARN_RUSSELL = 'arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt';
-// const TWITCH_CLIENT_SECRET_ARN_CHANDLER = 'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu';
-// const MONGODB_FULL_URI_ARN_CHANDLER = 'arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB-6SPDyv';
 export class SlStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -44,20 +42,11 @@ export class SlStack extends Stack {
     messageStoreBucket.grantRead(vodPoller);
     // follow below link on how to add new secrets
     // https://docs.aws.amazon.com/cdk/latest/guide/get_secrets_manager_value.html
-    // const twitchSecretChandler = Secret.fromSecretAttributes(this, 'TWITCH_CLIENT_SECRET_CHANDLER', {
-    //   secretCompleteArn:
-    //     TWITCH_CLIENT_SECRET_ARN_CHANDLER,
-    // });
 
     const twitchSecretRussell = Secret.fromSecretAttributes(this, 'TWITCH_CLIENT_SECRET_RUSSELL', {
       secretCompleteArn:
         TWITCH_CLIENT_SECRET_ARN_RUSSELL,
     });
-
-    // const mongoSecretChandler = Secret.fromSecretAttributes(this, 'MONGODB_FULL_URI_CHANDLER', {
-    //   secretCompleteArn:
-    //     MONGODB_FULL_URI_ARN_CHANDLER,
-    // });
 
     const mongoSecretRussell = Secret.fromSecretAttributes(this, 'MONGODB_FULL_URI_RUSSELL', {
       secretCompleteArn:
@@ -70,7 +59,7 @@ export class SlStack extends Stack {
     const downloadLambda = new NodejsFunction(this, 'DownloadHandler', {
       runtime: Runtime.NODEJS_14_X,
       entry: './lambdas/downloader/handler.js',
-      memorySize: 3072,
+      memorySize: 1280,
       timeout: Duration.seconds(900),
       handler: 'main',
       environment: {
@@ -86,7 +75,7 @@ export class SlStack extends Stack {
       handler: 'handler',
       index: 'handler.py',
       entry: './lambdas/clipfinder',
-      memorySize: 1256,
+      memorySize: 1280,
       timeout: Duration.seconds(900),
       environment: {
         BUCKET: messageStoreBucket.bucketName,
