@@ -12,8 +12,8 @@ import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs';
 
 // const { TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET, MONGODB_FULL_URI,  } = process.env;
 const TWITCH_CLIENT_ID = '2nakqoqdxka9v5oekyo6742bmnxt2o';
-const TWITCH_CLIENT_SECRET_ARN_RUSSELL = 'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V';
-const MONGODB_FULL_URI_ARN_RUSSELL = 'arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt';
+const TWITCH_CLIENT_SECRET_ARN = 'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V';
+const MONGODB_FULL_URI_ARN = 'arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt';
 export class SlStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -29,7 +29,7 @@ export class SlStack extends Stack {
       handler: 'main',
       environment: {
         BUCKET: messageStoreBucket.bucketName,
-        TWITCH_CLIENT_ID,
+        TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
         TOPIC: readyForDownloadsTopic.topicArn,
       },
     });
@@ -43,18 +43,18 @@ export class SlStack extends Stack {
     // follow below link on how to add new secrets
     // https://docs.aws.amazon.com/cdk/latest/guide/get_secrets_manager_value.html
 
-    const twitchSecretRussell = Secret.fromSecretAttributes(this, 'TWITCH_CLIENT_SECRET_RUSSELL', {
+    const twitchSecret = Secret.fromSecretAttributes(this, 'TWITCH_CLIENT_SECRET', {
       secretCompleteArn:
-        TWITCH_CLIENT_SECRET_ARN_RUSSELL,
+        TWITCH_CLIENT_SECRET_ARN,
     });
 
-    const mongoSecretRussell = Secret.fromSecretAttributes(this, 'MONGODB_FULL_URI_RUSSELL', {
+    const mongoSecret = Secret.fromSecretAttributes(this, 'MONGODB_FULL_URI', {
       secretCompleteArn:
-        MONGODB_FULL_URI_ARN_RUSSELL,
+        MONGODB_FULL_URI_ARN,
     });
 
-    twitchSecretRussell.grantRead(vodPoller);
-    mongoSecretRussell.grantRead(vodPoller);
+    twitchSecret.grantRead(vodPoller);
+    mongoSecret.grantRead(vodPoller);
 
     const downloadLambda = new NodejsFunction(this, 'DownloadHandler', {
       runtime: Runtime.NODEJS_14_X,
@@ -80,11 +80,11 @@ export class SlStack extends Stack {
       environment: {
         BUCKET: messageStoreBucket.bucketName,
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
-        TWITCH_CLIENT_SECRET_ARN: twitchSecretRussell.secretArn
+        TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn
       },
     });
 
-    twitchSecretRussell.grantRead(clipFinder)
+    twitchSecret.grantRead(clipFinder)
 
     const cccFinder = new PythonFunction(this, 'CCCFinder', {
       runtime: Runtime.PYTHON_3_8,
@@ -95,19 +95,19 @@ export class SlStack extends Stack {
       timeout: Duration.seconds(60),
       environment: {
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
-        TWITCH_CLIENT_SECRET_ARN: twitchSecretRussell.secretArn
+        TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn
       },
     });
 
-    twitchSecretRussell.grantRead(cccFinder);
-    mongoSecretRussell.grantRead(cccFinder);
+    twitchSecret.grantRead(cccFinder);
+    mongoSecret.grantRead(cccFinder);
 
     new SnsEventSource(readyForDownloadsTopic).bind(cccFinder);
 
     messageStoreBucket.grantWrite(downloadLambda);
 
     messageStoreBucket.grantRead(clipFinder);
-    mongoSecretRussell.grantRead(clipFinder);
+    mongoSecret.grantRead(clipFinder);
     
     new S3EventSource(messageStoreBucket, { events: [EventType.OBJECT_CREATED] }).bind(clipFinder);
   }
