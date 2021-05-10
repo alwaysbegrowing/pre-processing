@@ -89,12 +89,12 @@ Resources:
               - secretsmanager:GetSecretValue
               - secretsmanager:DescribeSecret
             Effect: Allow
-            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
           - Action:
               - secretsmanager:GetSecretValue
               - secretsmanager:DescribeSecret
             Effect: Allow
-            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB-6SPDyv
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt
           - Action: sns:Publish
             Effect: Allow
             Resource:
@@ -213,7 +213,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 6567bd339c8b45bd26499d503413d7cfac40f63a8854ce96b740454bf0b2dc82.zip
+        S3Key: 2ed6e50699a35cbf500698e6a4920479a4c70cdc66d52c1e0311c1cf5d66638b.zip
       Role:
         Fn::GetAtt:
           - DownloadHandlerServiceRole4B8FD2FF
@@ -232,7 +232,7 @@ Resources:
       - DownloadHandlerServiceRole4B8FD2FF
     Metadata:
       aws:cdk:path: SlStack/DownloadHandler/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.6567bd339c8b45bd26499d503413d7cfac40f63a8854ce96b740454bf0b2dc82
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.2ed6e50699a35cbf500698e6a4920479a4c70cdc66d52c1e0311c1cf5d66638b
       aws:asset:property: Code
   DownloadHandlerAllowInvokeSlStackReadyForDownloads8DCF2BE93A9C74E7:
     Type: AWS::Lambda::Permission
@@ -286,7 +286,7 @@ Resources:
               - secretsmanager:GetSecretValue
               - secretsmanager:DescribeSecret
             Effect: Allow
-            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
           - Action:
               - s3:GetObject*
               - s3:GetBucket*
@@ -306,7 +306,7 @@ Resources:
               - secretsmanager:GetSecretValue
               - secretsmanager:DescribeSecret
             Effect: Allow
-            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB-6SPDyv
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt
         Version: "2012-10-17"
       PolicyName: ClipFinderServiceRoleDefaultPolicyAFBF3421
       Roles:
@@ -319,7 +319,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: db72087a7dc58b485dc8bbfdb9d27b281253817d36b3ec03724cbd6c315d4444.zip
+        S3Key: 88184dbdaed9cb642626a40cf9dd12c57f8fef870eba61e186da6af6c61b3e4c.zip
       Role:
         Fn::GetAtt:
           - ClipFinderServiceRole28A544E9
@@ -329,7 +329,7 @@ Resources:
           BUCKET:
             Ref: MessageStore60E7AFC8
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
-          TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
+          TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
       Handler: handler.handler
       MemorySize: 1256
       Runtime: python3.8
@@ -339,7 +339,7 @@ Resources:
       - ClipFinderServiceRole28A544E9
     Metadata:
       aws:cdk:path: SlStack/ClipFinder/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.db72087a7dc58b485dc8bbfdb9d27b281253817d36b3ec03724cbd6c315d4444
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.88184dbdaed9cb642626a40cf9dd12c57f8fef870eba61e186da6af6c61b3e4c
       aws:asset:property: Code
   CCCFinderServiceRoleCE3B78F6:
     Type: AWS::IAM::Role
@@ -368,7 +368,12 @@ Resources:
               - secretsmanager:GetSecretValue
               - secretsmanager:DescribeSecret
             Effect: Allow
-            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
+          - Action:
+              - secretsmanager:GetSecretValue
+              - secretsmanager:DescribeSecret
+            Effect: Allow
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt
         Version: "2012-10-17"
       PolicyName: CCCFinderServiceRoleDefaultPolicyED0B32B3
       Roles:
@@ -381,7 +386,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: e8de7788ef3b3b6b0f12ea1ca7285a9759743f5da09b6be555fd5f71018fc272.zip
+        S3Key: 1f4475487bbbcc0970538f84fd80636c15cfc43f736fa05e4735931e3c89a706.zip
       Role:
         Fn::GetAtt:
           - CCCFinderServiceRoleCE3B78F6
@@ -389,7 +394,7 @@ Resources:
       Environment:
         Variables:
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
-          TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_SECRET-xylhKu
+          TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
       Handler: handler.handler
       MemorySize: 256
       Runtime: python3.8
@@ -399,7 +404,7 @@ Resources:
       - CCCFinderServiceRoleCE3B78F6
     Metadata:
       aws:cdk:path: SlStack/CCCFinder/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.e8de7788ef3b3b6b0f12ea1ca7285a9759743f5da09b6be555fd5f71018fc272
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.1f4475487bbbcc0970538f84fd80636c15cfc43f736fa05e4735931e3c89a706
       aws:asset:property: Code
   CCCFinderAllowInvokeSlStackReadyForDownloads8DCF2BE926D4656E:
     Type: AWS::Lambda::Permission

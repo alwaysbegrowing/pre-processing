@@ -18,12 +18,15 @@ const getMessages = async (videoId) => {
     const { _next, comments } = await resp.json();
     allMessages.push(...comments);
 
-    if (_next) {
-      await callTwitch(_next);
-    }
+    return _next;
   };
 
-  await callTwitch();
+  var cursor = await callTwitch();
+
+  while (cursor) {
+    cursor = await callTwitch(cursor);
+  }
+
   return allMessages;
 };
 
