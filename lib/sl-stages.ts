@@ -12,7 +12,7 @@ export class PreProdStage extends Stage {
         super(scope, id);
 
         //const service = new SlStack(this, 'PreProd');
-        new SlStack(this, 'PreProd');
+        new SlStack(this, 'PreProd-Timestamps');
 
     }
 }
@@ -24,7 +24,7 @@ export class ProdStage extends Stage {
         super(scope, id);
 
         //const service = new SlStack(this, 'PreProd');
-        new SlStack(this, 'Prod');
+        new SlStack(this, 'Prod-Timestamps');
 
     }
 }

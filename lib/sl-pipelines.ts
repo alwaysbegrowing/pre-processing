@@ -12,7 +12,7 @@ export class PreProdPipeline extends Stack {
         const cloudAssemblyArtifact = new codepipeline.Artifact();
 
         const pipeline = new CdkPipeline(this, 'Timestamps', {
-            pipelineName: 'PreProd-Timetamps',
+            pipelineName: 'PreProd-Timestamps',
             cloudAssemblyArtifact,
 
             sourceAction: new codepipeline_actions.GitHubSourceAction({
@@ -47,7 +47,7 @@ export class ProdPipeline extends Stack {
         const cloudAssemblyArtifact = new codepipeline.Artifact();
 
         const pipeline = new CdkPipeline(this, 'Timestamps', {
-            pipelineName: 'Prod-Timetamps',
+            pipelineName: 'Prod-Timestamps',
             cloudAssemblyArtifact,
 
             sourceAction: new codepipeline_actions.GitHubSourceAction({
