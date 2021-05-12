@@ -22,6 +22,7 @@ export class SlStack extends Stack {
     const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
 
     const vodPoller = new NodejsFunction(this, 'VodPoller', {
+      description: 'Checks for VODs',
       runtime: Runtime.NODEJS_14_X,
       entry: './lambdas/poller/handler.js',
       memorySize: 256,
@@ -56,7 +57,8 @@ export class SlStack extends Stack {
     twitchSecret.grantRead(vodPoller);
     mongoSecret.grantRead(vodPoller);
 
-    const downloadLambda = new NodejsFunction(this, 'DownloadHandler', {
+    const downloadLambda = new NodejsFunction(this, 'ChatDownloader', {
+      description: 'Downloads chat and saves to S3',
       runtime: Runtime.NODEJS_14_X,
       entry: './lambdas/downloader/handler.js',
       memorySize: 1280,
@@ -71,6 +73,7 @@ export class SlStack extends Stack {
     new SnsEventSource(readyForDownloadsTopic).bind(downloadLambda);
 
     const clipFinder = new PythonFunction(this, 'ClipFinder', {
+      description: 'Finds clips with the Pillar Algorithms',
       runtime: Runtime.PYTHON_3_8,
       handler: 'handler',
       index: 'handler.py',
@@ -87,6 +90,7 @@ export class SlStack extends Stack {
     twitchSecret.grantRead(clipFinder)
 
     const cccFinder = new PythonFunction(this, 'CCCFinder', {
+      description: 'Finds CCC on Twitch',
       runtime: Runtime.PYTHON_3_8,
       handler: 'handler',
       index: 'handler.py',
