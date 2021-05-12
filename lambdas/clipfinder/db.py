@@ -20,7 +20,6 @@ def connect_to_db():
         )
         cached_uri = client.get_secret_value(
             SecretId=secret_name)['SecretString']
-    print(cached_uri)
     client = pymongo.MongoClient(cached_uri)
     db = client['pillar']
     return db
