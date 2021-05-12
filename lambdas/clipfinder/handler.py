@@ -26,10 +26,14 @@ def handler(event, context):
     bucket = data['bucket']['name']
     key = data['object']['key']
 
+    print(f'Finding data for video {key}')
+
     obj = s3.get_object(Bucket=bucket, Key=key)
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
 
     brain_results = brain.run(all_messages, clip_length=.75)
+
+    print(f'Found {len(brain_results)} clips. Adding to database.')
 
     clips = {
         "brain": brain_results, 
