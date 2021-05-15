@@ -31,7 +31,7 @@ def handler(event, context):
     obj = s3.get_object(Bucket=bucket, Key=key)
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
 
-    brain_results = brain.run(all_messages, clip_length=.75)
+    brain_results = algo1.run(all_messages, min_=.75,  limit=10)
 
     print(f'Found {len(brain_results)} clips. Adding to database.')
 
