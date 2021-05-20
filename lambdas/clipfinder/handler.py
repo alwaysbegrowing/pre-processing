@@ -32,11 +32,14 @@ def handler(event, context):
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
 
     brain_results = algo1.run(all_messages, min_=.75,  limit=10)
+    algo1_clips = algo1.run(all_messages, min_=0.70, limit=10)
+
 
     print(f'Found {len(brain_results)} clips. Adding to database.')
 
     clips = {
         "brain": brain_results, 
+        "algo1": algo1_clips
     }
     
     store_in_db(key, clips)
