@@ -1,4 +1,5 @@
 import os
+import json
 
 from clip_lib import twitch_auth, get_video_ccc, get_ccc_start_end_times
 from db import input_ccc
@@ -15,7 +16,7 @@ def handler(event, context):
 
     video_id = event['Records'][0]['Sns']['MessageAttributes']['VideoId']['Value']
 
-    print(f'Getting CCC data for video {video_id}')
+    print(json.dumps({'videoId': video_id}))
     
     ccc_data = get_video_ccc(TWITCH_CLIENT_ID, access_token, video_id)
 
@@ -25,8 +26,8 @@ def handler(event, context):
         start_time, end_time = get_ccc_start_end_times(clip)
         data.append({'startTime': start_time, 'endTime': end_time})
     
+    print(json.dumps({'number_of_clips':len(data), 'clips':data}))
+    
     input_ccc(video_id, data)
-
-    print(f'Added {len(data)} clips to database.')
 
     return {}
