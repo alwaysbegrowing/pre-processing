@@ -85,6 +85,7 @@ const getVodsToDownload = async (numOfVodsPerStreamer) => {
 };
 
 const sendSnsMessages = async (missingVideoIds) => {
+  console.log({missingVideoIds: missingVideoIds});
   const SnsTopicsSent = missingVideoIds.map(async (missingVideoId) => {
     const params = {
       Message: 'The included videoID is missing messages',
@@ -96,6 +97,7 @@ const sendSnsMessages = async (missingVideoIds) => {
         },
       },
     };
+
     const publishTextPromise = await new AWS.SNS().publish(params).promise();
     return publishTextPromise;
   });
