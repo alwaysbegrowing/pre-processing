@@ -1,5 +1,5 @@
 // import * as apigateway from "@aws-cdk/aws-apigateway";
-import { Function, Runtime, Code } from '@aws-cdk/aws-lambda';
+import { Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack, Construct, StackProps, CfnParameter } from '@aws-cdk/core';
 import { Bucket, EventType } from '@aws-cdk/aws-s3';
 import { Topic } from '@aws-cdk/aws-sns';
