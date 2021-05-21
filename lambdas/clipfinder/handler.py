@@ -18,7 +18,7 @@ def store_in_db(key, clip_timestamps):
     }
 
     result = db['timestamps'].update_one(search, update, upsert=True)
-    print(result)
+    
     return result
 
 def handler(event, context):
@@ -26,7 +26,7 @@ def handler(event, context):
     bucket = data['bucket']['name']
     key = data['object']['key']
 
-    print(f'Finding data for video {key}')
+    print(json.dumps({'videoId': key}))
 
     obj = s3.get_object(Bucket=bucket, Key=key)
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
@@ -34,13 +34,15 @@ def handler(event, context):
     brain_results = algo1.run(all_messages, min_=.75,  limit=10)
     algo1_clips = algo1.run(all_messages, min_=0.70, limit=10)
 
+    print(json.dumps({'algo1_results_length': len(algo1_clips)}))
 
-    print(f'Found {len(brain_results)} clips. Adding to database.')
-
+    
     clips = {
         "brain": brain_results, 
         "algo1": algo1_clips
     }
+
+    print(json.dumps({'clips': clips}))
     
     store_in_db(key, clips)
     return clips
