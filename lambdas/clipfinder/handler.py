@@ -34,9 +34,10 @@ def handler(event, context):
     brain_results = algo1.run(all_messages, min_=.75,  limit=10)
     algo1_clips = algo1.run(all_messages, min_=0.70, limit=10)
 
+    # only print out algo1's length since we're using it twice
     print(json.dumps({'algo1_results_length': len(algo1_clips)}))
 
-    
+    # clips that the algorithm found
     clips = {
         "brain": brain_results, 
         "algo1": algo1_clips

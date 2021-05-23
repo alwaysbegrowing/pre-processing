@@ -85,7 +85,8 @@ const getVodsToDownload = async (numOfVodsPerStreamer) => {
 };
 
 const sendSnsMessages = async (missingVideoIds) => {
-  console.log({missingVideoIds: missingVideoIds, description: "Video IDs that are not in the S3 bucket."});
+  // missingVideoIDs: Video IDs that are not in the S3 bucket.
+  console.log({missingVideoIds: missingVideoIds});
   const SnsTopicsSent = missingVideoIds.map(async (missingVideoId) => {
     const params = {
       Message: 'The included videoID is missing messages',

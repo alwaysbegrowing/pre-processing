@@ -32,6 +32,8 @@ const getMessages = async (videoId) => {
 
 exports.main = async (event) => {
   const videoId = event.Records[0].Sns.MessageAttributes.VideoId.Value;
+  // bucket that the messages are being stored to
+  // and the video ID that they can be accessed at
   console.log({ bucketName: bucketName, videoId: videoId });
   const allMessages = await getMessages(videoId);
   console.log({ numberOfMessages: allMessages.length });

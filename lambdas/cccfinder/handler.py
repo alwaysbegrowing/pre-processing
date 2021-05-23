@@ -26,6 +26,7 @@ def handler(event, context):
         start_time, end_time = get_ccc_start_end_times(clip)
         data.append({'startTime': start_time, 'endTime': end_time})
     
+    # the number of ccc clips found and the list of the ccc clips
     print(json.dumps({'number_of_clips':len(data), 'ccc_clips':data}))
     
     input_ccc(video_id, data)
