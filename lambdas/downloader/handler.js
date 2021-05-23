@@ -32,7 +32,7 @@ const getMessages = async (videoId) => {
 
 exports.main = async (event) => {
   const videoId = event.Records[0].Sns.MessageAttributes.VideoId.Value;
-  console.log({ bucketName, videoId });
+  console.log({ bucketName: bucketName, videoId: videoId });
   const allMessages = await getMessages(videoId);
   console.log({ numberOfMessages: allMessages.length });
   const resp = await S3.upload({

@@ -42,7 +42,7 @@ def handler(event, context):
         "algo1": algo1_clips
     }
 
-    print(json.dumps({'clips': clips}))
+    print(json.dumps({'found_clips': clips}))
     
     store_in_db(key, clips)
     return clips
