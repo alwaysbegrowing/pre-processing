@@ -106,6 +106,8 @@ const sendSnsMessages = async (missingVideoIds) => {
 };
 
 exports.main = async () => {
+  // The event that triggers this lambda isn't relevant,
+  // as long as the lambda gets triggered.
   const videoIds = await getVodsToDownload(5);
   const resp = await sendSnsMessages(videoIds);
   console.log({ length: resp.length, resp });

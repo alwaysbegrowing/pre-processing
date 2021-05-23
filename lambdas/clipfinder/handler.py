@@ -22,6 +22,9 @@ def store_in_db(key, clip_timestamps):
     return result
 
 def handler(event, context):
+
+    print(json.dumps(event, default=str))
+
     data = event['Records'][0]['s3']
     bucket = data['bucket']['name']
     key = data['object']['key']

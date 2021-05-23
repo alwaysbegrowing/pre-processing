@@ -12,6 +12,9 @@ def handler(event, context):
     '''
     Event should have the following information: The user's Twitch ID and the video ID
     '''
+
+    print(json.dumps(event, default=str))
+
     access_token = twitch_auth(TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET)['access_token']
 
     video_id = event['Records'][0]['Sns']['MessageAttributes']['VideoId']['Value']
