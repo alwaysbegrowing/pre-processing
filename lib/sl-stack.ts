@@ -15,7 +15,7 @@ const TWITCH_CLIENT_ID = '2nakqoqdxka9v5oekyo6742bmnxt2o';
 const TWITCH_CLIENT_SECRET_ARN = 'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V';
 const MONGODB_FULL_URI_ARN = 'arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt';
 export class SlStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, mongoDBDatabase: string = 'dev', props?: StackProps) {
     super(scope, id, props);
 
     const messageStoreBucket = new Bucket(this, 'MessageStore');
@@ -32,6 +32,7 @@ export class SlStack extends Stack {
         BUCKET: messageStoreBucket.bucketName,
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
         TOPIC: readyForDownloadsTopic.topicArn,
+        DB_NAME: mongoDBDatabase
       },
     });
 
@@ -83,7 +84,8 @@ export class SlStack extends Stack {
       environment: {
         BUCKET: messageStoreBucket.bucketName,
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
-        TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn
+        TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
+        DB_NAME: mongoDBDatabase,
       },
     });
 
@@ -99,7 +101,8 @@ export class SlStack extends Stack {
       timeout: Duration.seconds(60),
       environment: {
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
-        TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn
+        TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
+        DB_NAME: mongoDBDatabase
       },
     });
 
