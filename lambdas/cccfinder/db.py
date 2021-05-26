@@ -7,7 +7,7 @@ cached_uri = None
 cached_db = None
 
 secret_name = 'MONGODB_FULL_URI'
-db_name = os.getenv('DB_NAME') or 'pillar'
+db_name = os.getenv('DB_NAME')
 
 def connect_to_db():
     global cached_uri
