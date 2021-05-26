@@ -85,6 +85,8 @@ const getVodsToDownload = async (numOfVodsPerStreamer) => {
 };
 
 const sendSnsMessages = async (missingVideoIds) => {
+  // missingVideoIDs: Video IDs that are not in the S3 bucket.
+  console.log({missingVideoIds: missingVideoIds});
   const SnsTopicsSent = missingVideoIds.map(async (missingVideoId) => {
     const params = {
       Message: 'The included videoID is missing messages',
@@ -96,6 +98,7 @@ const sendSnsMessages = async (missingVideoIds) => {
         },
       },
     };
+
     const publishTextPromise = await new AWS.SNS().publish(params).promise();
     return publishTextPromise;
   });
@@ -103,6 +106,8 @@ const sendSnsMessages = async (missingVideoIds) => {
 };
 
 exports.main = async () => {
+  // The event that triggers this lambda isn't relevant,
+  // as long as the lambda gets triggered.
   const videoIds = await getVodsToDownload(5);
   const resp = await sendSnsMessages(videoIds);
   console.log({ length: resp.length, resp });
