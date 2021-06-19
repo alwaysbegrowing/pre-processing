@@ -1,0 +1,31 @@
+{
+    "videoId": "1025588420",
+    "ccc": [{
+        "startTime": 7655,
+        "endTime": 7662.6
+    }, {
+        "startTime": 9902,
+        "endTime": 9910.9
+    }, {
+        "startTime": 6508,
+        "endTime": 6534.5
+    }],
+    "clips": {
+        "brain": [{
+            "startTime": 5846.986,
+            "endTime": 5891.16
+        }, {
+            "startTime": 2604.655,
+            "endTime": 2646.245
+        }, {
+            "startTime": 2706.737,
+            "endTime": 2751.631
+        }, {
+            "startTime": 7742.361,
+            "endTime": 7786.825
+        }, {
+            "startTime": 10698.207,
+            "endTime": 10742.766
+        }]
+    }
+}
