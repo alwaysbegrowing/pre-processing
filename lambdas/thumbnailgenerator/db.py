@@ -27,3 +27,17 @@ def connect_to_db():
     client = pymongo.MongoClient(cached_uri)
     db = client[db_name]
     return db
+
+def input_thumbnail_urls(key, thumbnail_data):
+    db = connect_to_db()
+    query = {'videoId': key}
+    timestamps = db.timestamps
+
+    update = {
+        '$set': {
+            'thumbnails': thumbnail_data
+        },
+    }
+    result = timestamps.update_one(query, update, upsert=True)
+
+    return result
