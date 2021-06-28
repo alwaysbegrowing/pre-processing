@@ -7,11 +7,11 @@ from bson.json_util import dumps, loads
 import boto3
 from botocore.exceptions import ClientError
 
-AWS_BUCKET = "prod-prodthumbnails"
+AWS_BUCKET = os.getenv('BUCKET')
 
 TWITCH_BASE_URL = "https://twitch.tv/videos/"
 
-videoId = "1024956589"
+# videoId = "1024956589"
 # file_name = '1024956589-29604.052-29647.544.jpg'
 
 # s3 = boto3.connect_s3(AWS_ACCESS_KEY_ID,
@@ -75,8 +75,6 @@ def generate_thumbnails(videoId):
             continue
     input_thumbnail_urls(videoId, thumbnail_urls)
 
-if __name__ == "__main__":
-    generate_thumbnails(videoId)
-    # print(upload_to_s3(file_name, AWS_BUCKET))
-    # get_clips_from_db(videoId)
-    # get_manifest_url(TWITCH_BASE_URL + videoId)
+def handler(event, context):
+    video_id = event['Records'][0]['Sns']['Message']
+    generate_thumbnails(video_id)

@@ -6,6 +6,18 @@ from pillaralgos import algo1, algo2, algo3_0, algo3_5, brain
 from db import connect_to_db
 
 s3 = boto3.client('s3')
+SNS = boto3.resource('sns')
+THUMBNAIL_GENERATOR_TOPIC = os.getenv('TOPIC')
+
+
+def sendSnsMessage(videoId):
+    return SNS.publish(
+        TargetArn=THUMBNAIL_GENERATOR_TOPIC,
+        Message=videoId,
+        MessageStructure='string',
+        MessageDeduplicationId=videoId
+    )
+
 
 def store_in_db(key, clip_timestamps):
     db = connect_to_db()
@@ -57,4 +69,5 @@ def handler(event, context):
     print(json.dumps({'found_clips': clips}))
 
     store_in_db(key, clips)
+    print(json.dumps({"event_published" : sendSnsMessage(key)}))
     return clips
