@@ -35,7 +35,7 @@ def upload_to_s3(file_name, bucket, object_name=None):
     try:
         response = s3_client.upload_file(file_name, bucket, object_name, ExtraArgs={'ACL': 'public-read'})
     except ClientError as e:
-        logging.error(e)
+        print(e)
         return False
     return True
 
@@ -43,7 +43,7 @@ def get_clips_from_db(videoId):
     db = connect_to_db()
     search = {"videoId": videoId}
 
-    result = db.timestamps.find_one(search, {"clips.brain"})["clips"]["brain"]
+    result = db.timestamps.find_one(search)["clips"]["brain"]
 
     return result
 
@@ -77,4 +77,5 @@ def generate_thumbnails(videoId):
 
 def handler(event, context):
     video_id = event['Records'][0]['Sns']['Message']
+    print(video_id)
     generate_thumbnails(video_id)

@@ -141,7 +141,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 594876fdb4679665fffd33c806ff6b3afd88b4f6cb6255d70ec4f3e9173ce777.zip
+        S3Key: 608d23b22f822a8f53d75e9b587996e7e5c3d3f267478220b71317f092352c6d.zip
       Role:
         Fn::GetAtt:
           - VodPollerServiceRole369446BC
@@ -165,7 +165,7 @@ Resources:
       - VodPollerServiceRole369446BC
     Metadata:
       aws:cdk:path: SlStack/VodPoller/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.594876fdb4679665fffd33c806ff6b3afd88b4f6cb6255d70ec4f3e9173ce777
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.608d23b22f822a8f53d75e9b587996e7e5c3d3f267478220b71317f092352c6d
       aws:asset:property: Code
   ThumbnailGeneratorServiceRole82D7629D:
     Type: AWS::IAM::Role
@@ -237,7 +237,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: b058b52bdce7ea813ac5e3397bbe6d3b333b1332fd1b68803f802a9d2b3f1f3e.zip
+        S3Key: 5fa51955c93759f0d40a35e77ef8040c66bf3c8396d990cd171bceb5290e4d86.zip
       Role:
         Fn::GetAtt:
           - ThumbnailGeneratorServiceRole82D7629D
@@ -259,7 +259,7 @@ Resources:
       - ThumbnailGeneratorServiceRole82D7629D
     Metadata:
       aws:cdk:path: SlStack/ThumbnailGenerator/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.b058b52bdce7ea813ac5e3397bbe6d3b333b1332fd1b68803f802a9d2b3f1f3e
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.5fa51955c93759f0d40a35e77ef8040c66bf3c8396d990cd171bceb5290e4d86
       aws:asset:property: Code
   CheckForVods8A3957E1:
     Type: AWS::Events::Rule
@@ -339,7 +339,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 96c1b22ebe5a37ba1104f7e588199fd3f235bb47136adb8c9a8672d522162720.zip
+        S3Key: deab54edb0aba409fb7f0c06d89f517a158bb7f6faf4c38ce906e70d1847fb1f.zip
       Role:
         Fn::GetAtt:
           - ChatDownloaderServiceRole613C36DF
@@ -359,7 +359,7 @@ Resources:
       - ChatDownloaderServiceRole613C36DF
     Metadata:
       aws:cdk:path: SlStack/ChatDownloader/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.96c1b22ebe5a37ba1104f7e588199fd3f235bb47136adb8c9a8672d522162720
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.deab54edb0aba409fb7f0c06d89f517a158bb7f6faf4c38ce906e70d1847fb1f
       aws:asset:property: Code
   ChatDownloaderAllowInvokeSlStackReadyForDownloads8DCF2BE93FD930B7:
     Type: AWS::Lambda::Permission
@@ -682,7 +682,7 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAACk2Qy07DMBBFv4W9MyUqIHUHVOoSRSk/4DqmTB525LGLKsv/jh8JYXU84zvXc12DPzxD/fDKf6gS3bDzQhsJ/my5GNhRK7LGCcuOX6qVpJ0Rkr0RSRsFV1RX9teNiijv0KJWgSU7T3vw704MMs8vp4JGjyjuW7vUgY18unQcfLxopJmQKNol2ckpUaxJEfhPPaNI/XI4uwsJg7Nd1P/r1bRSupM9wUfG6seQT+BbPeYEmdtu61a0r3gKTZCzM3mTKha+dctYZAiBHV7gcfvKxOXp+W6/tYImY4uSNoKedrf6Ceo02xNiZZyyOEloC38BxXCFCqMBAAA=
+      Analytics: v2:deflate64:H4sIAAAAAAAACk1Ry27DIBD8lt7xplbaSLm1jdRjZTn9AYJpun6AxUKqCPHv5WHXPc3uMDvsQA3++Az1wwv/oUp0w84LbST4s+ViYCetyBonLDt9qVaSdkZI9kokbRRcUV3ZHxsVUd6hRa0CS3ae9uDfnBhknl+qAo0eUdw3uvSBjXy6dBx8PGikmZAo2iXZu1OiWJMi8J96RpH4UpzdhYTB2S7q//1qWindyZ7gI8Pqx5BP4Fs95gQZt93WrWhf8RSaIGdn8iZVbHzrlrGIIQR2PMDj9pQJl6vnu/3WCpoMW5S0EfS0u9VPUB/iN/SEWBmnLE4S2oK/BRStHaMBAAA=
     Metadata:
       aws:cdk:path: SlStack/CDKMetadata/Default
     Condition: CDKMetadataAvailable
