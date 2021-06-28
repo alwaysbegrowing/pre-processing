@@ -17,3 +17,4 @@ env
 package-lock.json
 .idea
 __pycache__
+.env

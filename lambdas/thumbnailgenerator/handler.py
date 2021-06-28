@@ -2,6 +2,7 @@ import json
 import streamlink
 import os
 import time
+import re
 from db import connect_to_db, input_thumbnail_urls
 from bson.json_util import dumps, loads
 import boto3
@@ -39,21 +40,30 @@ def upload_to_s3(file_name, bucket, object_name=None):
         return False
     return True
 
-def get_clips_from_db(videoId):
+def get_clips_from_db(videoId: str):
     db = connect_to_db()
-    search = {"videoId": videoId}
+    timestamps = db['timestamps']
 
-    result = db.timestamps.find_one(search)["clips"]["brain"]
+    search = {"videoId": re.sub(r'\d', '', videoId) }
 
-    return result
+    print(search)
+
+    result = timestamps.find_one(search)
+    print(result)
+    video_timestamps = result['clips']['brain']
+    print(video_timestamps)
+    return video_timestamps
 
 def get_manifest_url(stream_url):
     s = streamlink.streams(stream_url)
     high_quality_manifest = s['best']
     return high_quality_manifest.url
 
-def generate_thumbnails(videoId):
+def generate_thumbnails(videoId: str):
     clip_data = get_clips_from_db(videoId)
+    if clip_data is None:
+        print('No clip data found.')
+        return
     stream_url = TWITCH_BASE_URL + videoId
     high_quality_manifest_url = get_manifest_url(stream_url)
     thumbnail_urls = {}
@@ -78,4 +88,5 @@ def generate_thumbnails(videoId):
 def handler(event, context):
     video_id = event['Records'][0]['Sns']['Message']
     print(video_id)
-    generate_thumbnails(video_id)
+    generate_thumbnails(str(video_id))
+    return {}

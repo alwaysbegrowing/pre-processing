@@ -16,7 +16,7 @@ def connect_to_db():
         return cached_db
 
     if (not cached_uri):
-        session = boto3.session.Session()
+        session = boto3.session.Session(region_name='us-east-1')
         client = session.client(
             service_name='secretsmanager'
         )
