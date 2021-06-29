@@ -41,11 +41,11 @@ def upload_to_s3(file_name, bucket, object_name=None):
     return True
 
 def get_clips_from_db(videoId: str):
+    print(videoId)
     db = connect_to_db()
     timestamps = db['timestamps']
 
-    search = {"videoId": re.sub(r'\d', '', videoId) }
-
+    search = {"videoId": videoId }
     print(search)
 
     result = timestamps.find_one(search)
@@ -60,6 +60,7 @@ def get_manifest_url(stream_url):
     return high_quality_manifest.url
 
 def generate_thumbnails(videoId: str):
+    print("****IN gen_thumb, ", videoId)
     clip_data = get_clips_from_db(videoId)
     if clip_data is None:
         print('No clip data found.')
