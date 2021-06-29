@@ -11,4 +11,8 @@ new PreProdPipeline(app, 'PreProdTimestampsPipeline');
 
 new ProdPipeline(app, 'ProdTimestampsPipeline');
 
+new SlStack(app, 'ProdTimestampsStack');
+
+new SlStack(app, 'QATimestampsStack');
+
 app.synth();
