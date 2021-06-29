@@ -12,3 +12,11 @@ env
 
 # vscode
 .vscode
+
+.DS_Store
+package-lock.json
+.idea
+__pycache__
+.env
+
+venv/

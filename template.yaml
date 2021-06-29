@@ -43,10 +43,40 @@ Resources:
           - Arn
     Metadata:
       aws:cdk:path: SlStack/MessageStore/AllowBucketNotificationsToSlStackClipFinder8D45DF29
+  ThumbnailStore34588C07:
+    Type: AWS::S3::Bucket
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: SlStack/ThumbnailStore/Resource
+  ThumbnailStorePolicy3141ECB1:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: ThumbnailStore34588C07
+      PolicyDocument:
+        Statement:
+          - Action: s3:GetObject
+            Effect: Allow
+            Principal: "*"
+            Resource:
+              Fn::Join:
+                - ""
+                - - Fn::GetAtt:
+                      - ThumbnailStore34588C07
+                      - Arn
+                  - /*
+        Version: "2012-10-17"
+    Metadata:
+      aws:cdk:path: SlStack/ThumbnailStore/Policy/Resource
   ReadyForDownloadsEEACEEFF:
     Type: AWS::SNS::Topic
     Metadata:
       aws:cdk:path: SlStack/ReadyForDownloads/Resource
+  ThumbnailGeneratorTopicFF9CDA5D:
+    Type: AWS::SNS::Topic
+    Metadata:
+      aws:cdk:path: SlStack/ThumbnailGeneratorTopic/Resource
   VodPollerServiceRole369446BC:
     Type: AWS::IAM::Role
     Properties:
@@ -111,11 +141,12 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 3213ede52bf7a82e281bde7547202a36f273430f7a2942c733838924a0d8898f.zip
+        S3Key: 13473ecacd0e17686682e00359bcbf1e94d25a041290adf380438a1af0ff4551.zip
       Role:
         Fn::GetAtt:
           - VodPollerServiceRole369446BC
           - Arn
+      Description: Checks for VODs
       Environment:
         Variables:
           BUCKET:
@@ -123,6 +154,7 @@ Resources:
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
           TOPIC:
             Ref: ReadyForDownloadsEEACEEFF
+          DB_NAME: dev
           AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
       Handler: index.main
       MemorySize: 256
@@ -133,7 +165,101 @@ Resources:
       - VodPollerServiceRole369446BC
     Metadata:
       aws:cdk:path: SlStack/VodPoller/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.3213ede52bf7a82e281bde7547202a36f273430f7a2942c733838924a0d8898f
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.13473ecacd0e17686682e00359bcbf1e94d25a041290adf380438a1af0ff4551
+      aws:asset:property: Code
+  ThumbnailGeneratorServiceRole82D7629D:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: SlStack/ThumbnailGenerator/ServiceRole/Resource
+  ThumbnailGeneratorServiceRoleDefaultPolicy29AA581D:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:DeleteObject*
+              - s3:PutObject
+              - s3:Abort*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - ThumbnailStore34588C07
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - ThumbnailStore34588C07
+                        - Arn
+                    - /*
+          - Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - ThumbnailStore34588C07
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - ThumbnailStore34588C07
+                        - Arn
+                    - /*
+          - Action:
+              - secretsmanager:GetSecretValue
+              - secretsmanager:DescribeSecret
+            Effect: Allow
+            Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt
+        Version: "2012-10-17"
+      PolicyName: ThumbnailGeneratorServiceRoleDefaultPolicy29AA581D
+      Roles:
+        - Ref: ThumbnailGeneratorServiceRole82D7629D
+    Metadata:
+      aws:cdk:path: SlStack/ThumbnailGenerator/ServiceRole/DefaultPolicy/Resource
+  ThumbnailGenerator01BB1F8C:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket:
+          Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
+        S3Key: 02ffeb5ec47872a8eb743ceacf6caf7d727ef8c4773678dc22d00fd543750681.zip
+      Role:
+        Fn::GetAtt:
+          - ThumbnailGeneratorServiceRole82D7629D
+          - Arn
+      Description: Generates thumbnails for each clip generated by CCCFinder
+      Environment:
+        Variables:
+          BUCKET:
+            Ref: ThumbnailStore34588C07
+          DB_NAME: dev
+          TOPIC:
+            Ref: ThumbnailGeneratorTopicFF9CDA5D
+      Handler: handler.handler
+      MemorySize: 1280
+      Runtime: python3.8
+      Timeout: 900
+    DependsOn:
+      - ThumbnailGeneratorServiceRoleDefaultPolicy29AA581D
+      - ThumbnailGeneratorServiceRole82D7629D
+    Metadata:
+      aws:cdk:path: SlStack/ThumbnailGenerator/Resource
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.02ffeb5ec47872a8eb743ceacf6caf7d727ef8c4773678dc22d00fd543750681
       aws:asset:property: Code
   CheckForVods8A3957E1:
     Type: AWS::Events::Rule
@@ -163,7 +289,7 @@ Resources:
           - Arn
     Metadata:
       aws:cdk:path: SlStack/CheckForVods/AllowEventRuleSlStackVodPollerF5ED207F
-  DownloadHandlerServiceRole4B8FD2FF:
+  ChatDownloaderServiceRole613C36DF:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -180,8 +306,8 @@ Resources:
               - Ref: AWS::Partition
               - :iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
     Metadata:
-      aws:cdk:path: SlStack/DownloadHandler/ServiceRole/Resource
-  DownloadHandlerServiceRoleDefaultPolicy4A78C071:
+      aws:cdk:path: SlStack/ChatDownloader/ServiceRole/Resource
+  ChatDownloaderServiceRoleDefaultPolicy0779E838:
     Type: AWS::IAM::Policy
     Properties:
       PolicyDocument:
@@ -202,52 +328,53 @@ Resources:
                         - Arn
                     - /*
         Version: "2012-10-17"
-      PolicyName: DownloadHandlerServiceRoleDefaultPolicy4A78C071
+      PolicyName: ChatDownloaderServiceRoleDefaultPolicy0779E838
       Roles:
-        - Ref: DownloadHandlerServiceRole4B8FD2FF
+        - Ref: ChatDownloaderServiceRole613C36DF
     Metadata:
-      aws:cdk:path: SlStack/DownloadHandler/ServiceRole/DefaultPolicy/Resource
-  DownloadHandler09CC40DB:
+      aws:cdk:path: SlStack/ChatDownloader/ServiceRole/DefaultPolicy/Resource
+  ChatDownloader326B83C0:
     Type: AWS::Lambda::Function
     Properties:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 2ed6e50699a35cbf500698e6a4920479a4c70cdc66d52c1e0311c1cf5d66638b.zip
+        S3Key: 1e66f373eb601af22d851acd87f34539fec2da9d719daef053babf08cd7d3c96.zip
       Role:
         Fn::GetAtt:
-          - DownloadHandlerServiceRole4B8FD2FF
+          - ChatDownloaderServiceRole613C36DF
           - Arn
+      Description: Downloads chat and saves to S3
       Environment:
         Variables:
           BUCKET:
             Ref: MessageStore60E7AFC8
           AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
       Handler: index.main
-      MemorySize: 3072
+      MemorySize: 1280
       Runtime: nodejs14.x
       Timeout: 900
     DependsOn:
-      - DownloadHandlerServiceRoleDefaultPolicy4A78C071
-      - DownloadHandlerServiceRole4B8FD2FF
+      - ChatDownloaderServiceRoleDefaultPolicy0779E838
+      - ChatDownloaderServiceRole613C36DF
     Metadata:
-      aws:cdk:path: SlStack/DownloadHandler/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.2ed6e50699a35cbf500698e6a4920479a4c70cdc66d52c1e0311c1cf5d66638b
+      aws:cdk:path: SlStack/ChatDownloader/Resource
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.1e66f373eb601af22d851acd87f34539fec2da9d719daef053babf08cd7d3c96
       aws:asset:property: Code
-  DownloadHandlerAllowInvokeSlStackReadyForDownloads8DCF2BE93A9C74E7:
+  ChatDownloaderAllowInvokeSlStackReadyForDownloads8DCF2BE93FD930B7:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
       FunctionName:
         Fn::GetAtt:
-          - DownloadHandler09CC40DB
+          - ChatDownloader326B83C0
           - Arn
       Principal: sns.amazonaws.com
       SourceArn:
         Ref: ReadyForDownloadsEEACEEFF
     Metadata:
-      aws:cdk:path: SlStack/DownloadHandler/AllowInvoke:SlStackReadyForDownloads8DCF2BE9
-  DownloadHandlerReadyForDownloadsE6380D4D:
+      aws:cdk:path: SlStack/ChatDownloader/AllowInvoke:SlStackReadyForDownloads8DCF2BE9
+  ChatDownloaderReadyForDownloadsBF8E5B32:
     Type: AWS::SNS::Subscription
     Properties:
       Protocol: lambda
@@ -255,10 +382,10 @@ Resources:
         Ref: ReadyForDownloadsEEACEEFF
       Endpoint:
         Fn::GetAtt:
-          - DownloadHandler09CC40DB
+          - ChatDownloader326B83C0
           - Arn
     Metadata:
-      aws:cdk:path: SlStack/DownloadHandler/ReadyForDownloads/Resource
+      aws:cdk:path: SlStack/ChatDownloader/ReadyForDownloads/Resource
   ClipFinderServiceRole28A544E9:
     Type: AWS::IAM::Role
     Properties:
@@ -319,19 +446,23 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 88184dbdaed9cb642626a40cf9dd12c57f8fef870eba61e186da6af6c61b3e4c.zip
+        S3Key: 4cdf151049143ece8416702e7472c752796438f160491395c3fee0e62b73effc.zip
       Role:
         Fn::GetAtt:
           - ClipFinderServiceRole28A544E9
           - Arn
+      Description: Finds clips with the Pillar Algorithms
       Environment:
         Variables:
           BUCKET:
             Ref: MessageStore60E7AFC8
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
           TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
+          DB_NAME: dev
+          TOPIC:
+            Ref: ThumbnailGeneratorTopicFF9CDA5D
       Handler: handler.handler
-      MemorySize: 1256
+      MemorySize: 1280
       Runtime: python3.8
       Timeout: 900
     DependsOn:
@@ -339,7 +470,7 @@ Resources:
       - ClipFinderServiceRole28A544E9
     Metadata:
       aws:cdk:path: SlStack/ClipFinder/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.88184dbdaed9cb642626a40cf9dd12c57f8fef870eba61e186da6af6c61b3e4c
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.4cdf151049143ece8416702e7472c752796438f160491395c3fee0e62b73effc
       aws:asset:property: Code
   CCCFinderServiceRoleCE3B78F6:
     Type: AWS::IAM::Role
@@ -386,15 +517,17 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 1f4475487bbbcc0970538f84fd80636c15cfc43f736fa05e4735931e3c89a706.zip
+        S3Key: 563a3c6f56f0a70a635fed86b547e3c8241d6d14d83f0899cdde228e8b3db2bb.zip
       Role:
         Fn::GetAtt:
           - CCCFinderServiceRoleCE3B78F6
           - Arn
+      Description: Finds CCC on Twitch
       Environment:
         Variables:
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
           TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
+          DB_NAME: dev
       Handler: handler.handler
       MemorySize: 256
       Runtime: python3.8
@@ -404,7 +537,7 @@ Resources:
       - CCCFinderServiceRoleCE3B78F6
     Metadata:
       aws:cdk:path: SlStack/CCCFinder/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.1f4475487bbbcc0970538f84fd80636c15cfc43f736fa05e4735931e3c89a706
+      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.563a3c6f56f0a70a635fed86b547e3c8241d6d14d83f0899cdde228e8b3db2bb
       aws:asset:property: Code
   CCCFinderAllowInvokeSlStackReadyForDownloads8DCF2BE926D4656E:
     Type: AWS::Lambda::Permission
@@ -549,7 +682,7 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAACk1Qy07DMBD8Fu7OlqhQqTegEkcUpfyA6yxl87Ajr11UWfl3/Egpp5ldzcw+agj7Z6gfXuQPV6obNkEZixCOTqpBHIxmZ71y4vClW2TjrULxyowuCs6kz+KvGxVR3pEjoxeR4gJvIbx5NWD2F7aIUU6nTkKIrQbtRMzRkQTvXqviZs0QPs1MKvULOfoTK0uzW9X/61topU2HPcNHhlueIDlBaM2Yl8zYmJHUNZWFxZHbSqa7GPJ5Ai+oYxFav9oiLssi9jt4vH8r4Tp6vrpvo6HJcD8lbQQ9by71E9S7+OmeiSrrtaMJoS34C22Tm42GAQAA
+      Analytics: v2:deflate64:H4sIAAAAAAAACk1Ry27DIBD8lt7xplbaSLm1jdRjZTn9AYJpun6AxUKqCPHv5WHXPc3uMDvsQA3++Az1wwv/oUp0w84LbST4s+ViYCetyBonLDt9qVaSdkZI9kokbRRcUV3ZHxsVUd6hRa0CS3ae9uDfnBhknl+qAo0eUdw3uvSBjXy6dBx8PGikmZAo2iXZu1OiWJMi8J96RpH4UpzdhYTB2S7q//1qWindyZ7gI8Pqx5BP4Fs95gQZt93WrWhf8RSaIGdn8iZVbHzrlrGIIQR2PMDj9pQJl6vnu/3WCpoMW5S0EfS0u9VPUB/iN/SEWBmnLE4S2oK/BRStHaMBAAA=
     Metadata:
       aws:cdk:path: SlStack/CDKMetadata/Default
     Condition: CDKMetadataAvailable

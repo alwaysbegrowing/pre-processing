@@ -3,6 +3,7 @@ const { SecretsManager } = require('aws-sdk');
 
 
 const secretName = 'MONGODB_FULL_URI';
+const dbName = process.env.DB_NAME || 'pillar';
 
 // Use cache across lambdas
 // https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html
@@ -27,7 +28,7 @@ async function connectToDatabase() {
 
   // Select the database through the connection,
   // using the database path of the connection string
-  const db = client.db('pillar');
+  const db = client.db(dbName);
 
   // Cache the database connection and return the connection
   cachedDb = db;

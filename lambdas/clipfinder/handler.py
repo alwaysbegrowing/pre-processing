@@ -1,12 +1,23 @@
 import json
 import os
-
 import boto3
 from pillaralgos import algo1, algo2, algo3_0, algo3_5, brain
 
 from db import connect_to_db
 
 s3 = boto3.client('s3')
+SNS = boto3.resource('sns')
+THUMBNAIL_GENERATOR_TOPIC = os.getenv('TOPIC')
+
+
+def sendSnsMessage(videoId):
+    return SNS.publish(
+        TargetArn=THUMBNAIL_GENERATOR_TOPIC,
+        Message=videoId,
+        MessageStructure='string',
+        MessageDeduplicationId=videoId
+    )
+
 
 def store_in_db(key, clip_timestamps):
     db = connect_to_db()
@@ -18,29 +29,45 @@ def store_in_db(key, clip_timestamps):
     }
 
     result = db['timestamps'].update_one(search, update, upsert=True)
-    print(result)
+
     return result
 
+def generate_clip_id(key, clip):
+    clip_id = f"{key}-{clip['startTime']}-{clip['endTime']}"
+    return clip_id
+
+def hydrate_clips(clips, key):
+    for clip in clips:
+        clip['id'] = generate_clip_id(key, clip)
+    return clips
+
 def handler(event, context):
+    print(json.dumps(event, default=str))
+
     data = event['Records'][0]['s3']
     bucket = data['bucket']['name']
     key = data['object']['key']
 
-    print(f'Finding data for video {key}')
+    print(json.dumps({'videoId': key}))
 
     obj = s3.get_object(Bucket=bucket, Key=key)
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
 
-    brain_results = algo1.run(all_messages, min_=.75,  limit=10)
-    algo1_clips = algo1.run(all_messages, min_=0.70, limit=10)
+    brain_results = algo1.run(all_messages, min_=.75, limit=10)
+    # algo1_clips = algo1.run(all_messages, min_=0.70, limit=10)
 
+    # only print out algo1's length since we're using it twice
+    print(json.dumps({'algo1_results_length': len(algo1_clips)}))
+    hydrated_brain_results = hydrate_clips(brain_results, key)
 
-    print(f'Found {len(brain_results)} clips. Adding to database.')
-
+    # clips that the algorithm found
     clips = {
-        "brain": brain_results, 
-        "algo1": algo1_clips
+        "brain": hydrated_brain_results,
+        # "algo1": algo1_clips
     }
-    
+
+    print(json.dumps({'found_clips': clips}))
+
     store_in_db(key, clips)
+    print(json.dumps({"event_published" : sendSnsMessage(key)}))
     return clips
