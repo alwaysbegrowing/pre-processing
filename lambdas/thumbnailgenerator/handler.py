@@ -60,6 +60,7 @@ def get_manifest_url(stream_url):
     return high_quality_manifest.url
 
 def generate_thumbnails(videoId: str):
+    os.chdir('/tmp')
     print("****IN gen_thumb, ", videoId)
     clip_data = get_clips_from_db(videoId)
     if clip_data is None:

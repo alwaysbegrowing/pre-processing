@@ -17,14 +17,14 @@ const TWITCH_CLIENT_ID = '2nakqoqdxka9v5oekyo6742bmnxt2o';
 const TWITCH_CLIENT_SECRET_ARN = 'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V';
 const MONGODB_FULL_URI_ARN = 'arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt';
 export class SlStack extends Stack {
-  constructor(scope: Construct, id: string, mongoDBDatabase: string = 'dev', props?: StackProps) {
+  constructor(scope: Construct, id: string, mongoDBDatabase: string = 'pillar', props?: StackProps) {
     super(scope, id, props);
 
     const messageStoreBucket = new Bucket(this, 'MessageStore');
-    const thumbnailStoreBucket = new Bucket(this, 'ThumbnailStore')
+    const thumbnailStoreBucket = new Bucket(this, 'ThumbnailStore');
 
     const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
-    const thumbnailGeneratorTopic = new Topic(this, 'ThumbnailGeneratorTopic')
+    const thumbnailGeneratorTopic = new Topic(this, 'ThumbnailGeneratorTopic');
 
     const vodPoller = new NodejsFunction(this, 'VodPoller', {
       description: 'Checks for VODs',
@@ -53,11 +53,8 @@ export class SlStack extends Stack {
       },
     });
 
-    thumbnailStoreBucket.grantWrite(thumbnailGenerator);
     thumbnailStoreBucket.grantPublicAccess();
-
-    thumbnailStoreBucket.grantRead(thumbnailGenerator);
-
+    thumbnailStoreBucket.grantReadWrite(thumbnailGenerator);
     new SnsEventSource(thumbnailGeneratorTopic).bind(thumbnailGenerator);
 
     new Rule(this, 'CheckForVods', {
