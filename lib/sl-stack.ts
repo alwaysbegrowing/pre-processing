@@ -53,8 +53,9 @@ export class SlStack extends Stack {
       },
     });
 
-    thumbnailStoreBucket.grantPublicAccess();
     thumbnailStoreBucket.grantReadWrite(thumbnailGenerator);
+    thumbnailStoreBucket.grantPutAcl(thumbnailGenerator);
+
     new SnsEventSource(thumbnailGeneratorTopic).bind(thumbnailGenerator);
 
     new Rule(this, 'CheckForVods', {
