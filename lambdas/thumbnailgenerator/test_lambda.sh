@@ -1,4 +1,4 @@
-docker build . -t thumbnail && docker run --rm -p 9000:8080 --env-file=docker.env  thumbnail:latest
+docker build . -t thumbnail && docker run --name thumbnailgenerator_test -d --rm -p 9000:8080 --env-file=docker.env thumbnail:latest
 
 curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{
   "Records": [
