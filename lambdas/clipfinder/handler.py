@@ -11,11 +11,11 @@ THUMBNAIL_GENERATOR_TOPIC = os.getenv('TOPIC')
 
 
 def sendSnsMessage(videoId):
+    print("message deduplication: ", videoId)
     return SNS.publish(
         TargetArn=THUMBNAIL_GENERATOR_TOPIC,
         Message=videoId,
-        MessageStructure='string',
-        MessageDeduplicationId=videoId
+        MessageStructure='string'
     )
 
 
