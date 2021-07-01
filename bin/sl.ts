@@ -7,6 +7,10 @@ import { PreProdPipeline, ProdPipeline } from '../lib/sl-pipelines';
 const app = new cdk.App();
 new SlStack(app, 'SlStack');
 
+new SlStack(app, 'Prod-Timestamps');
+
+new SlStack(app, 'QA-Timestamps');
+
 new PreProdPipeline(app, 'PreProdTimestampsPipeline');
 
 new ProdPipeline(app, 'ProdTimestampsPipeline');
