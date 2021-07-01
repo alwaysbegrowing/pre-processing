@@ -1,7 +1,9 @@
 name: Deploy
 
 on: 
-  [push]
+  push:
+    branches:
+      - master
 
 jobs:
   deploy:
@@ -40,4 +42,4 @@ jobs:
         run: cdk synth
 
       - name: CDK Deploy
-        run: cdk deploy SlStack --require-approval="never"
+        run: cdk deploy Prod-Timestamps --require-approval="never"

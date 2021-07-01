@@ -1,0 +1,61 @@
+name: Test Lambdas
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Setup Node 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Update NPM
+        run: sudo npm i -g npm@latest
+
+      - name: Install CDK
+        run: sudo npm i -g aws-cdk
+
+      - name: Install Dependencies
+        run: npm i
+
+      - name: CDK Synth
+        run: cdk synth RenderLambdaStack --no-staging > template.yaml
+
+      - name: Clip Queuer Lambda
+        run: |
+          sam local invoke ClipQueuer58A9C9FE --env-vars env.json --event ./events/clipQueuerEvent.json
+
+      - name: Render Lambda
+        run: |
+          sam local invoke FinalRendererCB91BC08 --env-vars env.json --event ./events/renderEvent.json
+
+      - name: Notification Lambda
+        run: |
+          sam local invoke Notify29C25B1B --env-vars env.json --event ./events/notifyS3Event.json
+          sam local invoke Notify29C25B1B --env-vars env.json --event ./events/notifyStepEvent.json
+
+      - name: Downloader Lambda
+        run: |
+          cd lambdas/downloader
+          docker build -t downloader-test .
+          docker run -d -p 9000:8080 --env-file docker.env downloader-test
+          export data=$(jq '.' -c ../../events/downloadEvent.json)
+          curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d $data
+        
