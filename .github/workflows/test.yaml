@@ -36,7 +36,7 @@ jobs:
         run: npm i
 
       - name: CDK Synth
-        run: cdk synth RenderLambdaStack --no-staging > template.yaml
+        run: cdk synth SlStack --no-staging > template.yaml
 
       - name: Poller Lambda
         run: |

@@ -36,7 +36,9 @@ jobs:
         run: sudo npm i -g aws-cdk
 
       - name: Install Dependencies
-        run: npm i
+        run: |
+          npm i
+          npm i -g esbuild
 
       - name: CDK Synth
         run: cdk synth
