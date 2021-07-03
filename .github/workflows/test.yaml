@@ -38,24 +38,27 @@ jobs:
       - name: CDK Synth
         run: cdk synth RenderLambdaStack --no-staging > template.yaml
 
-      - name: Clip Queuer Lambda
+      - name: Poller Lambda
         run: |
-          sam local invoke ClipQueuer58A9C9FE --env-vars env.json --event ./events/clipQueuerEvent.json
+          npm run poller
 
-      - name: Render Lambda
+      - name: Clip Finder Lambda
         run: |
-          sam local invoke FinalRendererCB91BC08 --env-vars env.json --event ./events/renderEvent.json
+          npm run clipfinder
 
-      - name: Notification Lambda
+      - name: CCC Finder Lambda
         run: |
-          sam local invoke Notify29C25B1B --env-vars env.json --event ./events/notifyS3Event.json
-          sam local invoke Notify29C25B1B --env-vars env.json --event ./events/notifyStepEvent.json
+          npm run cccfinder
 
       - name: Downloader Lambda
         run: |
-          cd lambdas/downloader
-          docker build -t downloader-test .
-          docker run -d -p 9000:8080 --env-file docker.env downloader-test
-          export data=$(jq '.' -c ../../events/downloadEvent.json)
+          npm run downloader
+
+      - name: Thumbnail Generator Lambda
+        run: |
+          cd lambdas/thumbnailgenerator
+          docker build -t thumbnail-test .
+          docker run -d -p 9000:8080 --env-file docker.env thumbnail-test
+          export data=$(jq '.' -c ../../test_events/thumbnailGeneratorEvent.json)
           curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d $data
         
