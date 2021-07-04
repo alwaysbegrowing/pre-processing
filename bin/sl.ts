@@ -11,4 +11,7 @@ new PreProdPipeline(app, 'PreProdTimestampsPipeline');
 
 new ProdPipeline(app, 'ProdTimestampsPipeline');
 
+new SlStack(app, 'Prod-Timestamps', 'pillar');
+
+
 app.synth();
