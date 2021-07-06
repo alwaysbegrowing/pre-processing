@@ -1,0 +1,2 @@
+-P ubuntu-latest=catthehacker/ubuntu:full-20.04
+-P ubuntu-20.04=catthehacker/ubuntu:full-20.04
