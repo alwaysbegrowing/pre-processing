@@ -35,24 +35,47 @@ jobs:
       - name: Install Dependencies
         run: npm i
 
+      - name: Make Logs Directory
+        run: mkdir logs
+
       - name: CDK Synth
         run: cdk synth SlStack --no-staging > template.yaml
 
       - name: Poller Lambda
         run: |
-          npm run poller
+          sam local invoke VodPoller741EDAA0 --env-vars env.json --no-event -l logs/poller.txt
+
+      - name: Test Poller
+        uses: pillargg/sam-ots@v0
+        with:
+          file: ./logs/poller.txt
 
       - name: Clip Finder Lambda
         run: |
-          npm run clipfinder
+          sam local invoke ClipFinderA73374EE --env-vars env.json --event test_events/clipFinderEvent.json -l logs/clipfinder.txt
+
+      - name: Test Clip Finder
+        uses: pillargg/sam-ots@v0
+        with:
+          file: ./logs/clipfinder.txt
 
       - name: CCC Finder Lambda
         run: |
-          npm run cccfinder
+          sam local invoke CCCFinder4C010E91 --env-vars env.json --event test_events/cccFinderEvent.json -l logs/cccfinder.txt
+
+      - name: Test CCC Finder
+        uses: pillargg/sam-ots@v0
+        with:
+          file: ./logs/cccfinder.txt
 
       - name: Downloader Lambda
         run: |
-          npm run downloader
+          sam local invoke ChatDownloader326B83C0 --env-vars env.json --event test_events/event.json -l logs/downloader.txt
+
+      - name: Test Downloader
+        uses: pillargg/sam-ots@v0
+        with:
+          file: ./logs/downloader.txt
 
       - name: Thumbnail Generator Lambda
         run: |
@@ -60,5 +83,9 @@ jobs:
           docker build -t thumbnail-test .
           docker run -d -p 9000:8080 --env-file docker.env thumbnail-test
           export data=$(jq '.' -c ../../test_events/thumbnailGeneratorEvent.json)
-          curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d $data
+          curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d $data > logs/thumbnail.json
         
+      - name: Test Generator
+        uses: pillargg/sam-ots@v0
+        with:
+          file: ./logs/thumbnail.json
