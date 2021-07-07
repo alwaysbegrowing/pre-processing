@@ -46,7 +46,7 @@ jobs:
           sam local invoke VodPoller741EDAA0 --env-vars env.json --no-event -l logs/poller.txt
 
       - name: Test Poller
-        uses: pillargg/sam-ots@v0
+        uses: pillargg/sam-ots@master
         with:
           file: ./logs/poller.txt
 
@@ -55,7 +55,7 @@ jobs:
           sam local invoke ClipFinderA73374EE --env-vars env.json --event test_events/clipFinderEvent.json -l logs/clipfinder.txt
 
       - name: Test Clip Finder
-        uses: pillargg/sam-ots@v0
+        uses: pillargg/sam-ots@master
         with:
           file: ./logs/clipfinder.txt
 
@@ -64,7 +64,7 @@ jobs:
           sam local invoke CCCFinder4C010E91 --env-vars env.json --event test_events/cccFinderEvent.json -l logs/cccfinder.txt
 
       - name: Test CCC Finder
-        uses: pillargg/sam-ots@v0
+        uses: pillargg/sam-ots@master
         with:
           file: ./logs/cccfinder.txt
 
@@ -73,7 +73,7 @@ jobs:
           sam local invoke ChatDownloader326B83C0 --env-vars env.json --event test_events/event.json -l logs/downloader.txt
 
       - name: Test Downloader
-        uses: pillargg/sam-ots@v0
+        uses: pillargg/sam-ots@master
         with:
           file: ./logs/downloader.txt
 
@@ -86,6 +86,6 @@ jobs:
           curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d $data > logs/thumbnail.json
         
       - name: Test Generator
-        uses: pillargg/sam-ots@v0
+        uses: pillargg/sam-ots@master
         with:
           file: ./logs/thumbnail.json
