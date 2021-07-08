@@ -8,10 +8,11 @@ from db import connect_to_db
 s3 = boto3.client('s3')
 SNS = boto3.client('sns')
 THUMBNAIL_GENERATOR_TOPIC = os.getenv('TOPIC')
+DRY_RUN = bool(os.getenv('DRY_RUN'))
 
 
 def sendSnsMessage(videoId):
-    if not os.getenv('DRY_RUN'):
+    if not DRY_RUN:
         return SNS.publish(
             TargetArn=THUMBNAIL_GENERATOR_TOPIC,
             Message=videoId,
