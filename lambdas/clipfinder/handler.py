@@ -11,12 +11,14 @@ THUMBNAIL_GENERATOR_TOPIC = os.getenv('TOPIC')
 
 
 def sendSnsMessage(videoId):
-    return SNS.publish(
-        TargetArn=THUMBNAIL_GENERATOR_TOPIC,
-        Message=videoId,
-        MessageStructure='string',
-        MessageDeduplicationId=videoId
-    )
+    if not os.getenv('DRY_RUN'):
+        return SNS.publish(
+            TargetArn=THUMBNAIL_GENERATOR_TOPIC,
+            Message=videoId,
+            MessageStructure='string',
+            MessageDeduplicationId=videoId
+        )
+    return {}
 
 
 def store_in_db(key, clip_timestamps):
