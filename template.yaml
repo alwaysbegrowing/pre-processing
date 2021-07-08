@@ -121,7 +121,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 08bffd1ebe527728847730a0a879edb0a24e3a7c47eebc1f16b7bcc7dc56ab71.zip
+        S3Key: ee40c70ed90b3aa9b06ff6058c41654dc059725f6ffdf059dc9b449ee211f4bc.zip
       Role:
         Fn::GetAtt:
           - VodPollerServiceRole369446BC
@@ -145,7 +145,7 @@ Resources:
       - VodPollerServiceRole369446BC
     Metadata:
       aws:cdk:path: SlStack/VodPoller/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.08bffd1ebe527728847730a0a879edb0a24e3a7c47eebc1f16b7bcc7dc56ab71
+      aws:asset:path: /home/chandler/projects/pillar/timestamps/cdk.out/asset.ee40c70ed90b3aa9b06ff6058c41654dc059725f6ffdf059dc9b449ee211f4bc
       aws:asset:property: Code
   ThumbnailGeneratorServiceRole82D7629D:
     Type: AWS::IAM::Role
@@ -213,7 +213,7 @@ Resources:
     Properties:
       Code:
         ImageUri:
-          Fn::Sub: ${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:550e4091bc142c6abc081bc2a155916539291e6ce8e7b85d8c7e5eb87173460b
+          Fn::Sub: ${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:f68f2182633dd5e50ac0afc44e6faf571bd3619b66be4f63ede3b0a11b58d688
       Role:
         Fn::GetAtt:
           - ThumbnailGeneratorServiceRole82D7629D
@@ -337,7 +337,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 9d406d847a20a886e4928173f9ff299e0d6a03ca1873b1b982a9b46813e8223c.zip
+        S3Key: 3422d803aedf7062a54ba2d2854501caa5c86fd31fb76cb2a9b338eae26fcd42.zip
       Role:
         Fn::GetAtt:
           - ChatDownloaderServiceRole613C36DF
@@ -357,7 +357,7 @@ Resources:
       - ChatDownloaderServiceRole613C36DF
     Metadata:
       aws:cdk:path: SlStack/ChatDownloader/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.9d406d847a20a886e4928173f9ff299e0d6a03ca1873b1b982a9b46813e8223c
+      aws:asset:path: /home/chandler/projects/pillar/timestamps/cdk.out/asset.3422d803aedf7062a54ba2d2854501caa5c86fd31fb76cb2a9b338eae26fcd42
       aws:asset:property: Code
   ChatDownloaderAllowInvokeSlStackReadyForDownloads8DCF2BE93FD930B7:
     Type: AWS::Lambda::Permission
@@ -444,7 +444,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: d7301f6604ba20d3b49e8589c855adc8614e9f4a7509217096631ebe69b2b9cd.zip
+        S3Key: d1423e197bb2d1b64ff8d9bff2cdf369ea8ee92be16a4b988e2f267ee0bb88f8.zip
       Role:
         Fn::GetAtt:
           - ClipFinderServiceRole28A544E9
@@ -468,7 +468,7 @@ Resources:
       - ClipFinderServiceRole28A544E9
     Metadata:
       aws:cdk:path: SlStack/ClipFinder/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.d7301f6604ba20d3b49e8589c855adc8614e9f4a7509217096631ebe69b2b9cd
+      aws:asset:path: /home/chandler/projects/pillar/timestamps/cdk.out/asset.d1423e197bb2d1b64ff8d9bff2cdf369ea8ee92be16a4b988e2f267ee0bb88f8
       aws:asset:property: Code
   CCCFinderServiceRoleCE3B78F6:
     Type: AWS::IAM::Role
@@ -515,7 +515,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: f3411180f4d637a149c64a8dbb70d5b42cf84170c11c552aa3897f811452dd87.zip
+        S3Key: 907c6de27f18e262930343aa70010d57acc59f8c45958ebfc99f2f8b9393ded1.zip
       Role:
         Fn::GetAtt:
           - CCCFinderServiceRoleCE3B78F6
@@ -535,7 +535,7 @@ Resources:
       - CCCFinderServiceRoleCE3B78F6
     Metadata:
       aws:cdk:path: SlStack/CCCFinder/Resource
-      aws:asset:path: C:\Users\chizz\Documents\pillar\timestamps\cdk.out\asset.f3411180f4d637a149c64a8dbb70d5b42cf84170c11c552aa3897f811452dd87
+      aws:asset:path: /home/chandler/projects/pillar/timestamps/cdk.out/asset.907c6de27f18e262930343aa70010d57acc59f8c45958ebfc99f2f8b9393ded1
       aws:asset:property: Code
   CCCFinderAllowInvokeSlStackReadyForDownloads8DCF2BE926D4656E:
     Type: AWS::Lambda::Permission
@@ -680,7 +680,7 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAACk1Qy07DMBD8lt6dLVEBiRu0CIkLilJ+wHWW1HnYkdcuiqz8O7bzoKfZHc/urCeHlyfId6/8lzJRtXsvtEHwZ8tFy05akTVOWHb6USWSdkYgeyNCGwS1VDXb2KAI8kpaqdXE4jpPB/BHJ1pM83M1sY73l4qDD1SBppdEYSIKPpwScZq966A0nz2vceUmRorAf+tBiqidi7O7kDBysMuG+341yrzSFTYEXwk2k2G0V62gSPBvI3kPvtRd+lDCQndSjLGdq3DKIeMxA4IUBUNhVuLu9O0NShw0SavNeOSEDG+ogtSXbnEJOIXI5g1LsBOLZ0ND+1v+CPkzPOwakjIzTlnZI5Qz/gH00ivJvwEAAA==
+      Analytics: v2:deflate64:H4sIAAAAAAAAA01Qy07DMBD8lt6draKAEDdoERIXFKX8gOsswXnYkdcuiqz8O7bzoKfZHc/urCeH50fIDy/8lzJRd0cvtEHwF8tFx85akTVOWHb+VhWSdkYgeyVCGwSNVA3b2aAI8lpaqdXM4jpPBfiTEx2m+aWaWc+Ha83BB6pEM0iiMBEF706JOM3edFCaj4E3uHEzI0Xgv/QoRdQuxcVdSRg52nXDfb8ZZV7pGluCzwS7yTjZH62gTPBvI/kAvtJ9+lDCUvdSTLFdqnBKkfGYAUGKgqEwG3F3+v4GFY6apNVmOnFChjdUQeort7oEnENky4Y12JnFs6Gl4y1/gPwJikNLUmbGKSsHhGrBP5MadnG/AQAA
     Metadata:
       aws:cdk:path: SlStack/CDKMetadata/Default
     Condition: CDKMetadataAvailable

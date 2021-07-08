@@ -10,14 +10,13 @@ const getMessages = async (videoId) => {
 
   const callTwitch = async (cursor = null) => {
     // use public client id thats used on twitch.tv - we could switch this to ours
-    const headers = { 'client-id': 'kimne78kx3ncx6brgo4mv6wki5h1ko' };
+    const headers = { 'client-id': 'b31o4btkqth5bzbvr9ub2ovr79umhh' };
     const url = `https://api.twitch.tv/v5/videos/${videoId}/comments${
       cursor ? `?cursor=${cursor}` : ''
     }`;
     const resp = await fetch(url, { headers });
     const { _next, comments } = await resp.json();
     allMessages.push(...comments);
-
     return _next;
   };
 
