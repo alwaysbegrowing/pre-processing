@@ -15,7 +15,8 @@ def sendSnsMessage(videoId):
         TargetArn=THUMBNAIL_GENERATOR_TOPIC,
         Message=videoId,
         MessageStructure='string',
-        MessageDeduplicationId=videoId
+        MessageDeduplicationId=videoId,
+        MessageGroupId="clipa"
     )
 
 
