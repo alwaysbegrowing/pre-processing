@@ -8,18 +8,15 @@ from db import connect_to_db
 s3 = boto3.client('s3')
 SNS = boto3.client('sns')
 THUMBNAIL_GENERATOR_TOPIC = os.getenv('TOPIC')
-DRY_RUN = bool(os.getenv('DRY_RUN'))
-
 
 def sendSnsMessage(videoId):
-    if not DRY_RUN:
-        return SNS.publish(
-            TargetArn=THUMBNAIL_GENERATOR_TOPIC,
-            Message=videoId,
-            MessageStructure='string',
-            MessageDeduplicationId=videoId
-        )
-    return {}
+    
+    return SNS.publish(
+        TargetArn=THUMBNAIL_GENERATOR_TOPIC,
+        Message=videoId,
+        MessageStructure='string',
+        MessageDeduplicationId=videoId
+    )
 
 
 def store_in_db(key, clip_timestamps):
