@@ -55,16 +55,13 @@ def handler(event, context):
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
 
     brain_results = algo1.run(all_messages, min_=.75, limit=10)
-    # algo1_clips = algo1.run(all_messages, min_=0.70, limit=10)
 
     # only print out algo1's length since we're using it twice
-    # print(json.dumps({'algo1_results_length': len(algo1_clips)}))
     hydrated_brain_results = hydrate_clips(brain_results, key)
 
     # clips that the algorithm found
     clips = {
         "brain": hydrated_brain_results,
-        # "algo1": algo1_clips
     }
 
     print(json.dumps({'found_clips': clips}))
