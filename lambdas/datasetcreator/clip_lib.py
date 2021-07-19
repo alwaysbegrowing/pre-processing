@@ -1,8 +1,5 @@
-import json
 import re
-
 import requests
-
 
 def twitch_auth(client_id, client_secret):
     queries = {
@@ -10,57 +7,41 @@ def twitch_auth(client_id, client_secret):
         'client_secret': client_secret,
         'grant_type': 'client_credentials'
     }
-
     resp = requests.post('https://id.twitch.tv/oauth2/token', params=queries)
+
     return resp.json()
 
-
 def get_games(twitch_client_id, access_token, length):
-    '''
-
-    :param twitch_client_id:string
-    :param access_token:string
-    :param length:int
-    :return: list of games, length long
-    '''
-
     headers = {
         'Client-Id': twitch_client_id,
         'Authorization': f'Bearer {access_token}'
     }
-
     query = {
         'first': length
     }
-
     resp = requests.get('https://api.twitch.tv/helix/games/top', headers=headers, params=query)
-
     data = resp.json()['data']
+
     return data
 
 def get_ccc_for_game(twitch_client_id, access_token, game_id, start_date, number_of_clips):
     '''
-    Gets last 100 CCCs per game and check to make sure they are a part of the specified video
+    Gets last N number of CCCs for a game_id
     '''
     headers = {
         'Client-Id': twitch_client_id,
         'Authorization': f'Bearer {access_token}'
     }
-
     query = {
         'game_id': game_id,
         'first': number_of_clips,
         'started_at': start_date
     }
-
     resp = requests.get('https://api.twitch.tv/helix/clips', headers=headers, params=query)
-
     resp.raise_for_status()
-
     data = resp.json()['data']
 
     return data
-
 
 def twitch_time_to_seconds(duration):
     total = 0
@@ -90,15 +71,11 @@ def get_video_details(twitch_client_id, access_token, video_id):
         'Client-Id': twitch_client_id,
         'Authorization': f'Bearer {access_token}'
     }
-
     query = {
         'id': video_id
     }
-
     resp = requests.get('https://api.twitch.tv/helix/videos', headers=headers, params=query)
-
     resp.raise_for_status()
-
     data = resp.json()['data']
 
     return data
@@ -118,19 +95,14 @@ def get_ccc_start_end_times(clip_data):
             }
         }
     }]
-
     gql_headers = {
         'Client-Id': 'kimne78kx3ncx6brgo4mv6wki5h1ko'
     }
 
     gql_resp = requests.post(gql_url, headers=gql_headers, json=gql_payload)
-
     gql_data = gql_resp.json()
-
-
     start_time = gql_data[0]['data']['clip']['videoOffsetSeconds']
 
-    # print("START_TIME: ", start_time)
     if start_time is None:
         raise AssertionError('Could not find videoOffsestSeconds in API response. GQL response data: ', gql_data)
 
@@ -143,7 +115,6 @@ def get_ccc_start_end_times(clip_data):
 
     types = [int, str, float]
     if not any(type(duration) is t for t in types):
-        # print(type(duration))
         raise AssertionError('Duration is not an integer, float, or string.')
 
     end_time = start_time + duration
