@@ -113,6 +113,7 @@ export class SlStack extends Stack {
     });
 
     twitchSecret.grantRead(clipFinder)
+    thumbnailGeneratorTopic.grantPublish(clipFinder);
 
     const cccFinder = new PythonFunction(this, 'CCCFinder', {
       description: 'Finds CCC on Twitch',
