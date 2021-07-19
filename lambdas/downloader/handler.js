@@ -21,7 +21,7 @@ const getMessages = async (videoId) => {
     return _next;
   };
 
-  var cursor = await callTwitch();
+  let cursor = await callTwitch();
 
   while (cursor) {
     cursor = await callTwitch(cursor);
@@ -30,11 +30,27 @@ const getMessages = async (videoId) => {
   return allMessages;
 };
 
+const checkIfS3KeyExists = async (videoId) => {
+  const params = {
+    Bucket: bucketName,
+    Key: videoId,
+  };
+  try {
+    await S3.headObject(params).promise();
+  } catch (err) {
+    console.log(err.code);
+    return false;
+  }
+  return true;
+};
+
 exports.main = async (event) => {
   const videoId = event.Records[0].Sns.MessageAttributes.VideoId.Value;
-  // bucket that the messages are being stored to
-  // and the video ID that they can be accessed at
-  console.log({ bucketName: bucketName, videoId: videoId });
+  console.log({ bucketName, videoId });
+
+  const keyFound = await checkIfS3KeyExists(videoId);
+  if (keyFound) return { message: 'KEY ALREADY EXISTS IN BUCKET. TERMINATING EARLY. ' };
+
   const allMessages = await getMessages(videoId);
   console.log({ numberOfMessages: allMessages.length });
   const resp = await S3.upload({
