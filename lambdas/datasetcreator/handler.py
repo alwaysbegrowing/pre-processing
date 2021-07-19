@@ -5,25 +5,30 @@ import json
 from clip_lib import twitch_auth, get_ccc_for_game, get_ccc_start_end_times, get_games, get_video_details
 
 
-# from db import input_ccc
-# from get_secret import get_secret
+# NOTE: this lambda isn't actually hooked up to our stack, and will not be deployed. it's meant for local use.
 
 # manual process to categorize the top 50 games:
 # 1. try to find wikipedia entry for the game, and use the genre listed
 # 2. for games not listed on wikipedia, go to steam store and use the genre listed on steam store
 # 3. overall try to make the labels consisten. like MMORPG is standard, but wiki sometimes says 'massive multiplayer online role-playing game'. so i favored the acronym version.
+
 f = open('genre_enum.json')
 game_genres = json.load(f)
 f.close()
 
-TWITCH_CLIENT_ID = 'phpnjz4llxez4zpw3iurfthoi573c8'
-TWITCH_CLIENT_SECRET = 'vfyfskmy4bziffaku3euj0la6egt2o'
+t = open('.env')
+env = json.load(t)
+t.close()
+
+TWITCH_CLIENT_ID = env['TWITCH_CLIENT_ID']
+TWITCH_CLIENT_SECRET = env['TWITCH_CLIENT_SECRET']
+CHAT_DOWNLOADER_TOPIC = env['CHAT_DOWNLOADER_TOPIC']
+
 SNS = boto3.client('sns')
-CHAT_DOWNLOADER_TOPIC = 'arn:aws:sns:us-east-1:576758376358:Prod-Timestamps-ReadyForDownloadsEEACEEFF-18Q7QL8YRPR8W'
 
 # parameters for clip scraping
-NUMBER_OF_GAMES = 50
-NUMBER_OF_CLIPS = 100
+NUMBER_OF_GAMES = 5
+NUMBER_OF_CLIPS = 1
 START_DATE = '2021-07-01T00:00:00Z'
 
 
