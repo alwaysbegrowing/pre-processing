@@ -11,7 +11,7 @@
     "synth": "cdk synth SlStack --no-staging > template.yaml",
     "poller": "sam local invoke VodPoller741EDAA0 --env-vars env.json --no-event",
     "clipfinder": "sam local invoke ClipFinderA73374EE --env-vars env.json --event test_events/clipFinderEvent.json",
-    "downloader": "sam local invoke DownloadHandler09CC40DB --env-vars env.json --event test_events/event.json",
+    "downloader": "sam local invoke ChatDownloader326B83C0 --env-vars env.json --event test_events/event.json",
     "cccfinder": "sam local invoke CCCFinder4C010E91 --env-vars env.json --event test_events/cccFinderEvent.json",
     "thumbnail": "sam local invoke ThumbnailGenerator01BB1F8C --env-vars env.json --event test_events/thumbnailGeneratorEvent.json",
     "cdk": "cdk"

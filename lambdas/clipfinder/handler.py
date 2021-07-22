@@ -9,13 +9,14 @@ s3 = boto3.client('s3')
 SNS = boto3.client('sns')
 THUMBNAIL_GENERATOR_TOPIC = os.getenv('TOPIC')
 
-
 def sendSnsMessage(videoId):
-    print("message deduplication: ", videoId)
+    
     return SNS.publish(
         TargetArn=THUMBNAIL_GENERATOR_TOPIC,
         Message=videoId,
-        MessageStructure='string'
+        MessageStructure='string',
+        MessageDeduplicationId=videoId,
+        MessageGroupId="clipa"
     )
 
 

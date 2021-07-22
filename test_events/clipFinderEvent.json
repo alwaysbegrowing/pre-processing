@@ -27,9 +27,9 @@
             "arn": "arn:aws:s3:::lambda-artifacts-deafc19498e3f2df"
           },
           "object": {
-            "key": "963184458",
-            "size": 1305107,
-            "eTag": "b21b84d653bb07b05b1e6b33684dc11b",
+            "key": "1003679885",
+            "size": 47400000,
+            "eTag": "8ec514428f31a823e104fd2dece57131-10",
             "sequencer": "0C0F6F405D6ED209E1"
           }
         }
