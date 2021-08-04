@@ -14,9 +14,4 @@ new SlStack(app, 'SlStack', 'dev');
 // Will deploy with CI/CD
 new SlStack(app, 'Prod-Timestamps', 'pillar');
 
-// Staging/QA Stack
-// DO NOT TOUCH
-// Will deploy with CI/CD
-new SlStack(app, 'QA-Timestamps', 'staging');
-
 app.synth();
