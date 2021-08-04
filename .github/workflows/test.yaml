@@ -87,7 +87,6 @@ jobs:
           cd lambdas/thumbnailgenerator
           echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> docker.env
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> docker.env
-          cat docker.env
           docker build -t thumbnail-test .
           docker run -d -p 9000:8080 --env-file docker.env thumbnail-test
           export data=$(jq '.' -c ../../test_events/thumbnailGeneratorEvent.json)
