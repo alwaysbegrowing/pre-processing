@@ -16,6 +16,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Login to ECR
+        run: |
+          export ecr_passwd=$(aws ecr get-login-password)
+          docker login -u AWS -p $ecr_passwd https://576758376358.dkr.ecr.us-east-1.amazonaws.com
+
       - name: Setup Node 14
         uses: actions/setup-node@v2
         with:
