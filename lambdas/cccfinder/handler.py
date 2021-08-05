@@ -43,6 +43,6 @@ def handler(event, context):
 
     result = input_ccc(video_id, hydrated_ccc_results)
     # the number of ccc clips found and the list of the ccc clips
-    print(json.dumps({'number_of_clips':len(hydrated_ccc_results), 'ccc_clips':hydrated_ccc_results, 'result': result}))
+    print(json.dumps({'number_of_clips':len(hydrated_ccc_results), 'ccc_clips':hydrated_ccc_results, 'result': str(result)}))
 
     return {}
