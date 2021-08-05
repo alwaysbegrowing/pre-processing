@@ -1,14 +1,12 @@
 // import * as apigateway from "@aws-cdk/aws-apigateway";
 import { DockerImageCode, DockerImageFunction, Runtime } from '@aws-cdk/aws-lambda';
-import { Duration, Stack, Construct, StackProps, CfnParameter } from '@aws-cdk/core';
+import { Duration, Stack, Construct, StackProps } from '@aws-cdk/core';
 import { Bucket, EventType } from '@aws-cdk/aws-s3';
 import { Topic } from '@aws-cdk/aws-sns';
 import { SnsEventSource, S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import { Rule, Schedule } from '@aws-cdk/aws-events';
 import { LambdaFunction } from '@aws-cdk/aws-events-targets';
-import { ContainerImage } from '@aws-cdk/aws-ecs';
-import { Function } from '@aws-cdk/aws-lambda';
 import { PythonFunction } from '@aws-cdk/aws-lambda-python';
 import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs';
 
