@@ -132,7 +132,6 @@ export class SlStack extends Stack {
     twitchSecret.grantRead(cccFinder);
     mongoSecret.grantRead(cccFinder);
 
-    new SnsEventSource(readyForDownloadsTopic).bind(cccFinder);
     new SnsEventSource(updateCCCTopic).bind(cccFinder);
 
     messageStoreBucket.grantWrite(downloadLambda);
