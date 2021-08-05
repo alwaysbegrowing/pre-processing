@@ -121,7 +121,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: ee40c70ed90b3aa9b06ff6058c41654dc059725f6ffdf059dc9b449ee211f4bc.zip
+        S3Key: 0160e6e5d5a9cdd9752044d05d5fc203762705dd3d9717bcadf9aa785cd7341e.zip
       Role:
         Fn::GetAtt:
           - VodPollerServiceRole369446BC
@@ -134,7 +134,7 @@ Resources:
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
           TOPIC:
             Ref: ReadyForDownloadsEEACEEFF
-          DB_NAME: pillar
+          DB_NAME: dev
           AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
       Handler: index.main
       MemorySize: 256
@@ -145,7 +145,7 @@ Resources:
       - VodPollerServiceRole369446BC
     Metadata:
       aws:cdk:path: SlStack/VodPoller/Resource
-      aws:asset:path: /home/chandler/projects/pillar/timestamps/cdk.out/asset.ee40c70ed90b3aa9b06ff6058c41654dc059725f6ffdf059dc9b449ee211f4bc
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.0160e6e5d5a9cdd9752044d05d5fc203762705dd3d9717bcadf9aa785cd7341e
       aws:asset:property: Code
   ThumbnailGeneratorServiceRole82D7629D:
     Type: AWS::IAM::Role
@@ -223,7 +223,7 @@ Resources:
         Variables:
           BUCKET:
             Ref: ThumbnailStore34588C07
-          DB_NAME: pillar
+          DB_NAME: dev
           TOPIC:
             Ref: ThumbnailGeneratorTopicFF9CDA5D
       MemorySize: 1280
@@ -337,7 +337,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 3422d803aedf7062a54ba2d2854501caa5c86fd31fb76cb2a9b338eae26fcd42.zip
+        S3Key: 7e0b4757e61c32cca0d684794529d04add84b682091b0b591894faf69a34d94d.zip
       Role:
         Fn::GetAtt:
           - ChatDownloaderServiceRole613C36DF
@@ -357,7 +357,7 @@ Resources:
       - ChatDownloaderServiceRole613C36DF
     Metadata:
       aws:cdk:path: SlStack/ChatDownloader/Resource
-      aws:asset:path: /home/chandler/projects/pillar/timestamps/cdk.out/asset.3422d803aedf7062a54ba2d2854501caa5c86fd31fb76cb2a9b338eae26fcd42
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.7e0b4757e61c32cca0d684794529d04add84b682091b0b591894faf69a34d94d
       aws:asset:property: Code
   ChatDownloaderAllowInvokeSlStackReadyForDownloads8DCF2BE93FD930B7:
     Type: AWS::Lambda::Permission
@@ -412,6 +412,10 @@ Resources:
               - secretsmanager:DescribeSecret
             Effect: Allow
             Resource: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
+          - Action: sns:Publish
+            Effect: Allow
+            Resource:
+              Ref: ThumbnailGeneratorTopicFF9CDA5D
           - Action:
               - s3:GetObject*
               - s3:GetBucket*
@@ -444,7 +448,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: d1423e197bb2d1b64ff8d9bff2cdf369ea8ee92be16a4b988e2f267ee0bb88f8.zip
+        S3Key: 25dc5c988ccacf9c95b198a91678552be9e10ef93bd189781fe0f9044eb3310b.zip
       Role:
         Fn::GetAtt:
           - ClipFinderServiceRole28A544E9
@@ -456,7 +460,7 @@ Resources:
             Ref: MessageStore60E7AFC8
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
           TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
-          DB_NAME: pillar
+          DB_NAME: dev
           TOPIC:
             Ref: ThumbnailGeneratorTopicFF9CDA5D
       Handler: handler.handler
@@ -468,7 +472,7 @@ Resources:
       - ClipFinderServiceRole28A544E9
     Metadata:
       aws:cdk:path: SlStack/ClipFinder/Resource
-      aws:asset:path: /home/chandler/projects/pillar/timestamps/cdk.out/asset.d1423e197bb2d1b64ff8d9bff2cdf369ea8ee92be16a4b988e2f267ee0bb88f8
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.25dc5c988ccacf9c95b198a91678552be9e10ef93bd189781fe0f9044eb3310b
       aws:asset:property: Code
   CCCFinderServiceRoleCE3B78F6:
     Type: AWS::IAM::Role
@@ -525,7 +529,7 @@ Resources:
         Variables:
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
           TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
-          DB_NAME: pillar
+          DB_NAME: dev
       Handler: handler.handler
       MemorySize: 256
       Runtime: python3.8
@@ -535,7 +539,7 @@ Resources:
       - CCCFinderServiceRoleCE3B78F6
     Metadata:
       aws:cdk:path: SlStack/CCCFinder/Resource
-      aws:asset:path: /home/chandler/projects/pillar/timestamps/cdk.out/asset.907c6de27f18e262930343aa70010d57acc59f8c45958ebfc99f2f8b9393ded1
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.907c6de27f18e262930343aa70010d57acc59f8c45958ebfc99f2f8b9393ded1
       aws:asset:property: Code
   CCCFinderAllowInvokeSlStackReadyForDownloads8DCF2BE926D4656E:
     Type: AWS::Lambda::Permission
@@ -680,7 +684,7 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAAA01Qy07DMBD8lt6draKAEDdoERIXFKX8gOsswXnYkdcuiqz8O7bzoKfZHc/urCeH50fIDy/8lzJRd0cvtEHwF8tFx85akTVOWHb+VhWSdkYgeyVCGwSNVA3b2aAI8lpaqdXM4jpPBfiTEx2m+aWaWc+Ha83BB6pEM0iiMBEF706JOM3edFCaj4E3uHEzI0Xgv/QoRdQuxcVdSRg52nXDfb8ZZV7pGluCzwS7yTjZH62gTPBvI/kAvtJ9+lDCUvdSTLFdqnBKkfGYAUGKgqEwG3F3+v4GFY6apNVmOnFChjdUQeort7oEnENky4Y12JnFs6Gl4y1/gPwJikNLUmbGKSsHhGrBP5MadnG/AQAA
+      Analytics: v2:deflate64:H4sIAAAAAAAAA01Qy27DIBD8ltzxplbUSL21SVSpl8py+gMEb138AIuFVBbyvxfwoznN7jC7s0wOL8+Q7175L2WiavdeaIPgr5aLlp21ImucsOz8rUok7YxA9kaENghqqWq2sUER5JW0UquJxXWeDuBPTrSY5udqYh3vbxUHH6gCTS+JwkQUvDsl4jS76KA0Hz2vceUmRorAf+lBiqidi6u7kTBysMuGx341yrzSFTYEnwk2k2G0P1pBkeDfRvIefKm79KGEhe6kGGM7V+GUQ8ZjBgQpCobCrMTD6dsblDhoklab8cQJGd5RBakv3eIScAqRzRuWYCcWz4aG9vf8CEd42jUkZWacsrJHKGf8A5CFv3m+AQAA
     Metadata:
       aws:cdk:path: SlStack/CDKMetadata/Default
     Condition: CDKMetadataAvailable
