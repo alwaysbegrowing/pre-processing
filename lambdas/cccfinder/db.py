@@ -38,4 +38,11 @@ def input_ccc(key, ccc_data):
     }
     result = timestamps.update_one(query, update, upsert=True)
 
+    if result is None:
+        doc = {
+            'videoId': key,
+            'ccc': ccc_data
+        }
+        result = timestamps.insert(doc)
+
     return result
