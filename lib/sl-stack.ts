@@ -24,6 +24,7 @@ export class SlStack extends Stack {
     const thumbnailStoreBucket = new Bucket(this, 'ThumbnailStore');
 
     const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
+    const updateCCCTopic = new Topic(this, 'UpdateCCCTopic');
     const thumbnailGeneratorTopic = new Topic(this, 'ThumbnailGeneratorTopic');
 
     const vodPoller = new NodejsFunction(this, 'VodPoller', {
@@ -134,6 +135,7 @@ export class SlStack extends Stack {
     mongoSecret.grantRead(cccFinder);
 
     new SnsEventSource(readyForDownloadsTopic).bind(cccFinder);
+    new SnsEventSource(updateCCCTopic).bind(cccFinder);
 
     messageStoreBucket.grantWrite(downloadLambda);
 
