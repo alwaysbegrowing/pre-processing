@@ -7,7 +7,7 @@ const app = new cdk.App();
 
 // development "hack stack"
 // this one can be changed at will
-new SlStack(app, 'SlStack', 'dev');
+new SlStack(app, 'Dev-Timestamps', 'dev');
 
 // production stack
 // DO NOT TOUCH

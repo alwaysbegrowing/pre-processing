@@ -44,7 +44,7 @@ jobs:
         run: mkdir logs
 
       - name: CDK Synth
-        run: cdk synth SlStack --no-staging > template.yaml
+        run: npm run synth
 
       - name: Poller Lambda
         run: |
