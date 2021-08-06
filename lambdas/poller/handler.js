@@ -132,12 +132,12 @@ exports.main = async () => {
   const missingVideoIds = await checkS3forMessages(videoIds);
   const missingVideosResponse = await sendMissingVideosSns(missingVideoIds);
 
-  const cccRefreshResponse = await sendRefreshVodSns(videoIds);
+  const refreshVodResponse = await sendRefreshVodSns(videoIds);
 
   console.log({
     missingVideoIdsLength: missingVideosResponse.length,
     missingVideosResponse,
-    cccRefreshResponse,
+    refreshVodResponse,
   });
   return { missingVideoIdsLength: missingVideosResponse.length };
 };
