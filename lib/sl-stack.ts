@@ -22,7 +22,7 @@ export class SlStack extends Stack {
     const thumbnailStoreBucket = new Bucket(this, 'ThumbnailStore');
 
     const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
-    const updateCCCTopic = new Topic(this, 'UpdateCCCTopic');
+    const vodDataRequested = new Topic(this, 'vodDataRequested');
     const thumbnailGeneratorTopic = new Topic(this, 'ThumbnailGeneratorTopic');
 
     const vodPoller = new NodejsFunction(this, 'VodPoller', {
@@ -132,7 +132,7 @@ export class SlStack extends Stack {
     twitchSecret.grantRead(cccFinder);
     mongoSecret.grantRead(cccFinder);
 
-    new SnsEventSource(updateCCCTopic).bind(cccFinder);
+    new SnsEventSource(vodDataRequested).bind(cccFinder);
 
     messageStoreBucket.grantWrite(downloadLambda);
 
