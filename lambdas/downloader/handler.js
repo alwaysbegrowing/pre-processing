@@ -1,4 +1,4 @@
-
+/* eslint-disable no-console */
 const AWS = require('aws-sdk');
 
 const S3 = new AWS.S3();
@@ -21,9 +21,10 @@ const getMessages = async (videoId) => {
     return _next;
   };
 
-  var cursor = await callTwitch();
+  let cursor = await callTwitch();
 
   while (cursor) {
+    // eslint-disable-next-line no-await-in-loop
     cursor = await callTwitch(cursor);
   }
 
@@ -34,7 +35,7 @@ exports.main = async (event) => {
   const videoId = event.Records[0].Sns.MessageAttributes.VideoId.Value;
   // bucket that the messages are being stored to
   // and the video ID that they can be accessed at
-  console.log({ bucketName: bucketName, videoId: videoId });
+  console.log({ bucketName, videoId });
   const allMessages = await getMessages(videoId);
   console.log({ numberOfMessages: allMessages.length });
   const resp = await S3.upload({
