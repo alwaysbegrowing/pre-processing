@@ -3,6 +3,7 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import {Construct, SecretValue, Stack} from '@aws-cdk/core';
 import {CdkPipeline, SimpleSynthAction} from '@aws-cdk/pipelines';
 import { PreProdStage, ProdStage } from './sl-stages';
+import { AddDockerLogin } from './cdkDockerLogin';
 
 export class PreProdPipeline extends Stack {
     constructor(scope: Construct, id: string) {
@@ -34,8 +35,9 @@ export class PreProdPipeline extends Stack {
             })
         });
 
-        pipeline.addApplicationStage(new PreProdStage(this, 'PreProd'))
+        pipeline.addApplicationStage(new PreProdStage(this, 'PreProd'));
 
+        AddDockerLogin(this, pipeline);
     }
 }
 
@@ -69,7 +71,8 @@ export class ProdPipeline extends Stack {
             })
         });
 
-        pipeline.addApplicationStage(new ProdStage(this, 'Prod'))
+        pipeline.addApplicationStage(new ProdStage(this, 'Prod'));
 
+        AddDockerLogin(this, pipeline);
     }
 }

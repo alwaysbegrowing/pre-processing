@@ -52,7 +52,7 @@ const isStreamerOnlineCheck = async (twitchId, headers) => {
   return false;
 };
 
-const getVodsToDownload = async (numOfVodsPerStreamer) => {
+const getLastVods = async (numOfVodsPerStreamer) => {
   const usersToPoll = await getUsersToPoll();
   const appToken = await getAccessToken();
   const headers = {
@@ -81,12 +81,12 @@ const getVodsToDownload = async (numOfVodsPerStreamer) => {
   });
 
   await Promise.all(videoPromises);
-  return checkS3forMessages(videoIds);
+  return videoIds;
 };
 
 const sendSnsMessages = async (missingVideoIds) => {
   // missingVideoIDs: Video IDs that are not in the S3 bucket.
-  console.log({missingVideoIds: missingVideoIds});
+  console.log({ missingVideoIds: missingVideoIds });
   const SnsTopicsSent = missingVideoIds.map(async (missingVideoId) => {
     const params = {
       Message: 'The included videoID is missing messages',
@@ -108,8 +108,10 @@ const sendSnsMessages = async (missingVideoIds) => {
 exports.main = async () => {
   // The event that triggers this lambda isn't relevant,
   // as long as the lambda gets triggered.
-  const videoIds = await getVodsToDownload(5);
-  const resp = await sendSnsMessages(videoIds);
+  const videoIds = await getLastVods(5);
+  const missingVideoIds = await checkS3forMessages(videoIds);
+  const resp = await sendSnsMessages(missingVideoIds);
+
   console.log({ length: resp.length, resp });
   return resp.length;
 };
