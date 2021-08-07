@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // const AWS = require('aws-sdk');
 // const S3 = new AWS.S3();
 const fetch = require('node-fetch');
@@ -8,7 +9,9 @@ const { getAccessToken } = require('./auth');
 
 const S3 = new AWS.S3();
 
-const { TWITCH_CLIENT_ID, TOPIC, BUCKET, REFRESH_VOD_TOPIC } = process.env;
+const {
+  TWITCH_CLIENT_ID, TOPIC, BUCKET, REFRESH_VOD_TOPIC,
+} = process.env;
 
 const getUsersToPoll = async () => {
   try {
@@ -31,13 +34,12 @@ const checkS3forMessages = async (videoIds) => {
   const checkingS3Buckets = videoIds.map(async (videoId) => {
     try {
       await S3.headObject({ Bucket: BUCKET, Key: videoId }).promise();
-
-      return null;
     } catch (err) {
       if (err.code === 'NotFound') {
         return videoId;
       }
     }
+    return null;
   });
   const existInS3Bucket = await Promise.all(checkingS3Buckets);
   const missingVideos = existInS3Bucket.filter((id) => id !== null);
