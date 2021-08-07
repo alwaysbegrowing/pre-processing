@@ -1,0 +1,183 @@
+{
+  "Just Chatting": [
+    "personality"
+  ],
+  "Grand Theft Auto V": [
+    "action-adventure"
+  ],
+  "League of Legends": [
+    "MOBA"
+  ],
+  "Call of Duty: Warzone": [
+    "battle royale",
+    "first-person shooter"
+  ],
+  "World of Warcraft": [
+    "MMORPG"
+  ],
+  "Rust": [
+    "survival"
+  ],
+  "VALORANT": [
+    "first-person hero shooter",
+    "tactical shooter"
+  ],
+  "Fortnite": [
+    "third-person shooter",
+    "battle royale"
+  ],
+  "Minecraft": [
+    "sandbox",
+    "survival"
+  ],
+  "Slots": [
+    "personality",
+    "gambling"
+  ],
+  "Final Fantasy XIV Online": [
+    "MMORPG"
+  ],
+  "Escape from Tarkov": [
+    "action role-playing",
+    "first-person shooter"
+  ],
+  "Super Smash Bros. Melee": [
+    "fighting"
+  ],
+  "Apex Legends": [
+    "battle royale",
+    "first-person hero shooter"
+  ],
+  "Music": [
+    "music",
+    "personality"
+  ],
+  "Dead by Daylight": [
+    "survival",
+    "horror",
+    "survival horror"
+  ],
+  "Counter-Strike: Global Offensive": [
+    "first-person shooter",
+    "first-person hero shooter",
+    "tactical shooter"
+  ],
+  "Art": [
+    "personality",
+    "art"
+  ],
+  "Garena Free Fire": [
+    "battle royale"
+  ],
+  "Hearthstone": [
+    "digital collectible card game"
+  ],
+  "Chess": [
+    "board game",
+    "abstract strategy game",
+    "mind sport"
+  ],
+  "Dota 2": [
+    "MOBA"
+  ],
+  "NBA 2K21": [
+    "sports"
+  ],
+  "Pools, Hot Tubs, and Beaches": [
+    "personality"
+  ],
+  "FIFA 21": [
+    "sports"
+  ],
+  "Dark Home": [
+    "action",
+    "horror",
+    "survival horror"
+  ],
+  "ASMR": [
+    "personality"
+  ],
+  "Call of Duty: Black Ops Cold War": [
+    "first-person shooter"
+  ],
+  "Call Of Duty: Modern Warfare": [
+    "first-person shooter"
+  ],
+  "Dark Souls": [
+    "action role-playing"
+  ],
+  "Rocket League": [
+    "sports"
+  ],
+  "StarCraft II": [
+    "real-time strategy"
+  ],
+  "Overwatch": [
+    "first-person shooter"
+  ],
+  "The Forest": [
+    "survival horror",
+    "survival",
+    "horror"
+  ],
+  "Destiny 2": [
+    "first-person shooter",
+    "MMOG"
+  ],
+  "Tom Clancy's Rainbow Six Siege": [
+    "tactical shooter"
+  ],
+  "LOST ARK": [
+    "action role-playing game",
+    "MMORPG"
+  ],
+  "War by Grow Games": [
+    "indie",
+    "strategy"
+  ],
+  "The Legend of Zelda: Skyward Sword HD": [
+    "action-adventure"
+  ],
+  "SMITE": [
+    "MOBA"
+  ],
+  "Retro": [
+    "action",
+    "casual",
+    "indie"
+  ],
+  "PUBG: BATTLEGROUNDS": [
+    "battle royale"
+  ],
+  "Genshin Impact": [
+    "action role-playing"
+  ],
+  "Sports": [
+    "personality",
+    "sports"
+  ],
+  "Pogostuck: Rage With Your Friends": [
+    "action",
+    "adventure",
+    "casual",
+    "indie"
+  ],
+  "Sea of Thieves": [
+    "action-adventure"
+  ],
+  "The Elder Scrolls Online": [
+    "MMORPG"
+  ],
+  "Dungeons & Dragons": [
+    "personality",
+    "role-playing"
+  ],
+  "Teamfight Tactics": [
+    "auto battler"
+  ],
+  "Talk Shows & Podcasts": [
+    "personality",
+    "podcast"
+  ],
+  "7 Days to Die": ["survival horror", "survival", "horror"], "Cruelty Squad": ["first-person shooter"], "Pummel Party": ["action", "casual", "indie"], "StarCraft": ["real-time strategy"], "Clash of Clans": ["strategy", "mobile"]
+}

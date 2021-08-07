@@ -14,11 +14,11 @@
           "MessageAttributes": {
             "VideoId": {
               "Type": "String",
-              "Value": "990211560"
+              "Value": "1069273034"
             },
             "TwitchId": {
               "Type": "String",
-              "Value": "22160074"
+              "Value": "51558772"
             }
           },
           "Type": "Notification",

@@ -81,7 +81,7 @@ const getLastVods = async (numOfVodsPerStreamer) => {
   });
 
   await Promise.all(videoPromises);
-  return videoPromises;
+  return videoIds;
 };
 
 const sendMissingVideosSns = async (missingVideoIds) => {
