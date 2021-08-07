@@ -8,9 +8,9 @@ Basic flow of this lambda:
 - 
 
 Ideas for improvement:
-- [ ] Remove the hardcoded secret keys + topic ARN to read from environment
-- [ ] Take the time to run the lambda locally via ```sam invoke```, so it can access the aws process.env
-- [ ] Create a new SNS topic and publish to it instead of using the current ready_for_download SNS topic 
+- [X] Remove the hardcoded secret keys + topic ARN to read from environment
+- [ ] Make local development possible (run the lambda locally via ```sam invoke```, make it so can access the aws process.env)
+- [ ] Create a new ml_infra specific SNS topic and publish to it instead of using the current ready_for_download SNS topic 
 - [ ] delete all the comments
 - [ ] delete unused functions and files
 - [ ] add command line arguments to control the data/number of clips/number of games/etc so Pete can have more control about what kind of dataset he wants to build
