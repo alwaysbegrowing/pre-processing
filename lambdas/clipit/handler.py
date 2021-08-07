@@ -13,6 +13,11 @@ def handler(event, context):
 
     raw_start_time = stream_info['data'][0].get('started_at')
 
-    start_time = arrow.get(raw_start_time)
+    stream_start_time = arrow.get(raw_start_time)
+
+    clip_end_time = now.timestamp() - stream_start_time.timestamp()
+
+    # maybe make this user configurable?
+    clip_start_time = clip_end_time - 30 # seconds
 
     
