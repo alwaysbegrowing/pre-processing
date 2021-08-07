@@ -53,10 +53,10 @@ Resources:
     Type: AWS::SNS::Topic
     Metadata:
       aws:cdk:path: Dev-Timestamps/ReadyForDownloads/Resource
-  UpdateCCCTopic61B38F51:
+  vodDataRequestedFA4189D1:
     Type: AWS::SNS::Topic
     Metadata:
-      aws:cdk:path: Dev-Timestamps/UpdateCCCTopic/Resource
+      aws:cdk:path: Dev-Timestamps/vodDataRequested/Resource
   ThumbnailGeneratorTopicFF9CDA5D:
     Type: AWS::SNS::Topic
     Metadata:
@@ -125,7 +125,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 0160e6e5d5a9cdd9752044d05d5fc203762705dd3d9717bcadf9aa785cd7341e.zip
+        S3Key: eee1735114df8e427ce747232fe7a381d2f2d1340e625edb58e31b73f6f3186f.zip
       Role:
         Fn::GetAtt:
           - VodPollerServiceRole369446BC
@@ -139,6 +139,8 @@ Resources:
           TOPIC:
             Ref: ReadyForDownloadsEEACEEFF
           DB_NAME: dev
+          REFRESH_VOD_TOPIC:
+            Ref: vodDataRequestedFA4189D1
           AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
       Handler: index.main
       MemorySize: 256
@@ -149,7 +151,7 @@ Resources:
       - VodPollerServiceRole369446BC
     Metadata:
       aws:cdk:path: Dev-Timestamps/VodPoller/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.0160e6e5d5a9cdd9752044d05d5fc203762705dd3d9717bcadf9aa785cd7341e
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.eee1735114df8e427ce747232fe7a381d2f2d1340e625edb58e31b73f6f3186f
       aws:asset:property: Code
   ThumbnailGeneratorServiceRole82D7629D:
     Type: AWS::IAM::Role
@@ -341,7 +343,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 7e0b4757e61c32cca0d684794529d04add84b682091b0b591894faf69a34d94d.zip
+        S3Key: c5e8d449a133ade3dbe2d669f0b81dbe342dd0fe175dd2bf19eff0290104b0ed.zip
       Role:
         Fn::GetAtt:
           - ChatDownloaderServiceRole613C36DF
@@ -361,7 +363,7 @@ Resources:
       - ChatDownloaderServiceRole613C36DF
     Metadata:
       aws:cdk:path: Dev-Timestamps/ChatDownloader/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.7e0b4757e61c32cca0d684794529d04add84b682091b0b591894faf69a34d94d
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.c5e8d449a133ade3dbe2d669f0b81dbe342dd0fe175dd2bf19eff0290104b0ed
       aws:asset:property: Code
   ChatDownloaderAllowInvokeDevTimestampsReadyForDownloads8F782FBDF7058709:
     Type: AWS::Lambda::Permission
@@ -523,7 +525,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 907c6de27f18e262930343aa70010d57acc59f8c45958ebfc99f2f8b9393ded1.zip
+        S3Key: c048644b2e9af2e572143b030709d757a285177c1d8d479a4ae5b03b8c2966e3.zip
       Role:
         Fn::GetAtt:
           - CCCFinderServiceRoleCE3B78F6
@@ -543,9 +545,9 @@ Resources:
       - CCCFinderServiceRoleCE3B78F6
     Metadata:
       aws:cdk:path: Dev-Timestamps/CCCFinder/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.907c6de27f18e262930343aa70010d57acc59f8c45958ebfc99f2f8b9393ded1
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.c048644b2e9af2e572143b030709d757a285177c1d8d479a4ae5b03b8c2966e3
       aws:asset:property: Code
-  CCCFinderAllowInvokeDevTimestampsReadyForDownloads8F782FBDB2478B50:
+  CCCFinderAllowInvokeDevTimestampsvodDataRequestedC83CEE1B8BDAD75C:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
@@ -555,46 +557,21 @@ Resources:
           - Arn
       Principal: sns.amazonaws.com
       SourceArn:
-        Ref: ReadyForDownloadsEEACEEFF
+        Ref: vodDataRequestedFA4189D1
     Metadata:
-      aws:cdk:path: Dev-Timestamps/CCCFinder/AllowInvoke:DevTimestampsReadyForDownloads8F782FBD
-  CCCFinderReadyForDownloadsC6EF4CA3:
+      aws:cdk:path: Dev-Timestamps/CCCFinder/AllowInvoke:DevTimestampsvodDataRequestedC83CEE1B
+  CCCFindervodDataRequested4589FCA5:
     Type: AWS::SNS::Subscription
     Properties:
       Protocol: lambda
       TopicArn:
-        Ref: ReadyForDownloadsEEACEEFF
+        Ref: vodDataRequestedFA4189D1
       Endpoint:
         Fn::GetAtt:
           - CCCFinder4C010E91
           - Arn
     Metadata:
-      aws:cdk:path: Dev-Timestamps/CCCFinder/ReadyForDownloads/Resource
-  CCCFinderAllowInvokeDevTimestampsUpdateCCCTopic85B1D49CD932CAE3:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName:
-        Fn::GetAtt:
-          - CCCFinder4C010E91
-          - Arn
-      Principal: sns.amazonaws.com
-      SourceArn:
-        Ref: UpdateCCCTopic61B38F51
-    Metadata:
-      aws:cdk:path: Dev-Timestamps/CCCFinder/AllowInvoke:DevTimestampsUpdateCCCTopic85B1D49C
-  CCCFinderUpdateCCCTopicEDE203D4:
-    Type: AWS::SNS::Subscription
-    Properties:
-      Protocol: lambda
-      TopicArn:
-        Ref: UpdateCCCTopic61B38F51
-      Endpoint:
-        Fn::GetAtt:
-          - CCCFinder4C010E91
-          - Arn
-    Metadata:
-      aws:cdk:path: Dev-Timestamps/CCCFinder/UpdateCCCTopic/Resource
+      aws:cdk:path: Dev-Timestamps/CCCFinder/vodDataRequested/Resource
   BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC:
     Type: AWS::IAM::Role
     Properties:
@@ -713,7 +690,7 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAAA01Ry27DIBD8lt7xRlbUSL21SRWpl8py+gMEb1P8YC0WUlnI/17wqznNMszuLEMOL8+QP73KX85U1eyCIosQLk6qRpzIsLNeOXH6NiUyeatQvDGji4KbNjexsVER5ZV2mswo0rjAewhHrxqc+udqFK3srpWEEKkCbaeZY0cSnL1RqVu8U1Taj07ecOVGwYYhfFGvVdLOxcVfWVndu2XC43k1yoKhCmuGzwk2k35wP2SgmODfRssOQknt9KAJC2q1GtJxruIq+0ymDBimKAQquxIPq293UGJPrB3Z4SgZBd7RRGko/eIScYyRzROWYEeR1oaad/f8AIf4RTVrnVlvnO4Qyhn/AFDhl26+AQAA
+      Analytics: v2:deflate64:H4sIAAAAAAAAA01Qy27DIBD8ltzxplbUSL21SVSpl8py+gMEb138AIuFVBbyvxfwoznN7jC7s0wOL8+Q7175L2WiavdeaIPgr5aLlp21ImucsOz8rUok7YxA9kaENghqqWq2sUER5JW0UquJxXWeDuBPTrSY5udqYh3vbxUHH6gCTS+JwkQUvDsl4jS76KA0Hz2vceUmRorAf+lBiqidi6u7kTBysMuGx341yrzSFTYEnwk2k2G0P1pBkeDfRvIefKm79KGEhe6kGGM7V+GUQ8ZjBgQpCobCrMTD6dsblDhoklab8cQJGd5RBakv3eIScAqRzRuWYCcWz4aG9vf8CEd42jUkZWacsrJHKGf8A5CFv3m+AQAA
     Metadata:
       aws:cdk:path: Dev-Timestamps/CDKMetadata/Default
     Condition: CDKMetadataAvailable

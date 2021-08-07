@@ -36,7 +36,8 @@ export class SlStack extends Stack {
         BUCKET: messageStoreBucket.bucketName,
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
         TOPIC: readyForDownloadsTopic.topicArn,
-        DB_NAME: mongoDBDatabase
+        DB_NAME: mongoDBDatabase,
+        REFRESH_VOD_TOPIC: vodDataRequested.topicArn,
       },
     });
 
