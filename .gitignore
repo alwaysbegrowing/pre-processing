@@ -7,6 +7,9 @@ node_modules
 .cdk.staging
 cdk.out
 
+# CDK Template file
+template.yaml
+
 # virtual environment used for testing
 env
 

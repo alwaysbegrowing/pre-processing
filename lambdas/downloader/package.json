@@ -2,6 +2,7 @@
     "name": "downloader",
     "version": "0.1.0",
     "dependencies": {
+        "aws-sdk": "^2.963.0",
         "node-fetch": "^2.6.1"
     }
 }
