@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // const AWS = require('aws-sdk');
 // const S3 = new AWS.S3();
 const fetch = require('node-fetch');
@@ -8,7 +9,9 @@ const { getAccessToken } = require('./auth');
 
 const S3 = new AWS.S3();
 
-const { TWITCH_CLIENT_ID, TOPIC, BUCKET } = process.env;
+const {
+  TWITCH_CLIENT_ID, TOPIC, BUCKET, REFRESH_VOD_TOPIC,
+} = process.env;
 
 const getUsersToPoll = async () => {
   try {
@@ -31,13 +34,12 @@ const checkS3forMessages = async (videoIds) => {
   const checkingS3Buckets = videoIds.map(async (videoId) => {
     try {
       await S3.headObject({ Bucket: BUCKET, Key: videoId }).promise();
-
-      return null;
     } catch (err) {
       if (err.code === 'NotFound') {
         return videoId;
       }
     }
+    return null;
   });
   const existInS3Bucket = await Promise.all(checkingS3Buckets);
   const missingVideos = existInS3Bucket.filter((id) => id !== null);
@@ -84,9 +86,9 @@ const getLastVods = async (numOfVodsPerStreamer) => {
   return videoIds;
 };
 
-const sendSnsMessages = async (missingVideoIds) => {
+const sendMissingVideosSns = async (missingVideoIds) => {
   // missingVideoIDs: Video IDs that are not in the S3 bucket.
-  console.log({ missingVideoIds: missingVideoIds });
+  console.log({ missingVideoIds });
   const SnsTopicsSent = missingVideoIds.map(async (missingVideoId) => {
     const params = {
       Message: 'The included videoID is missing messages',
@@ -105,13 +107,39 @@ const sendSnsMessages = async (missingVideoIds) => {
   return Promise.all(SnsTopicsSent);
 };
 
+const sendRefreshVodSns = async (vodsToRefresh) => {
+  console.log({ vodsToRefresh });
+  const SnsTopicsSent = vodsToRefresh.map(async (vodToRefresh) => {
+    const params = {
+      Message: 'Request to Refresh Data',
+      TopicArn: REFRESH_VOD_TOPIC,
+      MessageAttributes: {
+        VideoId: {
+          DataType: 'String',
+          StringValue: vodToRefresh,
+        },
+      },
+    };
+
+    const publishTextPromise = await new AWS.SNS().publish(params).promise();
+    return publishTextPromise;
+  });
+  return Promise.all(SnsTopicsSent);
+};
+
 exports.main = async () => {
   // The event that triggers this lambda isn't relevant,
   // as long as the lambda gets triggered.
   const videoIds = await getLastVods(5);
   const missingVideoIds = await checkS3forMessages(videoIds);
-  const resp = await sendSnsMessages(missingVideoIds);
+  const missingVideosResponse = await sendMissingVideosSns(missingVideoIds);
 
-  console.log({ length: resp.length, resp });
-  return resp.length;
+  const refreshVodResponse = await sendRefreshVodSns(videoIds);
+
+  console.log({
+    missingVideoIdsLength: missingVideosResponse.length,
+    missingVideosResponse,
+    refreshVodResponse,
+  });
+  return { missingVideoIdsLength: missingVideosResponse.length };
 };

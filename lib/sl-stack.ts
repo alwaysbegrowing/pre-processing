@@ -36,7 +36,8 @@ export class SlStack extends Stack {
         BUCKET: messageStoreBucket.bucketName,
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
         TOPIC: readyForDownloadsTopic.topicArn,
-        DB_NAME: mongoDBDatabase
+        DB_NAME: mongoDBDatabase,
+        REFRESH_VOD_TOPIC: vodDataRequested.topicArn,
       },
     });
 
@@ -92,6 +93,8 @@ export class SlStack extends Stack {
     });
 
     readyForDownloadsTopic.grantPublish(vodPoller);
+    vodDataRequested.grantPublish(vodPoller);
+
     new SnsEventSource(readyForDownloadsTopic).bind(downloadLambda);
 
     const clipFinder = new PythonFunction(this, 'ClipFinder', {
