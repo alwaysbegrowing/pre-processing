@@ -93,6 +93,8 @@ export class SlStack extends Stack {
     });
 
     readyForDownloadsTopic.grantPublish(vodPoller);
+    vodDataRequested.grantPublish(vodPoller);
+
     new SnsEventSource(readyForDownloadsTopic).bind(downloadLambda);
 
     const clipFinder = new PythonFunction(this, 'ClipFinder', {
