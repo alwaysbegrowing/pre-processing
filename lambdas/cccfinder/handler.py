@@ -37,7 +37,10 @@ def handler(event, context):
 
     for clip in ccc_data:
         start_time, end_time = get_ccc_start_end_times(clip)
-        data.append({'startTime': start_time, 'endTime': end_time})
+        clip['startTime'] = start_time
+        clip['endTime'] = end_time
+        clip['twitchClipId'] = clip['id']
+        data.append(clip)
 
     hydrated_ccc_results = hydrate_clips(data, video_id)
 
