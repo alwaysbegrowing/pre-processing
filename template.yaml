@@ -22,15 +22,8 @@ Resources:
               Fn::GetAtt:
                 - ClipFinderA73374EE
                 - Arn
-          - Events:
-              - s3:ObjectCreated:*
-            LambdaFunctionArn:
-              Fn::GetAtt:
-                - ManualClipD684F488
-                - Arn
     DependsOn:
       - MessageStoreAllowBucketNotificationsToDevTimestampsClipFinderA2E23893A00A4BC9
-      - MessageStoreAllowBucketNotificationsToDevTimestampsManualClip9C85548190CACF07
     Metadata:
       aws:cdk:path: Dev-Timestamps/MessageStore/Notifications/Resource
   MessageStoreAllowBucketNotificationsToDevTimestampsClipFinderA2E23893A00A4BC9:
@@ -50,23 +43,6 @@ Resources:
           - Arn
     Metadata:
       aws:cdk:path: Dev-Timestamps/MessageStore/AllowBucketNotificationsToDevTimestampsClipFinderA2E23893
-  MessageStoreAllowBucketNotificationsToDevTimestampsManualClip9C85548190CACF07:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName:
-        Fn::GetAtt:
-          - ManualClipD684F488
-          - Arn
-      Principal: s3.amazonaws.com
-      SourceAccount:
-        Ref: AWS::AccountId
-      SourceArn:
-        Fn::GetAtt:
-          - MessageStore60E7AFC8
-          - Arn
-    Metadata:
-      aws:cdk:path: Dev-Timestamps/MessageStore/AllowBucketNotificationsToDevTimestampsManualClip9C855481
   ThumbnailStore34588C07:
     Type: AWS::S3::Bucket
     UpdateReplacePolicy: Retain
@@ -149,7 +125,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 59c10cace4978fc33b211519aabceef044bd4b6646647ee990d1593e4b457430.zip
+        S3Key: 253e1ec1d5a8e825818cbb1d1bcfcdb9cf0e7994cc20acf4daf7fde55e886be4.zip
       Role:
         Fn::GetAtt:
           - VodPollerServiceRole369446BC
@@ -173,7 +149,7 @@ Resources:
       - VodPollerServiceRole369446BC
     Metadata:
       aws:cdk:path: Dev-Timestamps/VodPoller/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.59c10cace4978fc33b211519aabceef044bd4b6646647ee990d1593e4b457430
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.253e1ec1d5a8e825818cbb1d1bcfcdb9cf0e7994cc20acf4daf7fde55e886be4
       aws:asset:property: Code
   ThumbnailGeneratorServiceRole82D7629D:
     Type: AWS::IAM::Role
@@ -365,7 +341,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 7e0b4757e61c32cca0d684794529d04add84b682091b0b591894faf69a34d94d.zip
+        S3Key: c5e8d449a133ade3dbe2d669f0b81dbe342dd0fe175dd2bf19eff0290104b0ed.zip
       Role:
         Fn::GetAtt:
           - ChatDownloaderServiceRole613C36DF
@@ -385,7 +361,7 @@ Resources:
       - ChatDownloaderServiceRole613C36DF
     Metadata:
       aws:cdk:path: Dev-Timestamps/ChatDownloader/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.7e0b4757e61c32cca0d684794529d04add84b682091b0b591894faf69a34d94d
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.c5e8d449a133ade3dbe2d669f0b81dbe342dd0fe175dd2bf19eff0290104b0ed
       aws:asset:property: Code
   ChatDownloaderAllowInvokeDevTimestampsReadyForDownloads8F782FBDF7058709:
     Type: AWS::Lambda::Permission
@@ -639,7 +615,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: bf2d9d82d0ee06d4d77776e29b2caba649586487f961305458b5070a2a672f9b.zip
+        S3Key: 7358e81ff81c111d69b1ec8f2050be0d1da97159f5db6b6b46c3e94d773b10d3.zip
       Role:
         Fn::GetAtt:
           - ManualClipServiceRole39F53868
@@ -647,11 +623,13 @@ Resources:
       Description: Allows manual clipping
       Environment:
         Variables:
-          BUCKET:
-            Ref: MessageStore60E7AFC8
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
           TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
           DB_NAME: dev
+          BUCKET:
+            Fn::GetAtt:
+              - MessageStore60E7AFC8
+              - Arn
       Handler: handler.handler
       MemorySize: 256
       Runtime: python3.8
@@ -661,8 +639,33 @@ Resources:
       - ManualClipServiceRole39F53868
     Metadata:
       aws:cdk:path: Dev-Timestamps/ManualClip/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.bf2d9d82d0ee06d4d77776e29b2caba649586487f961305458b5070a2a672f9b
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.7358e81ff81c111d69b1ec8f2050be0d1da97159f5db6b6b46c3e94d773b10d3
       aws:asset:property: Code
+  ManualClipAllowInvokeDevTimestampsvodDataRequestedC83CEE1B819FC96B:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - ManualClipD684F488
+          - Arn
+      Principal: sns.amazonaws.com
+      SourceArn:
+        Ref: vodDataRequestedFA4189D1
+    Metadata:
+      aws:cdk:path: Dev-Timestamps/ManualClip/AllowInvoke:DevTimestampsvodDataRequestedC83CEE1B
+  ManualClipvodDataRequested259FB810:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: lambda
+      TopicArn:
+        Ref: vodDataRequestedFA4189D1
+      Endpoint:
+        Fn::GetAtt:
+          - ManualClipD684F488
+          - Arn
+    Metadata:
+      aws:cdk:path: Dev-Timestamps/ManualClip/vodDataRequested/Resource
   BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC:
     Type: AWS::IAM::Role
     Properties:
