@@ -132,6 +132,24 @@ export class SlStack extends Stack {
     twitchSecret.grantRead(cccFinder);
     mongoSecret.grantRead(cccFinder);
 
+    const manualClip = new PythonFunction(this, 'ManualClip', {
+      description: 'Allows manual clipping',
+      runtime: Runtime.PYTHON_3_8,
+      handler: 'handler',
+      index: 'handler.py',
+      entry: './lambdas/clipit',
+      memorySize: 256,
+      timeout: Duration.seconds(120),
+      environment: {
+        TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
+        TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
+        DB_NAME: mongoDBDatabase
+      },
+    });
+
+    twitchSecret.grantRead(manualClip);
+    mongoSecret.grantRead(manualClip);
+
     new SnsEventSource(vodDataRequested).bind(cccFinder);
 
     messageStoreBucket.grantWrite(downloadLambda);
@@ -141,5 +159,6 @@ export class SlStack extends Stack {
 
     mongoSecret.grantRead(thumbnailGenerator);
     new S3EventSource(messageStoreBucket, { events: [EventType.OBJECT_CREATED] }).bind(clipFinder);
+    new S3EventSource(messageStoreBucket, { events: [EventType.OBJECT_CREATED] }).bind(manualClip);
   }
 }
