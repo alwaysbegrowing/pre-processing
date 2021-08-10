@@ -143,7 +143,8 @@ export class SlStack extends Stack {
       environment: {
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
         TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
-        DB_NAME: mongoDBDatabase
+        DB_NAME: mongoDBDatabase,
+        BUCKET: messageStoreBucket.bucketArn
       },
     });
 
@@ -151,6 +152,7 @@ export class SlStack extends Stack {
     mongoSecret.grantRead(manualClip);
 
     new SnsEventSource(vodDataRequested).bind(cccFinder);
+    new SnsEventSource(vodDataRequested).bind(manualClip)
 
     messageStoreBucket.grantWrite(downloadLambda);
 
@@ -159,6 +161,5 @@ export class SlStack extends Stack {
 
     mongoSecret.grantRead(thumbnailGenerator);
     new S3EventSource(messageStoreBucket, { events: [EventType.OBJECT_CREATED] }).bind(clipFinder);
-    new S3EventSource(messageStoreBucket, { events: [EventType.OBJECT_CREATED] }).bind(manualClip);
   }
 }

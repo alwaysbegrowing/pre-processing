@@ -1,4 +1,5 @@
 import json
+import os
 
 import arrow
 import boto3
@@ -10,6 +11,8 @@ s3 = boto3.client('s3')
 
 # make this user configurable later?
 CLIP_LENGTH = 30 # seconds
+
+BUCKET = os.getenv('BUCKET')
 
 def generate_clip_id(key, start_time, end_time):
     clip_id = f"{key}-{start_time}-{end_time}"
@@ -29,9 +32,7 @@ def is_moderator(message):
 def handler(event, context):
     print(json.dumps(event, default=str))
 
-    data = event['Records'][0]['s3']
-    bucket = data['bucket']['name']
-    key = data['object']['key']
+    key = event['Records'][0]['Sns']['MessageAttributes']['VideoId']['Value']
 
     stream_data = get_info(key)
 
@@ -39,7 +40,7 @@ def handler(event, context):
 
     print(json.dumps({'videoId': key}))
 
-    obj = s3.get_object(Bucket=bucket, Key=key)
+    obj = s3.get_object(Bucket=BUCKET, Key=key)
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
 
     clip_command_timestamps = []
@@ -60,8 +61,8 @@ def handler(event, context):
     clips = []
 
     for clip_command in clip_command_timestamps:
-        end_time = arrow.get(clip_command).timestamp() - stream_start_time.timestamp()
-        start_time = end_time - CLIP_LENGTH
+        end_time = round(arrow.get(clip_command).timestamp() - stream_start_time.timestamp(), 2)
+        start_time = round(end_time - CLIP_LENGTH, 2)
         clip_id = generate_clip_id(key, start_time, end_time)
         clips.append({
             'startTime': start_time,
@@ -71,6 +72,6 @@ def handler(event, context):
 
     resp = input_ccc(key, clips)
 
-    print(json.dumps({'#clips': len(clips), 'clips': clips, 'db_resp': str(resp)}))
+    print(json.dumps({'#clips': len(clips), 'clips': clips, 'db_resp': resp.modified_count}))
 
     return {}
