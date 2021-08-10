@@ -32,7 +32,7 @@ def is_moderator(message):
 def handler(event, context):
     print(json.dumps(event, default=str))
 
-    key = event['Records'][0]['Sns']['MessageAttributes']['VideoId']['Value']
+    key = event['Records'][0]['Sns']['Message']
 
     stream_data = get_info(key)
 

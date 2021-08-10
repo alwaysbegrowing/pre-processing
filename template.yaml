@@ -61,6 +61,10 @@ Resources:
     Type: AWS::SNS::Topic
     Metadata:
       aws:cdk:path: Dev-Timestamps/ThumbnailGeneratorTopic/Resource
+  ManualClipTopicA6382BCA:
+    Type: AWS::SNS::Topic
+    Metadata:
+      aws:cdk:path: Dev-Timestamps/ManualClipTopic/Resource
   VodPollerServiceRole369446BC:
     Type: AWS::IAM::Role
     Properties:
@@ -452,7 +456,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 25dc5c988ccacf9c95b198a91678552be9e10ef93bd189781fe0f9044eb3310b.zip
+        S3Key: cbf84d81f06820ba4c7d9f80487bd1740059faec6cf8af9ca25dc48fd5e5fa4a.zip
       Role:
         Fn::GetAtt:
           - ClipFinderServiceRole28A544E9
@@ -467,6 +471,8 @@ Resources:
           DB_NAME: dev
           TOPIC:
             Ref: ThumbnailGeneratorTopicFF9CDA5D
+          MANUAL_TOPIC:
+            Ref: ManualClipTopicA6382BCA
       Handler: handler.handler
       MemorySize: 1280
       Runtime: python3.8
@@ -476,7 +482,7 @@ Resources:
       - ClipFinderServiceRole28A544E9
     Metadata:
       aws:cdk:path: Dev-Timestamps/ClipFinder/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.25dc5c988ccacf9c95b198a91678552be9e10ef93bd189781fe0f9044eb3310b
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.cbf84d81f06820ba4c7d9f80487bd1740059faec6cf8af9ca25dc48fd5e5fa4a
       aws:asset:property: Code
   CCCFinderServiceRoleCE3B78F6:
     Type: AWS::IAM::Role
@@ -615,7 +621,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 7358e81ff81c111d69b1ec8f2050be0d1da97159f5db6b6b46c3e94d773b10d3.zip
+        S3Key: 739f769410721abbdf66bb1f8380b54b2b0a7f032d9fa41aa66093b7b275a499.zip
       Role:
         Fn::GetAtt:
           - ManualClipServiceRole39F53868
@@ -639,33 +645,8 @@ Resources:
       - ManualClipServiceRole39F53868
     Metadata:
       aws:cdk:path: Dev-Timestamps/ManualClip/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.7358e81ff81c111d69b1ec8f2050be0d1da97159f5db6b6b46c3e94d773b10d3
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.739f769410721abbdf66bb1f8380b54b2b0a7f032d9fa41aa66093b7b275a499
       aws:asset:property: Code
-  ManualClipAllowInvokeDevTimestampsvodDataRequestedC83CEE1B819FC96B:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName:
-        Fn::GetAtt:
-          - ManualClipD684F488
-          - Arn
-      Principal: sns.amazonaws.com
-      SourceArn:
-        Ref: vodDataRequestedFA4189D1
-    Metadata:
-      aws:cdk:path: Dev-Timestamps/ManualClip/AllowInvoke:DevTimestampsvodDataRequestedC83CEE1B
-  ManualClipvodDataRequested259FB810:
-    Type: AWS::SNS::Subscription
-    Properties:
-      Protocol: lambda
-      TopicArn:
-        Ref: vodDataRequestedFA4189D1
-      Endpoint:
-        Fn::GetAtt:
-          - ManualClipD684F488
-          - Arn
-    Metadata:
-      aws:cdk:path: Dev-Timestamps/ManualClip/vodDataRequested/Resource
   BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC:
     Type: AWS::IAM::Role
     Properties:
