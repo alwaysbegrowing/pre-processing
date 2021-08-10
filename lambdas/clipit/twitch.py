@@ -33,7 +33,12 @@ def get_info(key):
     resp = requests.get('https://api.twitch.tv/helix/videos', params=queries, headers=headers)
     resp.raise_for_status()
 
-    return resp.json()
+    data = resp.json().get('data')
+
+    if data is None:
+        return None
+
+    return data[0] 
 
 if __name__=='__main__':
     print(get_info('1036509656'))
