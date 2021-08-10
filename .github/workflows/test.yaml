@@ -77,7 +77,7 @@ jobs:
         run: |
           sam local invoke ManualClipD684F488 --env-vars env.json --event test_events/cccFinderEvent.json -l logs/manualclip.txt
 
-      - name: Manual Clip Finder
+      - name: Test Manual Clip
         uses: pillargg/sam-ots@master
         with:
           file: ./logs/manualclip.txt
