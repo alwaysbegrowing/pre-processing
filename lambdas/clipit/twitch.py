@@ -20,8 +20,8 @@ def twitch_auth():
 
     return resp.json()['access_token']
 
-def get_stream(login):
-    queries = {'user_login': login}
+def get_info(key):
+    queries = {'id': key}
 
     access_token = twitch_auth()
 
@@ -30,10 +30,10 @@ def get_stream(login):
         'Authorization': f'Bearer {access_token}'
     }
 
-    resp = requests.get('https://api.twitch.tv/helix/streams', params=queries, headers=headers)
+    resp = requests.get('https://api.twitch.tv/helix/videos', params=queries, headers=headers)
     resp.raise_for_status()
 
     return resp.json()
 
 if __name__=='__main__':
-    print(get_stream('jeditobiwan'))
+    print(get_info('1036509656'))
