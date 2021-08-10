@@ -24,6 +24,7 @@ export class SlStack extends Stack {
     const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
     const vodDataRequested = new Topic(this, 'vodDataRequested');
     const thumbnailGeneratorTopic = new Topic(this, 'ThumbnailGeneratorTopic');
+    const checkManualClips = new Topic(this, 'ManualClipTopic');
 
     const vodPoller = new NodejsFunction(this, 'VodPoller', {
       description: 'Checks for VODs',
@@ -110,7 +111,8 @@ export class SlStack extends Stack {
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
         TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
         DB_NAME: mongoDBDatabase,
-        TOPIC: thumbnailGeneratorTopic.topicArn
+        TOPIC: thumbnailGeneratorTopic.topicArn,
+        MANUAL_TOPIC: checkManualClips.topicArn,
       },
     });
 
@@ -134,6 +136,25 @@ export class SlStack extends Stack {
 
     twitchSecret.grantRead(cccFinder);
     mongoSecret.grantRead(cccFinder);
+
+    const manualClip = new PythonFunction(this, 'ManualClip', {
+      description: 'Allows manual clipping',
+      runtime: Runtime.PYTHON_3_8,
+      handler: 'handler',
+      index: 'handler.py',
+      entry: './lambdas/clipit',
+      memorySize: 256,
+      timeout: Duration.seconds(120),
+      environment: {
+        TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
+        TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
+        DB_NAME: mongoDBDatabase,
+        BUCKET: messageStoreBucket.bucketArn
+      },
+    });
+
+    twitchSecret.grantRead(manualClip);
+    mongoSecret.grantRead(manualClip);
 
     new SnsEventSource(vodDataRequested).bind(cccFinder);
 

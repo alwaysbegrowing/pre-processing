@@ -14,9 +14,9 @@
     "downloader": "sam local invoke ChatDownloader326B83C0 --env-vars env.json --event test_events/event.json",
     "cccfinder": "sam local invoke CCCFinder4C010E91 --env-vars env.json --event test_events/cccFinderEvent.json",
     "thumbnail": "sam local invoke ThumbnailGenerator01BB1F8C --env-vars env.json --event test_events/thumbnailGeneratorEvent.json",
-    "cdk": "cdk",
-    "deploy": "cdk deploy Dev-Timestamps"
-
+    "deploy": "cdk deploy Dev-Timestamps",
+    "manualclip": "sam local invoke ManualClipD684F488 --env-vars env.json --event test_events/thumbnailGeneratorEvent.json",
+    "cdk": "cdk"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.95.1",

@@ -73,6 +73,15 @@ jobs:
         with:
           file: ./logs/cccfinder.txt
 
+      - name: Manual Clip Lambda
+        run: |
+          sam local invoke ManualClipD684F488 --env-vars env.json --event test_events/thumbnailGeneratorEvent.json -l logs/manualclip.txt
+
+      - name: Test Manual Clip
+        uses: pillargg/sam-ots@master
+        with:
+          file: ./logs/manualclip.txt
+
       - name: Downloader Lambda
         run: |
           sam local invoke ChatDownloader326B83C0 --env-vars env.json --event test_events/event.json -l logs/downloader.txt
