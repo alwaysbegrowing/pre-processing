@@ -639,7 +639,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 99818aa195949293beb7ed5e320ed8cb5699a62c83c2847a2f9191f5c98d41f8.zip
+        S3Key: bf2d9d82d0ee06d4d77776e29b2caba649586487f961305458b5070a2a672f9b.zip
       Role:
         Fn::GetAtt:
           - ManualClipServiceRole39F53868
@@ -647,6 +647,8 @@ Resources:
       Description: Allows manual clipping
       Environment:
         Variables:
+          BUCKET:
+            Ref: MessageStore60E7AFC8
           TWITCH_CLIENT_ID: 2nakqoqdxka9v5oekyo6742bmnxt2o
           TWITCH_CLIENT_SECRET_ARN: arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V
           DB_NAME: dev
@@ -659,7 +661,7 @@ Resources:
       - ManualClipServiceRole39F53868
     Metadata:
       aws:cdk:path: Dev-Timestamps/ManualClip/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.99818aa195949293beb7ed5e320ed8cb5699a62c83c2847a2f9191f5c98d41f8
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.bf2d9d82d0ee06d4d77776e29b2caba649586487f961305458b5070a2a672f9b
       aws:asset:property: Code
   BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC:
     Type: AWS::IAM::Role
