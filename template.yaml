@@ -15,34 +15,16 @@ Resources:
       BucketName:
         Ref: MessageStore60E7AFC8
       NotificationConfiguration:
-        LambdaFunctionConfigurations:
+        TopicConfigurations:
           - Events:
               - s3:ObjectCreated:*
-            LambdaFunctionArn:
-              Fn::GetAtt:
-                - ClipFinderA73374EE
-                - Arn
+            TopicArn:
+              Ref: ScanChatTopic83F173F4
     DependsOn:
-      - MessageStoreAllowBucketNotificationsToDevTimestampsClipFinderA2E23893A00A4BC9
+      - ScanChatTopicPolicy14BBA751
+      - ScanChatTopic83F173F4
     Metadata:
       aws:cdk:path: Dev-Timestamps/MessageStore/Notifications/Resource
-  MessageStoreAllowBucketNotificationsToDevTimestampsClipFinderA2E23893A00A4BC9:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName:
-        Fn::GetAtt:
-          - ClipFinderA73374EE
-          - Arn
-      Principal: s3.amazonaws.com
-      SourceAccount:
-        Ref: AWS::AccountId
-      SourceArn:
-        Fn::GetAtt:
-          - MessageStore60E7AFC8
-          - Arn
-    Metadata:
-      aws:cdk:path: Dev-Timestamps/MessageStore/AllowBucketNotificationsToDevTimestampsClipFinderA2E23893
   ThumbnailStore34588C07:
     Type: AWS::S3::Bucket
     UpdateReplacePolicy: Retain
@@ -53,18 +35,41 @@ Resources:
     Type: AWS::SNS::Topic
     Metadata:
       aws:cdk:path: Dev-Timestamps/ReadyForDownloads/Resource
-  vodDataRequestedFA4189D1:
+  VodDataRequested85E08839:
     Type: AWS::SNS::Topic
     Metadata:
-      aws:cdk:path: Dev-Timestamps/vodDataRequested/Resource
+      aws:cdk:path: Dev-Timestamps/VodDataRequested/Resource
   ThumbnailGeneratorTopicFF9CDA5D:
     Type: AWS::SNS::Topic
     Metadata:
       aws:cdk:path: Dev-Timestamps/ThumbnailGeneratorTopic/Resource
-  ManualClipTopicA6382BCA:
+  ScanChatTopic83F173F4:
     Type: AWS::SNS::Topic
     Metadata:
-      aws:cdk:path: Dev-Timestamps/ManualClipTopic/Resource
+      aws:cdk:path: Dev-Timestamps/ScanChatTopic/Resource
+  ScanChatTopicPolicy14BBA751:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action: sns:Publish
+            Condition:
+              ArnLike:
+                aws:SourceArn:
+                  Fn::GetAtt:
+                    - MessageStore60E7AFC8
+                    - Arn
+            Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Resource:
+              Ref: ScanChatTopic83F173F4
+            Sid: "0"
+        Version: "2012-10-17"
+      Topics:
+        - Ref: ScanChatTopic83F173F4
+    Metadata:
+      aws:cdk:path: Dev-Timestamps/ScanChatTopic/Policy/Resource
   VodPollerServiceRole369446BC:
     Type: AWS::IAM::Role
     Properties:
@@ -129,7 +134,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 253e1ec1d5a8e825818cbb1d1bcfcdb9cf0e7994cc20acf4daf7fde55e886be4.zip
+        S3Key: 59c10cace4978fc33b211519aabceef044bd4b6646647ee990d1593e4b457430.zip
       Role:
         Fn::GetAtt:
           - VodPollerServiceRole369446BC
@@ -153,7 +158,7 @@ Resources:
       - VodPollerServiceRole369446BC
     Metadata:
       aws:cdk:path: Dev-Timestamps/VodPoller/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.253e1ec1d5a8e825818cbb1d1bcfcdb9cf0e7994cc20acf4daf7fde55e886be4
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.59c10cace4978fc33b211519aabceef044bd4b6646647ee990d1593e4b457430
       aws:asset:property: Code
   ThumbnailGeneratorServiceRole82D7629D:
     Type: AWS::IAM::Role
@@ -345,7 +350,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: c5e8d449a133ade3dbe2d669f0b81dbe342dd0fe175dd2bf19eff0290104b0ed.zip
+        S3Key: 7e0b4757e61c32cca0d684794529d04add84b682091b0b591894faf69a34d94d.zip
       Role:
         Fn::GetAtt:
           - ChatDownloaderServiceRole613C36DF
@@ -365,7 +370,7 @@ Resources:
       - ChatDownloaderServiceRole613C36DF
     Metadata:
       aws:cdk:path: Dev-Timestamps/ChatDownloader/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.c5e8d449a133ade3dbe2d669f0b81dbe342dd0fe175dd2bf19eff0290104b0ed
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.7e0b4757e61c32cca0d684794529d04add84b682091b0b591894faf69a34d94d
       aws:asset:property: Code
   ChatDownloaderAllowInvokeDevTimestampsReadyForDownloads8F782FBDF7058709:
     Type: AWS::Lambda::Permission
@@ -456,7 +461,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: cbf84d81f06820ba4c7d9f80487bd1740059faec6cf8af9ca25dc48fd5e5fa4a.zip
+        S3Key: be3a4a914a3892204692caccfe9208085df4a5e08a1b7926376378a4574b00ff.zip
       Role:
         Fn::GetAtt:
           - ClipFinderServiceRole28A544E9
@@ -471,8 +476,6 @@ Resources:
           DB_NAME: dev
           TOPIC:
             Ref: ThumbnailGeneratorTopicFF9CDA5D
-          MANUAL_TOPIC:
-            Ref: ManualClipTopicA6382BCA
       Handler: handler.handler
       MemorySize: 1280
       Runtime: python3.8
@@ -482,8 +485,33 @@ Resources:
       - ClipFinderServiceRole28A544E9
     Metadata:
       aws:cdk:path: Dev-Timestamps/ClipFinder/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.cbf84d81f06820ba4c7d9f80487bd1740059faec6cf8af9ca25dc48fd5e5fa4a
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.be3a4a914a3892204692caccfe9208085df4a5e08a1b7926376378a4574b00ff
       aws:asset:property: Code
+  ClipFinderAllowInvokeDevTimestampsScanChatTopic682727147845EF7D:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - ClipFinderA73374EE
+          - Arn
+      Principal: sns.amazonaws.com
+      SourceArn:
+        Ref: ScanChatTopic83F173F4
+    Metadata:
+      aws:cdk:path: Dev-Timestamps/ClipFinder/AllowInvoke:DevTimestampsScanChatTopic68272714
+  ClipFinderScanChatTopicFBB952E2:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: lambda
+      TopicArn:
+        Ref: ScanChatTopic83F173F4
+      Endpoint:
+        Fn::GetAtt:
+          - ClipFinderA73374EE
+          - Arn
+    Metadata:
+      aws:cdk:path: Dev-Timestamps/ClipFinder/ScanChatTopic/Resource
   CCCFinderServiceRoleCE3B78F6:
     Type: AWS::IAM::Role
     Properties:
@@ -551,7 +579,7 @@ Resources:
       aws:cdk:path: Dev-Timestamps/CCCFinder/Resource
       aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.c048644b2e9af2e572143b030709d757a285177c1d8d479a4ae5b03b8c2966e3
       aws:asset:property: Code
-  CCCFinderAllowInvokeDevTimestampsvodDataRequestedC83CEE1B8BDAD75C:
+  CCCFinderAllowInvokeDevTimestampsVodDataRequestedA99AC8AB7F48B403:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
@@ -561,21 +589,21 @@ Resources:
           - Arn
       Principal: sns.amazonaws.com
       SourceArn:
-        Ref: vodDataRequestedFA4189D1
+        Ref: VodDataRequested85E08839
     Metadata:
-      aws:cdk:path: Dev-Timestamps/CCCFinder/AllowInvoke:DevTimestampsvodDataRequestedC83CEE1B
-  CCCFindervodDataRequested4589FCA5:
+      aws:cdk:path: Dev-Timestamps/CCCFinder/AllowInvoke:DevTimestampsVodDataRequestedA99AC8AB
+  CCCFinderVodDataRequestedFD8C32F2:
     Type: AWS::SNS::Subscription
     Properties:
       Protocol: lambda
       TopicArn:
-        Ref: vodDataRequestedFA4189D1
+        Ref: VodDataRequested85E08839
       Endpoint:
         Fn::GetAtt:
           - CCCFinder4C010E91
           - Arn
     Metadata:
-      aws:cdk:path: Dev-Timestamps/CCCFinder/vodDataRequested/Resource
+      aws:cdk:path: Dev-Timestamps/CCCFinder/VodDataRequested/Resource
   ManualClipServiceRole39F53868:
     Type: AWS::IAM::Role
     Properties:
@@ -621,7 +649,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: 739f769410721abbdf66bb1f8380b54b2b0a7f032d9fa41aa66093b7b275a499.zip
+        S3Key: b7a600530dbcf6c5d312b52e6f3da338ef7877345cc2e2d012ff42b9f825954a.zip
       Role:
         Fn::GetAtt:
           - ManualClipServiceRole39F53868
@@ -645,8 +673,33 @@ Resources:
       - ManualClipServiceRole39F53868
     Metadata:
       aws:cdk:path: Dev-Timestamps/ManualClip/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.739f769410721abbdf66bb1f8380b54b2b0a7f032d9fa41aa66093b7b275a499
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.b7a600530dbcf6c5d312b52e6f3da338ef7877345cc2e2d012ff42b9f825954a
       aws:asset:property: Code
+  ManualClipAllowInvokeDevTimestampsScanChatTopic6827271449E72E9A:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Fn::GetAtt:
+          - ManualClipD684F488
+          - Arn
+      Principal: sns.amazonaws.com
+      SourceArn:
+        Ref: ScanChatTopic83F173F4
+    Metadata:
+      aws:cdk:path: Dev-Timestamps/ManualClip/AllowInvoke:DevTimestampsScanChatTopic68272714
+  ManualClipScanChatTopic9C3635E8:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: lambda
+      TopicArn:
+        Ref: ScanChatTopic83F173F4
+      Endpoint:
+        Fn::GetAtt:
+          - ManualClipD684F488
+          - Arn
+    Metadata:
+      aws:cdk:path: Dev-Timestamps/ManualClip/ScanChatTopic/Resource
   BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC:
     Type: AWS::IAM::Role
     Properties:
@@ -765,7 +818,7 @@ Resources:
   CDKMetadata:
     Type: AWS::CDK::Metadata
     Properties:
-      Analytics: v2:deflate64:H4sIAAAAAAAAA01Ry27DIBD8lt7xRlbUSL21SRWpl8py+gMEb1P8YC0WUlnI/17wqznNMszuLEMOL8+QP73KX85U1eyCIosQLk6qRpzIsLNeOXH6NiUyeatQvDGji4KbNjexsVER5ZV2mswo0rjAewhHrxqc+udqFK3srpWEEKkCbaeZY0cSnL1RqVu8U1Taj07ecOVGwYYhfFGvVdLOxcVfWVndu2XC43k1yoKhCmuGzwk2k35wP2SgmODfRssOQknt9KAJC2q1GtJxruIq+0ymDBimKAQquxIPq293UGJPrB3Z4SgZBd7RRGko/eIScYyRzROWYEeR1oaad/f8AIf4RTVrnVlvnO4Qyhn/AFDhl26+AQAA
+      Analytics: v2:deflate64:H4sIAAAAAAAAA01Ry27DIBD8lt7xRlbUSL21SRWplypy+gMEb1P8AIuFVBbi38vDcXNhdodh9kENL89QP73yX6pE22+80AbBny0XPTtoRdY4YdnhWzVI2hmB7I0IbRRcpbqylY2KKG+llVoFluw8bcHvnegxvy9RYKQI/JeepEhsCfJ50oMU80ou6dldSBg5Jd9095gHNvDx0vLKK91iR/CZ4eiUyPJptj9awSnDnQ1M8hF8o4fcdMb/0iWKXW4rnuYkyOMuhcBHyWr/ruNE5mPkV1y5ZIFmlES5FApz93lQF8t4Bw1OmqTVZt5zQoY3VFHqG7c0FzHEbRaHZeeBpWmho82t3sEu/l5HUlbGKStHhKbgH91OyZLZAQAA
     Metadata:
       aws:cdk:path: Dev-Timestamps/CDKMetadata/Default
     Condition: CDKMetadataAvailable

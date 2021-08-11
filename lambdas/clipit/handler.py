@@ -5,7 +5,7 @@ import arrow
 import boto3
 
 from twitch import get_info
-from db import input_ccc
+from db import input_clips
 
 s3 = boto3.client('s3')
 
@@ -32,7 +32,8 @@ def is_moderator(message):
 def handler(event, context):
     print(json.dumps(event, default=str))
 
-    key = event['Records'][0]['Sns']['Message']
+    data = event['Records'][0]['s3']
+    key = data['object']['key']
 
     stream_data = get_info(key)
 
@@ -70,8 +71,8 @@ def handler(event, context):
             'id': clip_id
         })
 
-    resp = input_ccc(key, clips)
+    resp = input_clips(key, clips)
 
-    print(json.dumps({'#clips': len(clips), 'clips': clips, 'db_resp': resp.modified_count}))
+    print(json.dumps({'num_clips_created': len(clips), 'clips': clips, 'db_resp': resp.modified_count}))
 
     return {}

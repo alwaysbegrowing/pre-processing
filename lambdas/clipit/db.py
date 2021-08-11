@@ -23,14 +23,14 @@ def connect_to_db():
     db = client[db_name]
     return db
 
-def input_ccc(key, ccc_data):
+def input_clips(key, clip_data):
     db = connect_to_db()
     query = {'videoId': key}
     timestamps = db.timestamps
     
     update = {
         '$set': {
-            'ccc': ccc_data
+            'manual': clip_data
         },
     }
     result = timestamps.update_one(query, update, upsert=True)
@@ -38,7 +38,7 @@ def input_ccc(key, ccc_data):
     if result is None:
         doc = {
             'videoId': key,
-            'ccc': ccc_data
+            'manual': clip_data
         }
         result = timestamps.insert(doc)
 
