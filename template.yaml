@@ -19,10 +19,10 @@ Resources:
           - Events:
               - s3:ObjectCreated:*
             TopicArn:
-              Ref: ScanChatTopic83F173F4
+              Ref: ChatMessagesDownloadedA7C9BB1F
     DependsOn:
-      - ScanChatTopicPolicy14BBA751
-      - ScanChatTopic83F173F4
+      - ChatMessagesDownloadedPolicy2A4BE52E
+      - ChatMessagesDownloadedA7C9BB1F
     Metadata:
       aws:cdk:path: Dev-Timestamps/MessageStore/Notifications/Resource
   ThumbnailStore34588C07:
@@ -43,11 +43,11 @@ Resources:
     Type: AWS::SNS::Topic
     Metadata:
       aws:cdk:path: Dev-Timestamps/ThumbnailGeneratorTopic/Resource
-  ScanChatTopic83F173F4:
+  ChatMessagesDownloadedA7C9BB1F:
     Type: AWS::SNS::Topic
     Metadata:
-      aws:cdk:path: Dev-Timestamps/ScanChatTopic/Resource
-  ScanChatTopicPolicy14BBA751:
+      aws:cdk:path: Dev-Timestamps/ChatMessagesDownloaded/Resource
+  ChatMessagesDownloadedPolicy2A4BE52E:
     Type: AWS::SNS::TopicPolicy
     Properties:
       PolicyDocument:
@@ -63,13 +63,13 @@ Resources:
             Principal:
               Service: s3.amazonaws.com
             Resource:
-              Ref: ScanChatTopic83F173F4
+              Ref: ChatMessagesDownloadedA7C9BB1F
             Sid: "0"
         Version: "2012-10-17"
       Topics:
-        - Ref: ScanChatTopic83F173F4
+        - Ref: ChatMessagesDownloadedA7C9BB1F
     Metadata:
-      aws:cdk:path: Dev-Timestamps/ScanChatTopic/Policy/Resource
+      aws:cdk:path: Dev-Timestamps/ChatMessagesDownloaded/Policy/Resource
   VodPollerServiceRole369446BC:
     Type: AWS::IAM::Role
     Properties:
@@ -461,7 +461,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: be3a4a914a3892204692caccfe9208085df4a5e08a1b7926376378a4574b00ff.zip
+        S3Key: f51c9069327dc115797ab70cbabf7d979c443f0a29363320df795cf7272b2981.zip
       Role:
         Fn::GetAtt:
           - ClipFinderServiceRole28A544E9
@@ -485,9 +485,9 @@ Resources:
       - ClipFinderServiceRole28A544E9
     Metadata:
       aws:cdk:path: Dev-Timestamps/ClipFinder/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.be3a4a914a3892204692caccfe9208085df4a5e08a1b7926376378a4574b00ff
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.f51c9069327dc115797ab70cbabf7d979c443f0a29363320df795cf7272b2981
       aws:asset:property: Code
-  ClipFinderAllowInvokeDevTimestampsScanChatTopic682727147845EF7D:
+  ClipFinderAllowInvokeDevTimestampsChatMessagesDownloadedE3D3E7026CBFB04C:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
@@ -497,21 +497,21 @@ Resources:
           - Arn
       Principal: sns.amazonaws.com
       SourceArn:
-        Ref: ScanChatTopic83F173F4
+        Ref: ChatMessagesDownloadedA7C9BB1F
     Metadata:
-      aws:cdk:path: Dev-Timestamps/ClipFinder/AllowInvoke:DevTimestampsScanChatTopic68272714
-  ClipFinderScanChatTopicFBB952E2:
+      aws:cdk:path: Dev-Timestamps/ClipFinder/AllowInvoke:DevTimestampsChatMessagesDownloadedE3D3E702
+  ClipFinderChatMessagesDownloaded96E8D393:
     Type: AWS::SNS::Subscription
     Properties:
       Protocol: lambda
       TopicArn:
-        Ref: ScanChatTopic83F173F4
+        Ref: ChatMessagesDownloadedA7C9BB1F
       Endpoint:
         Fn::GetAtt:
           - ClipFinderA73374EE
           - Arn
     Metadata:
-      aws:cdk:path: Dev-Timestamps/ClipFinder/ScanChatTopic/Resource
+      aws:cdk:path: Dev-Timestamps/ClipFinder/ChatMessagesDownloaded/Resource
   CCCFinderServiceRoleCE3B78F6:
     Type: AWS::IAM::Role
     Properties:
@@ -649,7 +649,7 @@ Resources:
       Code:
         S3Bucket:
           Fn::Sub: cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}
-        S3Key: b7a600530dbcf6c5d312b52e6f3da338ef7877345cc2e2d012ff42b9f825954a.zip
+        S3Key: bd87fb4767f5342a711f7c02d9e1a2095d15427779aa7e9757cbee71ef13f09e.zip
       Role:
         Fn::GetAtt:
           - ManualClipServiceRole39F53868
@@ -673,9 +673,9 @@ Resources:
       - ManualClipServiceRole39F53868
     Metadata:
       aws:cdk:path: Dev-Timestamps/ManualClip/Resource
-      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.b7a600530dbcf6c5d312b52e6f3da338ef7877345cc2e2d012ff42b9f825954a
+      aws:asset:path: /home/chandler/Documents/pillar/timestamps/cdk.out/asset.bd87fb4767f5342a711f7c02d9e1a2095d15427779aa7e9757cbee71ef13f09e
       aws:asset:property: Code
-  ManualClipAllowInvokeDevTimestampsScanChatTopic6827271449E72E9A:
+  ManualClipAllowInvokeDevTimestampsChatMessagesDownloadedE3D3E70272030573:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
@@ -685,21 +685,21 @@ Resources:
           - Arn
       Principal: sns.amazonaws.com
       SourceArn:
-        Ref: ScanChatTopic83F173F4
+        Ref: ChatMessagesDownloadedA7C9BB1F
     Metadata:
-      aws:cdk:path: Dev-Timestamps/ManualClip/AllowInvoke:DevTimestampsScanChatTopic68272714
-  ManualClipScanChatTopic9C3635E8:
+      aws:cdk:path: Dev-Timestamps/ManualClip/AllowInvoke:DevTimestampsChatMessagesDownloadedE3D3E702
+  ManualClipChatMessagesDownloaded93B1287D:
     Type: AWS::SNS::Subscription
     Properties:
       Protocol: lambda
       TopicArn:
-        Ref: ScanChatTopic83F173F4
+        Ref: ChatMessagesDownloadedA7C9BB1F
       Endpoint:
         Fn::GetAtt:
           - ManualClipD684F488
           - Arn
     Metadata:
-      aws:cdk:path: Dev-Timestamps/ManualClip/ScanChatTopic/Resource
+      aws:cdk:path: Dev-Timestamps/ManualClip/ChatMessagesDownloaded/Resource
   BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC:
     Type: AWS::IAM::Role
     Properties:

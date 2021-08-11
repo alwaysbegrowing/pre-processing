@@ -5,7 +5,7 @@ import arrow
 import boto3
 
 from twitch import get_info
-from db import input_clips
+from db import save_clips
 
 s3 = boto3.client('s3')
 
@@ -40,7 +40,7 @@ def handler(event, context):
 
     stream_data = get_info(key)
 
-    display_name = stream_data['user_login']
+    streamer_name = stream_data['user_login']
 
     print(json.dumps({'videoId': key}))
 
@@ -51,9 +51,9 @@ def handler(event, context):
 
     for message in all_messages:
         try:
-            commenter = message['commenter']['display_name']
+            commenter_display_name = message['commenter']['display_name']
             is_mod = is_moderator(message)
-            if display_name in commenter or is_mod:
+            if streamer_name in commenter_display_name or is_mod:
                 body = message['message']['body']
                 if '!clip' in body:
                     clip_command_timestamps.append(arrow.get(message['created_at']))
@@ -74,7 +74,7 @@ def handler(event, context):
             'id': clip_id
         })
 
-    resp = input_clips(key, clips)
+    resp = save_clips(key, clips)
 
     print(json.dumps({'num_clips_created': len(clips), 'clips': clips, 'db_resp': resp.modified_count}))
 

@@ -23,7 +23,7 @@ def connect_to_db():
     db = client[db_name]
     return db
 
-def input_clips(key, clip_data):
+def save_clips(key, clip_data):
     db = connect_to_db()
     query = {'videoId': key}
     timestamps = db.timestamps

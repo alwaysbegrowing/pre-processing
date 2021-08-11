@@ -25,7 +25,7 @@ export class SlStack extends Stack {
     const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
     const vodDataRequested = new Topic(this, 'VodDataRequested');
     const thumbnailGeneratorTopic = new Topic(this, 'ThumbnailGeneratorTopic');
-    const scanChat = new Topic(this, 'ScanChatTopic');
+    const chatMessagesDownloaded = new Topic(this, 'ChatMessagesDownloaded');
 
     const vodPoller = new NodejsFunction(this, 'VodPoller', {
       description: 'Checks for VODs',
@@ -115,7 +115,7 @@ export class SlStack extends Stack {
 
     twitchSecret.grantRead(clipFinder)
     thumbnailGeneratorTopic.grantPublish(clipFinder);
-    new SnsEventSource(scanChat).bind(clipFinder);
+    new SnsEventSource(chatMessagesDownloaded).bind(clipFinder);
 
     const cccFinder = new PythonFunction(this, 'CCCFinder', {
       description: 'Finds CCC on Twitch',
@@ -140,7 +140,7 @@ export class SlStack extends Stack {
       runtime: Runtime.PYTHON_3_8,
       handler: 'handler',
       index: 'handler.py',
-      entry: './lambdas/clipit',
+      entry: './lambdas/manualclips',
       memorySize: 256,
       timeout: Duration.seconds(120),
       environment: {
@@ -151,7 +151,7 @@ export class SlStack extends Stack {
       },
     });
 
-    new SnsEventSource(scanChat).bind(manualClip);
+    new SnsEventSource(chatMessagesDownloaded).bind(manualClip);
 
     twitchSecret.grantRead(manualClip);
     mongoSecret.grantRead(manualClip);
@@ -167,7 +167,7 @@ export class SlStack extends Stack {
     
     messageStoreBucket.addEventNotification(
       EventType.OBJECT_CREATED,
-      new SnsDestination(scanChat),
+      new SnsDestination(chatMessagesDownloaded),
     )
   }
 }
