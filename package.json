@@ -10,11 +10,11 @@
     "test": "jest",
     "synth": "cdk synth Dev-Timestamps --no-staging > template.yaml",
     "poller": "sam local invoke VodPoller741EDAA0 --env-vars env.json --no-event",
-    "clipfinder": "sam local invoke ClipFinderA73374EE --env-vars env.json --event test_events/clipFinderEvent.json",
+    "clipfinder": "sam local invoke ClipFinderA73374EE --env-vars env.json --event test_events/s3SNSEvent.json",
     "downloader": "sam local invoke ChatDownloader326B83C0 --env-vars env.json --event test_events/event.json",
     "cccfinder": "sam local invoke CCCFinder4C010E91 --env-vars env.json --event test_events/cccFinderEvent.json",
     "thumbnail": "sam local invoke ThumbnailGenerator01BB1F8C --env-vars env.json --event test_events/thumbnailGeneratorEvent.json",
-    "manualclip": "sam local invoke ManualClipD684F488 --env-vars env.json --event test_events/clipFinderEvent.json",
+    "manualclip": "sam local invoke ManualClipD684F488 --env-vars env.json --event test_events/s3SNSEvent.json",
     "cdk": "cdk"
   },
   "devDependencies": {
