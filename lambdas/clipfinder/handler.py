@@ -8,7 +8,6 @@ from db import connect_to_db
 s3 = boto3.client('s3')
 SNS = boto3.client('sns')
 THUMBNAIL_GENERATOR_TOPIC = os.getenv('TOPIC')
-MANUAL_CLIP_TOPIC = os.getenv('MANUAL_TOPIC')
 
 def sendSnsMessage(videoId, topic):
     
@@ -46,6 +45,9 @@ def hydrate_clips(clips, key):
 def handler(event, context):
     print(json.dumps(event, default=str))
 
+    message = event['Records'][0]['Sns']['Message']
+    event = json.loads(message)
+
     data = event['Records'][0]['s3']
     bucket = data['bucket']['name']
     key = data['object']['key']
@@ -68,5 +70,5 @@ def handler(event, context):
     print(json.dumps({'found_clips': clips}))
 
     store_in_db(key, clips)
-    print(json.dumps({"event_published" : [sendSnsMessage(key, THUMBNAIL_GENERATOR_TOPIC), sendSnsMessage(key, MANUAL_CLIP_TOPIC)]}))
+    print(json.dumps({"event_published" : sendSnsMessage(key, THUMBNAIL_GENERATOR_TOPIC)}))
     return clips

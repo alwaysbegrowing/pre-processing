@@ -2,8 +2,9 @@
 import { DockerImageCode, DockerImageFunction, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack, Construct, StackProps } from '@aws-cdk/core';
 import { Bucket, EventType } from '@aws-cdk/aws-s3';
+import { SnsDestination } from '@aws-cdk/aws-s3-notifications';
 import { Topic } from '@aws-cdk/aws-sns';
-import { SnsEventSource, S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
+import { SnsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import { Rule, Schedule } from '@aws-cdk/aws-events';
 import { LambdaFunction } from '@aws-cdk/aws-events-targets';
@@ -22,9 +23,9 @@ export class SlStack extends Stack {
     const thumbnailStoreBucket = new Bucket(this, 'ThumbnailStore');
 
     const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
-    const vodDataRequested = new Topic(this, 'vodDataRequested');
+    const vodDataRequested = new Topic(this, 'VodDataRequested');
     const thumbnailGeneratorTopic = new Topic(this, 'ThumbnailGeneratorTopic');
-    const checkManualClips = new Topic(this, 'ManualClipTopic');
+    const chatMessagesDownloaded = new Topic(this, 'ChatMessagesDownloaded');
 
     const vodPoller = new NodejsFunction(this, 'VodPoller', {
       description: 'Checks for VODs',
@@ -112,12 +113,12 @@ export class SlStack extends Stack {
         TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
         DB_NAME: mongoDBDatabase,
         TOPIC: thumbnailGeneratorTopic.topicArn,
-        MANUAL_TOPIC: checkManualClips.topicArn,
       },
     });
 
     twitchSecret.grantRead(clipFinder)
     thumbnailGeneratorTopic.grantPublish(clipFinder);
+    new SnsEventSource(chatMessagesDownloaded).bind(clipFinder);
 
     const cccFinder = new PythonFunction(this, 'CCCFinder', {
       description: 'Finds CCC on Twitch',
@@ -142,7 +143,7 @@ export class SlStack extends Stack {
       runtime: Runtime.PYTHON_3_8,
       handler: 'handler',
       index: 'handler.py',
-      entry: './lambdas/clipit',
+      entry: './lambdas/manualclips',
       memorySize: 256,
       timeout: Duration.seconds(120),
       environment: {
@@ -152,6 +153,8 @@ export class SlStack extends Stack {
         BUCKET: messageStoreBucket.bucketArn
       },
     });
+
+    new SnsEventSource(chatMessagesDownloaded).bind(manualClip);
 
     twitchSecret.grantRead(manualClip);
     mongoSecret.grantRead(manualClip);
@@ -164,6 +167,10 @@ export class SlStack extends Stack {
     mongoSecret.grantRead(clipFinder);
 
     mongoSecret.grantRead(thumbnailGenerator);
-    new S3EventSource(messageStoreBucket, { events: [EventType.OBJECT_CREATED] }).bind(clipFinder);
+    
+    messageStoreBucket.addEventNotification(
+      EventType.OBJECT_CREATED,
+      new SnsDestination(chatMessagesDownloaded),
+    )
   }
 }
