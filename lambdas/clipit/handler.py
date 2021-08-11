@@ -32,6 +32,9 @@ def is_moderator(message):
 def handler(event, context):
     print(json.dumps(event, default=str))
 
+    message = event['Records'][0]['Sns']['Message']
+    event = json.loads(message)
+
     data = event['Records'][0]['s3']
     key = data['object']['key']
 
