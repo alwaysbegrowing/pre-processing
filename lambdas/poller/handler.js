@@ -56,8 +56,13 @@ const isStreamerOnlineCheck = async (twitchId, headers) => {
   return false;
 };
 
-const getLastVods = async (numOfVodsPerStreamer) => {
-  const usersToPoll = await getUsersToPoll();
+const getLastVods = async (numOfVodsPerStreamer, userId = null) => {
+  let usersToPoll;
+  if (userId) {
+    usersToPoll = [userId];
+  } else {
+    usersToPoll = await getUsersToPoll();
+  }
   const appToken = await getAccessToken();
   const headers = {
     Authorization: `Bearer ${appToken}`,
@@ -130,29 +135,7 @@ const sendRefreshVodSns = async (vodsToRefresh) => {
 };
 
 const newUserSignUp = async (userId) => {
-  // get twitch access token
-  const accessToken = await getAccessToken();
-
-  // construct twitch headers
-  const headers = {
-    Authorization: `Bearer ${accessToken}`,
-    'Client-ID': TWITCH_CLIENT_ID,
-  };
-
-  // construct url to get user's last 5 vods
-  const url = `https://api.twitch.tv/helix/videos?user_id=${userId}&limit=${VOD_LIMIT}&type=archive`;
-
-  // fetch url
-  const response = await fetch(url, { headers });
-
-  if (!response.ok) {
-    return { error: `Error fetching user's last 5 vods: ${response.status} ${response.statusText}` };
-  }
-
-  // get data from json body
-  const { data } = await response.json();
-
-  const videoIds = data.slice(0, VOD_LIMIT).map(({ id }) => id);
+  const videoIds = getLastVods(VOD_LIMIT, userId);
 
   // send refresh vod sns
   const missingVideoIds = await sendMissingVideosSns(videoIds);
