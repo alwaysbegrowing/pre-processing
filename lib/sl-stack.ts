@@ -22,6 +22,7 @@ export class SlStack extends Stack {
     const messageStoreBucket = new Bucket(this, 'MessageStore');
     const thumbnailStoreBucket = new Bucket(this, 'ThumbnailStore');
 
+    const newUserSignup = new Topic(this, 'NewUserSignup');
     const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
     const vodDataRequested = new Topic(this, 'VodDataRequested');
     const thumbnailGeneratorTopic = new Topic(this, 'ThumbnailGeneratorTopic');
@@ -42,6 +43,26 @@ export class SlStack extends Stack {
         REFRESH_VOD_TOPIC: vodDataRequested.topicArn,
       },
     });
+
+    vodDataRequested.grantPublish(vodPoller);
+
+    // define signupPoller lambda function
+    const signupPoller = new NodejsFunction(this, 'SignupPoller', {
+      description: 'Checks for new user VODs',
+      runtime: Runtime.NODEJS_14_X,
+      entry: './lambdas/signupPoller/handler.js',
+      handler: 'handler',
+      memorySize: 256,
+      timeout: Duration.seconds(60),
+      environment: {
+        TWITCH_CLIENT_ID,
+        REFRESH_VOD_TOPIC: vodDataRequested.topicArn,
+        DB_NAME: mongoDBDatabase,
+      }
+    });
+
+    vodDataRequested.grantPublish(signupPoller);
+    new SnsEventSource(newUserSignup).bind(signupPoller);
 
     const thumbnailGenerator = new DockerImageFunction(this, 'ThumbnailGenerator', {
       code: DockerImageCode.fromImageAsset('./lambdas/thumbnailgenerator'),

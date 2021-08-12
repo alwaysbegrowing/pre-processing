@@ -73,7 +73,7 @@ exports.handler = async (event) => {
 
   // send refresh vod sns
   const refreshVodResponse = await sendRefreshVodSns(videoIds);
-  const resp = { videoIds, refreshVodResponse };
+  const resp = { refreshVodResponse };
 
   console.log(resp);
   return resp;
