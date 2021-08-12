@@ -56,7 +56,7 @@ exports.handler = async (event) => {
   };
 
   // construct url to get user's last 5 vods
-  const url = `'https://api.twitch.tv/helix/videos?user_id=${twitchId}&limit=${VOD_LIMIT}&type=archive`;
+  const url = `https://api.twitch.tv/helix/videos?user_id=${twitchId}&limit=${VOD_LIMIT}&type=archive`;
 
   // fetch url
   const response = await fetch(url, { headers });

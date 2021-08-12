@@ -55,6 +55,15 @@ jobs:
         with:
           file: ./logs/poller.txt
 
+      - name: SignUp Poller Lambda
+        run: |
+          sam local invoke SignupPoller2D072BE7 --env-vars env.json --event test_events/signupPollerEvent.json -l logs/signup.txt
+
+      - name: Test SignUp Poller
+        uses: pillargg/sam-ots@master
+        with:
+          file: ./logs/signup.txt
+
       - name: Clip Finder Lambda
         run: |
           sam local invoke ClipFinderA73374EE --env-vars env.json --event test_events/s3SNSEvent.json -l logs/clipfinder.txt
