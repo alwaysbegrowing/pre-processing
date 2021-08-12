@@ -137,7 +137,7 @@ const sendRefreshVodSns = async (vodsToRefresh) => {
 const newUserSignUp = async (userId) => {
   const videoIds = getLastVods(VOD_LIMIT, userId);
 
-  // send refresh vod sns
+  // send missing vod sns
   const missingVideoIds = await sendMissingVideosSns(videoIds);
   const resp = { missingVideoIds };
 
@@ -145,10 +145,10 @@ const newUserSignUp = async (userId) => {
   return resp;
 };
 
-const refreshVods = async () => {
+const pollVods = async () => {
   // The event that triggers this lambda isn't relevant,
   // as long as the lambda gets triggered.
-  const videoIds = await getLastVods(5);
+  const videoIds = await getLastVods(VOD_LIMIT);
   const missingVideoIds = await checkS3forMessages(videoIds);
   const missingVideosResponse = await sendMissingVideosSns(missingVideoIds);
 
@@ -171,5 +171,5 @@ exports.main = async (event) => {
     }
   }
 
-  return refreshVods();
+  return pollVods();
 };
