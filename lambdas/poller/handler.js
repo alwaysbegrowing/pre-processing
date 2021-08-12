@@ -13,6 +13,8 @@ const {
   TWITCH_CLIENT_ID, TOPIC, BUCKET, REFRESH_VOD_TOPIC,
 } = process.env;
 
+const VOD_LIMIT = 5;
+
 const getUsersToPoll = async () => {
   try {
     const db = await connectToDatabase();
@@ -127,7 +129,40 @@ const sendRefreshVodSns = async (vodsToRefresh) => {
   return Promise.all(SnsTopicsSent);
 };
 
-exports.main = async () => {
+const newUserSignUp = async (userId) => {
+  // get twitch access token
+  const accessToken = await getAccessToken();
+
+  // construct twitch headers
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+    'Client-ID': TWITCH_CLIENT_ID,
+  };
+
+  // construct url to get user's last 5 vods
+  const url = `https://api.twitch.tv/helix/videos?user_id=${userId}&limit=${VOD_LIMIT}&type=archive`;
+
+  // fetch url
+  const response = await fetch(url, { headers });
+
+  if (!response.ok) {
+    return { error: `Error fetching user's last 5 vods: ${response.status} ${response.statusText}` };
+  }
+
+  // get data from json body
+  const { data } = await response.json();
+
+  const videoIds = data.slice(0, VOD_LIMIT).map(({ id }) => id);
+
+  // send refresh vod sns
+  const refreshVodResponse = await sendRefreshVodSns(videoIds);
+  const resp = { refreshVodResponse };
+
+  console.log(resp);
+  return resp;
+};
+
+const refreshVods = async () => {
   // The event that triggers this lambda isn't relevant,
   // as long as the lambda gets triggered.
   const videoIds = await getLastVods(5);
@@ -142,4 +177,16 @@ exports.main = async () => {
     refreshVodResponse,
   });
   return { missingVideoIdsLength: missingVideosResponse.length };
+};
+
+exports.main = async (event) => {
+  if (event?.Records) {
+    const userId = event?.Records[0]?.Sns?.MessageAttributes?.TwitchId?.Value;
+
+    if (userId) {
+      return newUserSignUp(userId);
+    }
+  }
+
+  return refreshVods();
 };

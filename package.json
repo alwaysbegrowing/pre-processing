@@ -15,7 +15,7 @@
     "cccfinder": "sam local invoke CCCFinder4C010E91 --env-vars env.json --event test_events/cccFinderEvent.json",
     "thumbnail": "sam local invoke ThumbnailGenerator01BB1F8C --env-vars env.json --event test_events/thumbnailGeneratorEvent.json",
     "manualclip": "sam local invoke ManualClipD684F488 --env-vars env.json --event test_events/s3SNSEvent.json",
-    "signuppoller":"sam local invoke SignupPoller2D072BE7 --env-vars env.json --event test_events/signupPollerEvent.json",
+    "signuppoller":"sam local invoke VodPoller741EDAA0 --env-vars env.json --event test_events/signupPollerEvent.json",
     "cdk": "cdk",
     "deploy": "cdk deploy Dev-Timestamps"
   },

@@ -45,24 +45,7 @@ export class SlStack extends Stack {
     });
 
     vodDataRequested.grantPublish(vodPoller);
-
-    // define signupPoller lambda function
-    const signupPoller = new NodejsFunction(this, 'SignupPoller', {
-      description: 'Checks for new user VODs',
-      runtime: Runtime.NODEJS_14_X,
-      entry: './lambdas/signupPoller/handler.js',
-      handler: 'handler',
-      memorySize: 256,
-      timeout: Duration.seconds(60),
-      environment: {
-        TWITCH_CLIENT_ID,
-        REFRESH_VOD_TOPIC: vodDataRequested.topicArn,
-        DB_NAME: mongoDBDatabase,
-      }
-    });
-
-    vodDataRequested.grantPublish(signupPoller);
-    new SnsEventSource(newUserSignup).bind(signupPoller);
+    new SnsEventSource(newUserSignup).bind(vodPoller);
 
     const thumbnailGenerator = new DockerImageFunction(this, 'ThumbnailGenerator', {
       code: DockerImageCode.fromImageAsset('./lambdas/thumbnailgenerator'),

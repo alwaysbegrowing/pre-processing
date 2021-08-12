@@ -57,7 +57,7 @@ jobs:
 
       - name: SignUp Poller Lambda
         run: |
-          sam local invoke SignupPoller2D072BE7 --env-vars env.json --event test_events/signupPollerEvent.json -l logs/signup.txt
+          sam local invoke VodPoller741EDAA0 --env-vars env.json --event test_events/signupPollerEvent.json -l logs/signup.txt
 
       - name: Test SignUp Poller
         uses: pillargg/sam-ots@master
