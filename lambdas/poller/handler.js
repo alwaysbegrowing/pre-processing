@@ -155,8 +155,8 @@ const newUserSignUp = async (userId) => {
   const videoIds = data.slice(0, VOD_LIMIT).map(({ id }) => id);
 
   // send refresh vod sns
-  const refreshVodResponse = await sendRefreshVodSns(videoIds);
-  const resp = { refreshVodResponse };
+  const missingVideoIds = await sendMissingVideosSns(videoIds);
+  const resp = { missingVideoIds };
 
   console.log(resp);
   return resp;
