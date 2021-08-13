@@ -12,10 +12,6 @@
           "MessageId": "95df01b4-ee98-5cb9-9903-4c221d41eb5e",
           "Message": "Hello from SNS!",
           "MessageAttributes": {
-            "VideoId": {
-              "Type": "String",
-              "Value": "1113801132"
-            },
             "TwitchId": {
               "Type": "String",
               "Value": "117861016"

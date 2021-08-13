@@ -13,6 +13,8 @@ const {
   TWITCH_CLIENT_ID, TOPIC, BUCKET, REFRESH_VOD_TOPIC,
 } = process.env;
 
+const VOD_LIMIT = 5;
+
 const getUsersToPoll = async () => {
   try {
     const db = await connectToDatabase();
@@ -54,8 +56,13 @@ const isStreamerOnlineCheck = async (twitchId, headers) => {
   return false;
 };
 
-const getLastVods = async (numOfVodsPerStreamer) => {
-  const usersToPoll = await getUsersToPoll();
+const getLastVods = async (numOfVodsPerStreamer, userId = null) => {
+  let usersToPoll;
+  if (userId) {
+    usersToPoll = [userId];
+  } else {
+    usersToPoll = await getUsersToPoll();
+  }
   const appToken = await getAccessToken();
   const headers = {
     Authorization: `Bearer ${appToken}`,
@@ -127,10 +134,21 @@ const sendRefreshVodSns = async (vodsToRefresh) => {
   return Promise.all(SnsTopicsSent);
 };
 
-exports.main = async () => {
+const newUserSignUp = async (userId) => {
+  const videoIds = getLastVods(VOD_LIMIT, userId);
+
+  // send missing vod sns
+  const missingVideoIds = await sendMissingVideosSns(videoIds);
+  const resp = { missingVideoIds };
+
+  console.log(resp);
+  return resp;
+};
+
+const pollVods = async () => {
   // The event that triggers this lambda isn't relevant,
   // as long as the lambda gets triggered.
-  const videoIds = await getLastVods(5);
+  const videoIds = await getLastVods(VOD_LIMIT);
   const missingVideoIds = await checkS3forMessages(videoIds);
   const missingVideosResponse = await sendMissingVideosSns(missingVideoIds);
 
@@ -142,4 +160,16 @@ exports.main = async () => {
     refreshVodResponse,
   });
   return { missingVideoIdsLength: missingVideosResponse.length };
+};
+
+exports.main = async (event) => {
+  if (event?.Records) {
+    const userId = event?.Records[0]?.Sns?.MessageAttributes?.TwitchId?.Value;
+
+    if (userId) {
+      return newUserSignUp(userId);
+    }
+  }
+
+  return pollVods();
 };

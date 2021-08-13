@@ -22,6 +22,7 @@ export class SlStack extends Stack {
     const messageStoreBucket = new Bucket(this, 'MessageStore');
     const thumbnailStoreBucket = new Bucket(this, 'ThumbnailStore');
 
+    const newUserSignup = new Topic(this, 'NewUserSignup');
     const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
     const vodDataRequested = new Topic(this, 'VodDataRequested');
     const thumbnailGeneratorTopic = new Topic(this, 'ThumbnailGeneratorTopic');
@@ -42,6 +43,9 @@ export class SlStack extends Stack {
         REFRESH_VOD_TOPIC: vodDataRequested.topicArn,
       },
     });
+
+    vodDataRequested.grantPublish(vodPoller);
+    new SnsEventSource(newUserSignup).bind(vodPoller);
 
     const thumbnailGenerator = new DockerImageFunction(this, 'ThumbnailGenerator', {
       code: DockerImageCode.fromImageAsset('./lambdas/thumbnailgenerator'),
