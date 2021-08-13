@@ -150,7 +150,7 @@ export class SlStack extends Stack {
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
         TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
         DB_NAME: mongoDBDatabase,
-        BUCKET: messageStoreBucket.bucketArn
+        BUCKET: messageStoreBucket.bucketName
       },
     });
 
