@@ -1,6 +1,8 @@
-# Welcome to your CDK TypeScript project!
+# Pre-Processing
 
-This is a blank project for TypeScript development with CDK.
+This repo contains the code to create clips for a stream, and store them in MongoDb. 
+
+We use CDK to define our infrastructure, and the application code is hosted on AWS Lambda. 
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
