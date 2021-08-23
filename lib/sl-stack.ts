@@ -162,6 +162,7 @@ export class SlStack extends Stack {
 
     twitchSecret.grantRead(manualClip);
     mongoSecret.grantRead(manualClip);
+    messageStoreBucket.grantRead(manualClip);
 
     new SnsEventSource(vodDataRequested).bind(cccFinder);
 
