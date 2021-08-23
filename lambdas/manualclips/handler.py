@@ -11,6 +11,9 @@ s3 = boto3.client('s3')
 
 BUCKET = os.getenv('BUCKET')
 
+# max clip length
+MAX_CLIP_LENGTH = 180 # In seconds. 3 minutes.
+
 # generates a clip id
 def generate_clip_id(key, start_time, end_time):
     clip_id = f"{key}-{start_time}-{end_time}"
@@ -52,6 +55,9 @@ def handler(event, context):
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
 
     clip_command_timestamps = []
+    
+    # get the clip length
+    clip_length = get_clip_length(streamer_name)
 
     # gets all messages that start with !clip
     # that were sent by a moderator or the broadcaster
@@ -70,16 +76,32 @@ def handler(event, context):
                 body = message['message']['body']
                 if body.startswith('!clip'):
                     # add the clip end time to the list
-                    clip_command_timestamps.append(arrow.get(message['created_at']))
+                    current_clip_length = clip_length
+
+                    # split at the space
+                    clip_command_parts = body.split(' ')
+
+                    # if there is more than one part
+                    if len(clip_command_parts) > 1:
+                        try:
+                            current_clip_length = int(clip_command_parts[1])
+                        except IndexError:
+                            current_clip_length = clip_length
+
+                    # make sure the clip length is not longer than the max
+                    if current_clip_length > MAX_CLIP_LENGTH:
+                        current_clip_length = MAX_CLIP_LENGTH
+
+                    clip_command_timestamps.append({
+                        'created_at': message['created_at'],
+                        'length': current_clip_length
+                    })
         except KeyError:
             continue
 
     # if the clip_command_timestamps list is empty
     if not clip_command_timestamps:
         return {}
-
-    # get the clip length
-    clip_length = get_clip_length(streamer_name)
 
     # if clip length is none
     if clip_length is None:
@@ -92,8 +114,8 @@ def handler(event, context):
 
     # create all of the manual clips 
     for clip_command in clip_command_timestamps:
-        end_time = round(arrow.get(clip_command).timestamp() - stream_start_time.timestamp(), 2)
-        start_time = round(end_time - clip_length, 2)
+        end_time = round(arrow.get(clip_command['created_at']).timestamp() - stream_start_time.timestamp(), 2)
+        start_time = round(end_time - clip_command['length'], 2)
         clip_id = generate_clip_id(key, start_time, end_time)
         clips.append({
             'startTime': start_time,
