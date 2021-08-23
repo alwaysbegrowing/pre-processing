@@ -9,7 +9,7 @@ cached_db = None
 
 SECRET_NAME = 'MONGODB_FULL_URI'
 DB_NAME = os.getenv('DB_NAME')
-DEFAULT_CLIP_LENGTH = 60 # seconds
+DEFAULT_CLIP_LENGTH = 120 # seconds
 
 def connect_to_db():
     global cached_uri
