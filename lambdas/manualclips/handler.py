@@ -13,6 +13,8 @@ BUCKET = os.getenv('BUCKET')
 
 # max clip length
 MAX_CLIP_LENGTH = 180 # In seconds. 3 minutes.
+# min clip length
+MIN_CLIP_LENGTH = 15 # In seconds.
 
 # generates a clip id
 def generate_clip_id(key, start_time, end_time):
@@ -91,6 +93,9 @@ def handler(event, context):
                     # make sure the clip length is not longer than the max
                     if current_clip_length > MAX_CLIP_LENGTH:
                         current_clip_length = MAX_CLIP_LENGTH
+
+                    if current_clip_length < MIN_CLIP_LENGTH:
+                        current_clip_length = MIN_CLIP_LENGTH
 
                     clip_command_timestamps.append({
                         'created_at': message['created_at'],
