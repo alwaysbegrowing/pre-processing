@@ -5,12 +5,9 @@ import arrow
 import boto3
 
 from twitch import get_info
-from db import save_clips
+from db import save_clips, get_clip_length
 
 s3 = boto3.client('s3')
-
-# make this user configurable later?
-CLIP_LENGTH = 30 # seconds
 
 BUCKET = os.getenv('BUCKET')
 
@@ -81,6 +78,13 @@ def handler(event, context):
     if not clip_command_timestamps:
         return {}
 
+    # get the clip length
+    clip_length = get_clip_length(streamer_name)
+
+    # if clip length is none
+    if clip_length is None:
+        return {'error': f'User {streamer_name} not found!'}
+
     # gets the start time of the stream
     stream_start_time = arrow.get(stream_data['created_at'])
 
@@ -89,7 +93,7 @@ def handler(event, context):
     # create all of the manual clips 
     for clip_command in clip_command_timestamps:
         end_time = round(arrow.get(clip_command).timestamp() - stream_start_time.timestamp(), 2)
-        start_time = round(end_time - CLIP_LENGTH, 2)
+        start_time = round(end_time - clip_length, 2)
         clip_id = generate_clip_id(key, start_time, end_time)
         clips.append({
             'startTime': start_time,
