@@ -48,7 +48,11 @@ def handler(event, context):
     stream_data = get_info(key)
 
     # get streamer name from stream data
+    # this is used to check if they are the streamer
     streamer_name = stream_data['user_login']
+
+    # get the streamer's id from the stream data
+    streamer_id = stream_data['user_id']
 
     print(json.dumps({'videoId': key}))
 
@@ -59,7 +63,11 @@ def handler(event, context):
     clip_command_timestamps = []
     
     # get the clip length
-    clip_length = get_clip_length(streamer_name)
+    clip_length = get_clip_length(streamer_id)
+
+    # if clip length is none
+    if clip_length is None:
+        return {'error': f'User {streamer_id} not found!'}
 
     # gets all messages that start with !clip
     # that were sent by a moderator or the broadcaster
@@ -107,10 +115,6 @@ def handler(event, context):
     # if the clip_command_timestamps list is empty
     if not clip_command_timestamps:
         return {}
-
-    # if clip length is none
-    if clip_length is None:
-        return {'error': f'User {streamer_name} not found!'}
 
     # gets the start time of the stream
     stream_start_time = arrow.get(stream_data['created_at'])

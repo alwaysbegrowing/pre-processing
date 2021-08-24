@@ -32,6 +32,7 @@ def save_clips(key, clip_data):
     
     update = {
         '$set': {
+            'videoId': key,
             'manual': clip_data
         },
     }
@@ -43,13 +44,13 @@ def save_clips(key, clip_data):
 # in the database
 def get_clip_length(key):
     db = connect_to_db()
-    query = {'display_name': key}
+    query = {'twitch_id': key}
 
     users = db.users
 
     user = users.find_one(query)
     
     if (user):
-        return user.get('clip_length', DEFAULT_CLIP_LENGTH)
+        return user.get('manual_clip_length', DEFAULT_CLIP_LENGTH)
 
     return None
