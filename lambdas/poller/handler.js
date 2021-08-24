@@ -135,7 +135,7 @@ const sendRefreshVodSns = async (vodsToRefresh) => {
 };
 
 const newUserSignUp = async (userId) => {
-  const videoIds = getLastVods(VOD_LIMIT, userId);
+  const videoIds = await getLastVods(VOD_LIMIT, userId);
 
   // send missing vod sns
   const missingVideoIds = await sendMissingVideosSns(videoIds);

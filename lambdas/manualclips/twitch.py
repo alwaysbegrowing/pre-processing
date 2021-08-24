@@ -7,6 +7,7 @@ from get_secret import get_secret
 TWITCH_CLIENT_ID = os.getenv("TWITCH_CLIENT_ID")
 TWITCH_CLIENT_SECRET = get_secret(os.getenv('TWITCH_CLIENT_SECRET_ARN'))
 
+# authenticates with twitch and returns an access token
 def twitch_auth():
     
     queries = {
@@ -20,6 +21,7 @@ def twitch_auth():
 
     return resp.json()['access_token']
 
+# gets stream data from twitch
 def get_info(key):
     queries = {'id': key}
 
