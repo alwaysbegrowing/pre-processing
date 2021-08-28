@@ -39,7 +39,7 @@ def get_clips_from_db(videoId: str):
 
     result = timestamps.find_one(search)
     print(result)
-    video_timestamps = result['clips']['brain']
+    video_timestamps = result['clips']['brain'] + result['manual']
     return video_timestamps
 
 def get_manifest_url(stream_url):
