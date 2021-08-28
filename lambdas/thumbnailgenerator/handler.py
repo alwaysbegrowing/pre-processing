@@ -34,12 +34,14 @@ def upload_to_s3(file_name, bucket, object_name=None):
 def get_clips_from_db(videoId: str):
     db = connect_to_db()
     timestamps = db['timestamps']
-
     search = {"videoId": videoId }
 
     result = timestamps.find_one(search)
     print(result)
-    video_timestamps = result['clips']['brain'] + result['manual']
+    video_timestamps = result['clips']['brain']
+    if 'manual' in result:
+        video_timestamps = video_timestamps + result['manual']
+    
     return video_timestamps
 
 def get_manifest_url(stream_url):
