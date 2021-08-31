@@ -24,7 +24,7 @@ jobs:
       - name: Setup Node 14
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: "14"
 
       - name: Setup Python 3.8
         uses: actions/setup-python@v2
@@ -109,7 +109,7 @@ jobs:
           docker run -d -p 9000:8080 --env-file docker.env thumbnail-test
           export data=$(jq '.' -c ../../test_events/thumbnailGeneratorEvent.json)
           curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d $data > ../../logs/thumbnail.json
-        
+
       - name: Test Generator
         uses: pillargg/sam-ots@master
         with:
