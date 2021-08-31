@@ -9,8 +9,9 @@ s3 = boto3.client('s3')
 SNS = boto3.client('sns')
 THUMBNAIL_GENERATOR_TOPIC = os.getenv('TOPIC')
 
+
 def sendSnsMessage(videoId, topic):
-    
+
     return SNS.publish(
         TargetArn=topic,
         Message=videoId,
@@ -33,14 +34,17 @@ def store_in_db(key, clip_timestamps):
 
     return result
 
+
 def generate_clip_id(key, clip):
     clip_id = f"{key}-{clip['startTime']}-{clip['endTime']}"
     return clip_id
+
 
 def hydrate_clips(clips, key):
     for clip in clips:
         clip['id'] = generate_clip_id(key, clip)
     return clips
+
 
 def handler(event, context):
     print(json.dumps(event, default=str))
@@ -70,5 +74,6 @@ def handler(event, context):
     print(json.dumps({'found_clips': clips}))
 
     store_in_db(key, clips)
-    print(json.dumps({"event_published" : sendSnsMessage(key, THUMBNAIL_GENERATOR_TOPIC)}))
+    print(json.dumps({"event_published": sendSnsMessage(
+        key, THUMBNAIL_GENERATOR_TOPIC)}))
     return clips

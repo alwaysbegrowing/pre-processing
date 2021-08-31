@@ -1,9 +1,8 @@
-const { MongoClient } = require('mongodb');
-const { SecretsManager } = require('aws-sdk');
+const { MongoClient } = require("mongodb");
+const { SecretsManager } = require("aws-sdk");
 
-
-const secretName = 'MONGODB_FULL_URI';
-const dbName = process.env.DB_NAME || 'pillar';
+const secretName = "MONGODB_FULL_URI";
+const dbName = process.env.DB_NAME || "pillar";
 
 // Use cache across lambdas
 // https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html
@@ -16,7 +15,9 @@ async function connectToDatabase() {
   }
   if (!cachedMongoURI) {
     const client = new SecretsManager();
-    const { SecretString } = await client.getSecretValue({ SecretId: secretName }).promise();
+    const { SecretString } = await client
+      .getSecretValue({ SecretId: secretName })
+      .promise();
     cachedMongoURI = SecretString;
   }
 

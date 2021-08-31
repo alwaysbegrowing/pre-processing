@@ -1,7 +1,7 @@
-const fetch = require('node-fetch');
-const { SecretsManager } = require('aws-sdk');
+const fetch = require("node-fetch");
+const { SecretsManager } = require("aws-sdk");
 
-const secretName = 'TWITCH_CLIENT_SECRET';
+const secretName = "TWITCH_CLIENT_SECRET";
 let cachedTwitchSecret;
 let cachedAccessToken;
 
@@ -11,9 +11,9 @@ let cachedAccessToken;
  * reference documentation: https://dev.twitch.tv/docs/authentication#validating-requests
  */
 async function isAccessTokenValid() {
-  const url = 'https://id.twitch.tv/oauth2/validate';
+  const url = "https://id.twitch.tv/oauth2/validate";
   const isValid = await fetch(url, {
-    method: 'GET',
+    method: "GET",
     headers: {
       Authorization: `OAuth ${cachedAccessToken}`,
     },
@@ -34,7 +34,9 @@ async function getAccessToken() {
   }
   if (!cachedTwitchSecret) {
     const client = new SecretsManager();
-    const { SecretString } = await client.getSecretValue({ SecretId: secretName }).promise();
+    const { SecretString } = await client
+      .getSecretValue({ SecretId: secretName })
+      .promise();
     cachedTwitchSecret = SecretString;
   }
 
@@ -42,7 +44,7 @@ async function getAccessToken() {
   try {
     // get a new app access token from twitch
     const tokenData = await fetch(url, {
-      method: 'POST',
+      method: "POST",
     });
     const resp = await tokenData.json();
     cachedAccessToken = resp.access_token;

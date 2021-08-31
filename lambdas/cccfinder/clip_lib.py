@@ -28,7 +28,10 @@ def get_video_ccc(twitch_client_id, access_token, video_id):
         'id': video_id
     }
 
-    resp = requests.get('https://api.twitch.tv/helix/videos', headers=headers, params=query)
+    resp = requests.get(
+        'https://api.twitch.tv/helix/videos',
+        headers=headers,
+        params=query)
 
     data = resp.json()['data'][0]
 
@@ -39,7 +42,10 @@ def get_video_ccc(twitch_client_id, access_token, video_id):
         'first': 100
     }
 
-    resp = requests.get('https://api.twitch.tv/helix/clips', headers=headers, params=query)
+    resp = requests.get(
+        'https://api.twitch.tv/helix/clips',
+        headers=headers,
+        params=query)
 
     resp.raise_for_status()
 
@@ -104,11 +110,11 @@ def get_ccc_start_end_times(clip_data):
     if duration is None:
         raise AssertionError('Could not find duration in API response.')
 
-    if type(duration) is str:
+    if isinstance(duration, str):
         duration = twitch_time_to_seconds(duration)
 
     types = [int, str, float]
-    if not any(type(duration) is t for t in types):
+    if not any(isinstance(duration, t) for t in types):
         print(type(duration))
         raise AssertionError('Duration is not an integer, float, or string.')
 

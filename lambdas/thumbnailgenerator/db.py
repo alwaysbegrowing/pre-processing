@@ -9,6 +9,7 @@ cached_db = None
 secret_name = 'MONGODB_FULL_URI'
 db_name = os.getenv('DB_NAME') or 'pillar'
 
+
 def connect_to_db():
     global cached_uri
     global cached_db
@@ -26,6 +27,7 @@ def connect_to_db():
     client = pymongo.MongoClient(cached_uri)
     db = client[db_name]
     return db
+
 
 def input_thumbnail_urls(key, thumbnail_data):
     db = connect_to_db()

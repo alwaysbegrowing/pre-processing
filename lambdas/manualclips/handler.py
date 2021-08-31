@@ -12,16 +12,20 @@ s3 = boto3.client('s3')
 BUCKET = os.getenv('BUCKET')
 
 # max clip length
-MAX_CLIP_LENGTH = 180 # In seconds. 3 minutes.
+MAX_CLIP_LENGTH = 180  # In seconds. 3 minutes.
 # min clip length
-MIN_CLIP_LENGTH = 15 # In seconds.
+MIN_CLIP_LENGTH = 15  # In seconds.
 
 # generates a clip id
+
+
 def generate_clip_id(key, start_time, end_time):
     clip_id = f"{key}-{start_time}-{end_time}"
     return clip_id
 
 # checks if a user is a moderator
+
+
 def is_moderator(message):
     try:
         badges = message['message']['user_badges']
@@ -32,6 +36,7 @@ def is_moderator(message):
         pass
 
     return False
+
 
 def handler(event, context):
     print(json.dumps(event, default=str))
@@ -61,7 +66,7 @@ def handler(event, context):
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
 
     clip_command_timestamps = []
-    
+
     # get the clip length
     clip_length = get_clip_length(streamer_id)
 
@@ -75,12 +80,12 @@ def handler(event, context):
         try:
             # gets the display name
             commenter_display_name = message['commenter']['display_name']
-            
+
             # checks if the user is a moderator
             is_mod = is_moderator(message)
             # or is the streamer
             is_streamer = streamer_name in commenter_display_name
-            
+
             # if the user is a moderator or the streamer
             if is_streamer or is_mod:
                 body = message['message']['body']
@@ -121,9 +126,13 @@ def handler(event, context):
 
     clips = []
 
-    # create all of the manual clips 
+    # create all of the manual clips
     for clip_command in clip_command_timestamps:
-        end_time = round(arrow.get(clip_command['created_at']).timestamp() - stream_start_time.timestamp(), 2)
+        end_time = round(
+            arrow.get(
+                clip_command['created_at']).timestamp() -
+            stream_start_time.timestamp(),
+            2)
         start_time = round(end_time - clip_command['length'], 2)
         clip_id = generate_clip_id(key, start_time, end_time)
         clips.append({
@@ -135,6 +144,7 @@ def handler(event, context):
     # save the clips to the database
     resp = save_clips(key, clips)
 
-    print(json.dumps({'num_clips_created': len(clips), 'clips': clips, 'db_resp': resp.modified_count}))
+    print(json.dumps({'num_clips_created': len(clips),
+          'clips': clips, 'db_resp': resp.modified_count}))
 
     return {}

@@ -9,6 +9,7 @@ cached_db = None
 secret_name = 'MONGODB_FULL_URI'
 db_name = os.getenv('DB_NAME')
 
+
 def connect_to_db():
     global cached_uri
     global cached_db
@@ -26,11 +27,12 @@ def connect_to_db():
     db = client[db_name]
     return db
 
+
 def input_ccc(key, ccc_data):
     db = connect_to_db()
     query = {'videoId': key}
     timestamps = db.timestamps
-    
+
     update = {
         '$set': {
             'ccc': ccc_data

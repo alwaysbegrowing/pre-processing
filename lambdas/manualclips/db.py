@@ -9,7 +9,8 @@ cached_db = None
 
 SECRET_NAME = 'MONGODB_FULL_URI'
 DB_NAME = os.getenv('DB_NAME')
-DEFAULT_CLIP_LENGTH = 120 # seconds
+DEFAULT_CLIP_LENGTH = 120  # seconds
+
 
 def connect_to_db():
     global cached_uri
@@ -25,11 +26,13 @@ def connect_to_db():
     return db
 
 # save clips to the database
+
+
 def save_clips(key, clip_data):
     db = connect_to_db()
     query = {'videoId': key}
     timestamps = db.timestamps
-    
+
     update = {
         '$set': {
             'videoId': key,
@@ -42,6 +45,8 @@ def save_clips(key, clip_data):
 
 # gets the clip length from the user
 # in the database
+
+
 def get_clip_length(key):
     db = connect_to_db()
     query = {'twitch_id': key}
@@ -49,7 +54,7 @@ def get_clip_length(key):
     users = db.users
 
     user = users.find_one(query)
-    
+
     if (user):
         return user.get('manual_clip_length', DEFAULT_CLIP_LENGTH)
 
