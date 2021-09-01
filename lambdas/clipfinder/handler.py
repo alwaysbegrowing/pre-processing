@@ -8,7 +8,7 @@ from db import connect_to_db
 s3 = boto3.client('s3')
 SNS = boto3.client('sns')
 THUMBNAIL_GENERATOR_TOPIC = os.getenv('TOPIC')
-MINIMUM_CLIP_LENGTH = 1
+MINIMUM_CLIP_LENGTH = 1 # seconds
 
 def sendSnsMessage(videoId, topic):
     
