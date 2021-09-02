@@ -8,6 +8,7 @@ from db import connect_to_db
 s3 = boto3.client('s3')
 SNS = boto3.client('sns')
 THUMBNAIL_GENERATOR_TOPIC = os.getenv('TOPIC')
+MINIMUM_CLIP_LENGTH = 1 # seconds
 
 def sendSnsMessage(videoId, topic):
     
@@ -38,8 +39,21 @@ def generate_clip_id(key, clip):
     return clip_id
 
 def hydrate_clips(clips, key):
+    # Python will not allow you to remove
+    # items mid-iteration. This was the 
+    # recommended solution on StackOverflow
+    clips_to_remove = []
+
     for clip in clips:
+        length = clip['endTime'] - clip['startTime']
+        if length < MINIMUM_CLIP_LENGTH:
+            clips_to_remove.append(clip)
+            continue
         clip['id'] = generate_clip_id(key, clip)
+
+    for clip in clips_to_remove:
+        clips.remove(clip)
+
     return clips
 
 def handler(event, context):
