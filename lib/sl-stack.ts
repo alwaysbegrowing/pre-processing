@@ -1,4 +1,4 @@
-// import * as apigateway from "@aws-cdk/aws-apigateway";
+import * as apigateway from "@aws-cdk/aws-apigateway";
 import { DockerImageCode, DockerImageFunction, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack, Construct, StackProps } from '@aws-cdk/core';
 import { Bucket, EventType } from '@aws-cdk/aws-s3';
