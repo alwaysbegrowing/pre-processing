@@ -97,6 +97,15 @@ export class SlStack extends Stack {
         BUCKET: messageStoreBucket.bucketName,
       },
     });
+    
+    const chatDownloaderApi = new apigateway.LambdaRestApi(this, 'chatdownloader-api', {
+      handler: downloadLambda,
+    });
+
+    const videoIdsResource = chatDownloaderApi.root.addResource('video_id');
+    const videoId = videoIdsResource.addResource('{video_id}');
+    video_id.addMethod('POST');
+    video_id.addMethod('GET');
 
     readyForDownloadsTopic.grantPublish(vodPoller);
     vodDataRequested.grantPublish(vodPoller);
