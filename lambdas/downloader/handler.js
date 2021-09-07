@@ -32,8 +32,9 @@ const getMessages = async (videoId) => {
 };
 
 exports.main = async (event) => {
-  let videoId
-  if(event.Records[0].Sns.MessageAttributes.VideoId.Value)
+  let videoId;
+  console.log(event)
+  if(event?.Records)
     videoId = event.Records[0].Sns.MessageAttributes.VideoId.Value;  
   else {
     console.log("GET RESPONSE WORKS", event)
