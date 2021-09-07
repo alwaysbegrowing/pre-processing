@@ -37,8 +37,8 @@ exports.main = async (event) => {
   if(event?.Records)
     videoId = event.Records[0].Sns.MessageAttributes.VideoId.Value;  
   else {
-    console.log("GET RESPONSE WORKS", event)
-    return {"test! ": event};
+    console.log("GET RESPONSE WORKS", event.pathParameters['video_id'])
+    videoId = event.pathParameters['video_id'];
   }
   
   console.log({ bucketName, videoId });
