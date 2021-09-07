@@ -100,12 +100,13 @@ export class SlStack extends Stack {
     
     const chatDownloaderApi = new apigateway.LambdaRestApi(this, 'chatdownloader-api', {
       handler: downloadLambda,
+      proxy: false
     });
 
     const videoIdsResource = chatDownloaderApi.root.addResource('video_id');
     const videoId = videoIdsResource.addResource('{video_id}');
-    video_id.addMethod('POST');
-    video_id.addMethod('GET');
+    videoId.addMethod('POST');
+    videoId.addMethod('GET');
 
     readyForDownloadsTopic.grantPublish(vodPoller);
     vodDataRequested.grantPublish(vodPoller);
