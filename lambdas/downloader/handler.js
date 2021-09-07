@@ -49,5 +49,14 @@ exports.main = async (event) => {
     Key: videoId,
     Body: JSON.stringify(allMessages),
   }).promise();
-  return resp;
+  let response = {
+    "statusCode": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "isBase64Encoded": false,
+    "body": JSON.stringify(resp)
+  }
+  return response
+  // return JSON.stringify(resp);
 };
