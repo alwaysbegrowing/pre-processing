@@ -40,7 +40,7 @@ export class SlStack extends Stack {
     const thumbnailGeneratorTopic = new Topic(this, "ThumbnailGeneratorTopic");
     const chatMessagesDownloaded = new Topic(this, "ChatMessagesDownloaded");
 
-    const twitchClient = Secret.fromSecretArn(
+    const twitchClient = Secret.fromSecretCompleteArn(
       this,
       "twitchClient",
       TWITCH_CLIENT_ID_ARN
@@ -146,7 +146,7 @@ export class SlStack extends Stack {
 
     const clipFinder = new PythonFunction(this, "ClipFinder", {
       description: "Finds clips with the Pillar Algorithms",
-      runtime: Runtime.PYTHON_3_8,
+      runtime: Runtime.PYTHON_3_9,
       handler: "handler",
       index: "handler.py",
       entry: "./lambdas/clipfinder",
@@ -167,7 +167,7 @@ export class SlStack extends Stack {
 
     const cccFinder = new PythonFunction(this, "CCCFinder", {
       description: "Finds CCC on Twitch",
-      runtime: Runtime.PYTHON_3_8,
+      runtime: Runtime.PYTHON_3_9,
       handler: "handler",
       index: "handler.py",
       entry: "./lambdas/cccfinder",
@@ -185,7 +185,7 @@ export class SlStack extends Stack {
 
     const manualClip = new PythonFunction(this, "ManualClip", {
       description: "Allows manual clipping",
-      runtime: Runtime.PYTHON_3_8,
+      runtime: Runtime.PYTHON_3_9,
       handler: "handler",
       index: "handler.py",
       entry: "./lambdas/manualclips",
