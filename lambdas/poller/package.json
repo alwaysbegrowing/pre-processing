@@ -12,6 +12,7 @@
     "aws-sdk": "^2.963.0",
     "mongodb": "^3.6.5",
     "mongodb-client-encryption": "^1.2.3",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "saslprep": "^1.0.3"
   }
 }

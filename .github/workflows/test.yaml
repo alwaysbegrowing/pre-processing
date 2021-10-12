@@ -16,6 +16,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Login to ECR
         run: |
           export ecr_passwd=$(aws ecr get-login-password)
@@ -24,12 +30,12 @@ jobs:
       - name: Setup Node 14
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: "14"
 
-      - name: Setup Python 3.8
+      - name: Setup Python 3.9
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.9
 
       - name: Update NPM
         run: npm i -g npm@latest
@@ -38,7 +44,9 @@ jobs:
         run: npm i -g aws-cdk
 
       - name: Install Dependencies
-        run: npm i
+        run: |
+          npm i
+          npm i -g esbuild
 
       - name: Make Logs Directory
         run: mkdir logs
@@ -55,14 +63,14 @@ jobs:
         with:
           file: ./logs/poller.txt
 
-      - name: SignUp Poller Lambda
-        run: |
-          sam local invoke VodPoller741EDAA0 --env-vars env.json --event test_events/signupPollerEvent.json -l logs/signup.txt
+      # - name: SignUp Poller Lambda
+      #   run: |
+      #     sam local invoke VodPoller741EDAA0 --env-vars env.json --event test_events/signupPollerEvent.json -l logs/signup.txt
 
-      - name: Test SignUp Poller
-        uses: pillargg/sam-ots@master
-        with:
-          file: ./logs/signup.txt
+      # - name: Test SignUp Poller
+      #   uses: pillargg/sam-ots@master
+      #   with:
+      #     file: ./logs/signup.txt
 
       - name: Clip Finder Lambda
         run: |
@@ -109,7 +117,7 @@ jobs:
           docker run -d -p 9000:8080 --env-file docker.env thumbnail-test
           export data=$(jq '.' -c ../../test_events/thumbnailGeneratorEvent.json)
           curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d $data > ../../logs/thumbnail.json
-        
+
       - name: Test Generator
         uses: pillargg/sam-ots@master
         with:

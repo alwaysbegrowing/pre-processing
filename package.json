@@ -53,6 +53,7 @@
     "mongodb": "^3.6.6",
     "mongodb-client-encryption": "^1.2.3",
     "node-fetch": "^2.6.1",
+    "saslprep": "^1.0.3",
     "source-map-support": "^0.5.16"
   }
 }
