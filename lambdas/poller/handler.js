@@ -57,7 +57,7 @@ const isStreamerOnlineCheck = async (twitchId, headers) => {
 const getLastVods = async (numOfVodsPerStreamer, userId = null) => {
   let usersToPoll;
   if (userId) {
-    usersToPoll = [userId];
+    usersToPoll = [{ twitch_id: userId }];
   } else {
     usersToPoll = await getUsersToPoll();
   }
