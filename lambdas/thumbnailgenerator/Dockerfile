@@ -10,13 +10,14 @@ RUN apt-get update && apt-get install --no-install-recommends -y ffmpeg \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+RUN pip3 install --no-cache-dir awslambdaric
+
 COPY . .
 RUN chmod +x ./entrypoint.sh
 
 RUN pip3 install --no-cache-dir --upgrade pip
 RUN pip3 install --no-cache-dir -r requirements.txt
-RUN pip3 install --no-cache-dir awslambdaric
 
 WORKDIR /
 ENTRYPOINT [ "./entrypoint.sh" ]
-CMD ["main.handler"]
+CMD ["handler.handler"]
