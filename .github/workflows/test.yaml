@@ -5,6 +5,8 @@ on: [push]
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      SAM_CLI_TELEMETRY: 0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -16,20 +18,28 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Login to ECR
-        run: |
-          export ecr_passwd=$(aws ecr get-login-password)
-          docker login -u AWS -p $ecr_passwd https://576758376358.dkr.ecr.us-east-1.amazonaws.com
+        uses: docker/login-action@v1
+        with:
+          registry: 576758376358.dkr.ecr.us-east-1.amazonaws.com
+          username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Setup Node 14
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: "14"
 
-      - name: Setup Python 3.8
+      - name: Setup Python 3.9
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.9
 
       - name: Update NPM
         run: npm i -g npm@latest
@@ -38,7 +48,9 @@ jobs:
         run: npm i -g aws-cdk
 
       - name: Install Dependencies
-        run: npm i
+        run: |
+          npm i
+          npm i -g esbuild
 
       - name: Make Logs Directory
         run: mkdir logs
@@ -103,13 +115,17 @@ jobs:
       - name: Thumbnail Generator Lambda
         run: |
           cd lambdas/thumbnailgenerator
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> docker.env
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" > docker.env
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> docker.env
+          echo "AWS_REGION=us-east-1" >> docker.env
+          echo "DEFAULT_AWS_REGION=us-east-1" >> docker.env
+          echo "AWS_LAMBDA_FUNCTION_MEMORY_SIZE=1280" >> docker.env
+          echo "BUCKET=slstack-thumbnailstore34588c07-lhe6y4k64g5k" >> docker.env
           docker build -t thumbnail-test .
           docker run -d -p 9000:8080 --env-file docker.env thumbnail-test
           export data=$(jq '.' -c ../../test_events/thumbnailGeneratorEvent.json)
           curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d $data > ../../logs/thumbnail.json
-        
+
       - name: Test Generator
         uses: pillargg/sam-ots@master
         with:

@@ -171,6 +171,7 @@ const pollVods = async () => {
 };
 
 exports.main = async (event) => {
+  console.log(event);
   if (event?.Records) {
     const userId = event?.Records[0]?.Sns?.MessageAttributes?.TwitchId?.Value;
 
