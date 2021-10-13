@@ -19,18 +19,11 @@ def hydrate_clips(clips, key):
     return clips
 
 def handler(event, context):
-    '''
-    Event should have the following information: The user's Twitch ID and the video ID
-    '''
-
     print(json.dumps(event, default=str))
+    video_id = event['videoId']
+
 
     access_token = twitch_auth(TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET)['access_token']
-
-    video_id = event['Records'][0]['Sns']['MessageAttributes']['VideoId']['Value']
-
-    print(json.dumps({'videoId': video_id}))
-    
     ccc_data = get_video_ccc(TWITCH_CLIENT_ID, access_token, video_id)
 
     data = []
@@ -48,4 +41,4 @@ def handler(event, context):
     # the number of ccc clips found and the list of the ccc clips
     print(json.dumps({'number_of_clips':len(hydrated_ccc_results), 'ccc_clips':hydrated_ccc_results, 'result': str(result)}))
 
-    return {}
+    return data

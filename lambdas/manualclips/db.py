@@ -27,7 +27,7 @@ def connect_to_db():
 # save clips to the database
 def save_clips(key, clip_data):
     db = connect_to_db()
-    query = {'videoId': key}
+    query = {'Key': key}
     timestamps = db.timestamps
     
     update = {

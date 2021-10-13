@@ -78,9 +78,11 @@ def generate_thumbnails(videoId: str):
             continue
 
     input_thumbnail_urls(videoId, thumbnail_urls)
+    return thumbnail_urls
 
 def handler(event, context):
-    video_id = event['Records'][0]['Sns']['Message']
-    print(video_id)
-    generate_thumbnails(str(video_id))
-    return {}
+    print(json.dumps(event, default=str))
+
+    video_id = event['videoId']
+    thumbnail_urls = generate_thumbnails(str(video_id))
+    return thumbnail_urls

@@ -9,7 +9,6 @@ from db import save_clips, get_clip_length
 
 s3 = boto3.client('s3')
 
-BUCKET = os.getenv('BUCKET')
 
 # max clip length
 MAX_CLIP_LENGTH = 180 # In seconds. 3 minutes.
@@ -36,15 +35,9 @@ def is_moderator(message):
 def handler(event, context):
     print(json.dumps(event, default=str))
 
-    # gets the S3 event from the SNS event
-    message = event['Records'][0]['Sns']['Message']
-    event = json.loads(message)
+    bucket = event['Bucket']
+    key = event['Key']
 
-    # gets the clip key from the S3 event
-    data = event['Records'][0]['s3']
-    key = data['object']['key']
-
-    # get stream info from twitch api
     stream_data = get_info(key)
 
     # get streamer name from stream data
@@ -54,10 +47,8 @@ def handler(event, context):
     # get the streamer's id from the stream data
     streamer_id = stream_data['user_id']
 
-    print(json.dumps({'videoId': key}))
-
     # gets messages from the S3 bucket
-    obj = s3.get_object(Bucket=BUCKET, Key=key)
+    obj = s3.get_object(Bucket=bucket, Key=key)
     all_messages = json.loads(obj['Body'].read().decode('utf-8'))
 
     clip_command_timestamps = []

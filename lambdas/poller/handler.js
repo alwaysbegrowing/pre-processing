@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 // const AWS = require('aws-sdk');
 // const S3 = new AWS.S3();
-const fetch = require("node-fetch");
-const AWS = require("aws-sdk");
+const fetch = require('node-fetch');
+const AWS = require('aws-sdk');
 
-const { connectToDatabase } = require("./db");
-const { getAccessToken } = require("./auth");
+const { connectToDatabase } = require('./db');
+const { getAccessToken } = require('./auth');
 
 const S3 = new AWS.S3();
 
@@ -17,7 +17,7 @@ const getUsersToPoll = async () => {
   try {
     const db = await connectToDatabase();
     const usersToMonitor = await db
-      .collection("users")
+      .collection('users')
       .find({
         twitch_id: { $ne: null },
       })
@@ -35,7 +35,7 @@ const checkS3forMessages = async (videoIds) => {
     try {
       await S3.headObject({ Bucket: BUCKET, Key: videoId }).promise();
     } catch (err) {
-      if (err.code === "NotFound") {
+      if (err.code === 'NotFound') {
         return videoId;
       }
     }
@@ -64,7 +64,7 @@ const getLastVods = async (numOfVodsPerStreamer, userId = null) => {
   const appToken = await getAccessToken();
   const headers = {
     Authorization: `Bearer ${appToken}`,
-    "Client-ID": TWITCH_CLIENT_ID,
+    'Client-ID': TWITCH_CLIENT_ID,
   };
 
   const videoIds = [];
@@ -88,7 +88,7 @@ const getLastVods = async (numOfVodsPerStreamer, userId = null) => {
   });
 
   if (videoPromises === undefined) {
-    console.log("No videos to poll, video promises is undefined");
+    console.log('No videos to poll, video promises is undefined');
     return [];
   }
 
@@ -101,11 +101,11 @@ const sendMissingVideosSns = async (missingVideoIds) => {
   console.log({ missingVideoIds });
   const SnsTopicsSent = missingVideoIds.map(async (missingVideoId) => {
     const params = {
-      Message: "The included videoID is missing messages",
+      Message: 'The included videoID is missing messages',
       TopicArn: TOPIC,
       MessageAttributes: {
         VideoId: {
-          DataType: "String",
+          DataType: 'String',
           StringValue: missingVideoId,
         },
       },
@@ -121,11 +121,11 @@ const sendRefreshVodSns = async (vodsToRefresh) => {
   console.log({ vodsToRefresh });
   const SnsTopicsSent = vodsToRefresh.map(async (vodToRefresh) => {
     const params = {
-      Message: "Request to Refresh Data",
+      Message: 'Request to Refresh Data',
       TopicArn: REFRESH_VOD_TOPIC,
       MessageAttributes: {
         VideoId: {
-          DataType: "String",
+          DataType: 'String',
           StringValue: vodToRefresh,
         },
       },
@@ -141,7 +141,7 @@ const newUserSignUp = async (userId) => {
   const videoIds = await getLastVods(VOD_LIMIT, userId);
 
   if (videoIds.length === 0) {
-    console.log("No videos to poll.");
+    console.log('No videos to poll.');
     return {};
   }
 

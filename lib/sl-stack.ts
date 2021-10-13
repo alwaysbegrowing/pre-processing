@@ -110,22 +110,13 @@ export class SlStack extends Stack {
       },
     });
 
-    const chatDownloaderApi = new apigateway.LambdaRestApi(this, 'chatdownloader-api', {
-      handler: downloadLambda,
-      proxy: false,
-    });
-
-    const videoIdsResource = chatDownloaderApi.root.addResource('video_id');
-    const videoId = videoIdsResource.addResource('{video_id}');
-    videoId.addMethod('POST');
-    videoId.addMethod('GET');
 
     readyForDownloadsTopic.grantPublish(vodPoller);
     vodDataRequested.grantPublish(vodPoller);
 
     new SnsEventSource(readyForDownloadsTopic).bind(downloadLambda);
 
-    const clipFinder = new PythonFunction(this, 'ClipFinder', {
+    const automaticClipGenerator = new PythonFunction(this, 'Automatic Clip Generator', {
       description: 'Finds clips with the Pillar Algorithms',
       runtime: Runtime.PYTHON_3_9,
       handler: 'handler',
@@ -142,11 +133,11 @@ export class SlStack extends Stack {
       },
     });
 
-    twitchSecret.grantRead(clipFinder);
-    thumbnailGeneratorTopic.grantPublish(clipFinder);
-    new SnsEventSource(chatMessagesDownloaded).bind(clipFinder);
+    twitchSecret.grantRead(automaticClipGenerator);
+    thumbnailGeneratorTopic.grantPublish(automaticClipGenerator);
+    new SnsEventSource(chatMessagesDownloaded).bind(automaticClipGenerator);
 
-    const cccFinder = new PythonFunction(this, 'CCCFinder', {
+    const cccGenerator = new PythonFunction(this, 'CCC Generator', {
       description: 'Finds CCC on Twitch',
       runtime: Runtime.PYTHON_3_9,
       handler: 'handler',
@@ -161,10 +152,10 @@ export class SlStack extends Stack {
       },
     });
 
-    twitchSecret.grantRead(cccFinder);
-    mongoSecret.grantRead(cccFinder);
+    twitchSecret.grantRead(cccGenerator);
+    mongoSecret.grantRead(cccGenerator);
 
-    const manualClip = new PythonFunction(this, 'ManualClip', {
+    const manualClipGenerator = new PythonFunction(this, 'Manual Clip Generator', {
       description: 'Allows manual clipping',
       runtime: Runtime.PYTHON_3_9,
       handler: 'handler',
@@ -180,18 +171,18 @@ export class SlStack extends Stack {
       },
     });
 
-    new SnsEventSource(chatMessagesDownloaded).bind(manualClip);
+    new SnsEventSource(chatMessagesDownloaded).bind(manualClipGenerator);
 
-    twitchSecret.grantRead(manualClip);
-    mongoSecret.grantRead(manualClip);
-    messageStoreBucket.grantRead(manualClip);
+    twitchSecret.grantRead(manualClipGenerator);
+    mongoSecret.grantRead(manualClipGenerator);
+    messageStoreBucket.grantRead(manualClipGenerator);
 
-    new SnsEventSource(vodDataRequested).bind(cccFinder);
+    new SnsEventSource(vodDataRequested).bind(cccGenerator);
 
     messageStoreBucket.grantWrite(downloadLambda);
 
-    messageStoreBucket.grantRead(clipFinder);
-    mongoSecret.grantRead(clipFinder);
+    messageStoreBucket.grantRead(automaticClipGenerator);
+    mongoSecret.grantRead(automaticClipGenerator);
 
     mongoSecret.grantRead(thumbnailGenerator);
 
@@ -212,33 +203,35 @@ export class SlStack extends Stack {
 
     // const downloadAllChats = new Map(this, "Download All Twitch Chats").iterator(downloadTwitchChat)
 
-    const findClipTimestamps = new LambdaInvoke(this, 'Find Clip Timestamps', {
-      lambdaFunction: clipFinder,
+    const generateAutomaticClips = new LambdaInvoke(this, 'Generate Clip Timestamps', {
+      lambdaFunction: automaticClipGenerator,
       outputPath: '$.Payload',
     });
 
-    const findCCCs = new LambdaInvoke(this, 'Find CCCs', {
-      lambdaFunction: cccFinder,
+    const generateCCCs = new LambdaInvoke(this, 'Generate CCCs', {
+      lambdaFunction: cccGenerator,
       outputPath: '$.Payload',
     });
 
-    const findManualCLips = new LambdaInvoke(this, 'Find Manual Clips', {
-      lambdaFunction: cccFinder,
+    const generateManualClips = new LambdaInvoke(this, 'Generate Manual Clips', {
+      lambdaFunction: manualClipGenerator,
       outputPath: '$.Payload',
     });
 
-    const findClipThumbnails = new LambdaInvoke(this, 'Find Clip Thumbnails', {
-      lambdaFunction: cccFinder,
+    const generateThumbnails = new LambdaInvoke(this, 'Generate Clip Thumbnails', {
+      lambdaFunction: thumbnailGenerator,
       outputPath: '$.Payload',
     });
+
+    const processTwitchChat = new Parallel(this, 'Process Twitch Chat');
+    processTwitchChat.branch(generateAutomaticClips)
+    processTwitchChat.branch(generateManualClips)
 
     const videoIdHydration = new Parallel(this, 'Hydrate Video Id');
-    videoIdHydration.branch(findClipTimestamps.next(downloadTwitchChat));
-    videoIdHydration.branch(findManualCLips);
-    videoIdHydration.branch(findClipThumbnails);
-    videoIdHydration.branch(findCCCs);
+    videoIdHydration.branch(downloadTwitchChat.next(processTwitchChat));
+    videoIdHydration.branch(generateCCCs);
 
-    const definition = videoIdHydration;
+    const definition = videoIdHydration.next(generateThumbnails);
 
     const stateMachine = new StateMachine(this, 'PreProcessing', {
       definition,
