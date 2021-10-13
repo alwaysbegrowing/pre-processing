@@ -29,7 +29,7 @@ def is_moderator_or_streamer(message):
     try:
         badges = message['message']['user_badges']
         for badge in badges:
-            if ['moderator', 'broacaster'] in badge['_id']:
+            if badge['_id'] == 'moderator' or badge['_id'] == 'broadcaster':
                 return True
     except KeyError:
         pass
