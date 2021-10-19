@@ -31,35 +31,11 @@ export class SlStack extends Stack {
 
     const messageStoreBucket = new Bucket(this, 'MessageStore');
     const thumbnailStoreBucket = new Bucket(this, 'ThumbnailStore');
-
     const newUserSignup = new Topic(this, 'NewUserSignup');
-    const readyForDownloadsTopic = new Topic(this, 'ReadyForDownloads');
-    const vodDataRequested = new Topic(this, 'VodDataRequested');
-    const thumbnailGeneratorTopic = new Topic(this, 'ThumbnailGeneratorTopic');
-    const chatMessagesDownloaded = new Topic(this, 'ChatMessagesDownloaded');
 
     const twitchClient = Secret.fromSecretCompleteArn(this, 'twitchClient', TWITCH_CLIENT_ID_ARN);
 
     const TWITCH_CLIENT_ID = twitchClient.secretValue.toString();
-
-    const vodPoller = new NodejsFunction(this, 'VodPoller', {
-      description: 'Checks for VODs',
-      runtime: Runtime.NODEJS_14_X,
-      entry: './lambdas/poller/handler.js',
-      memorySize: 256,
-      timeout: Duration.seconds(60),
-      handler: 'main',
-      environment: {
-        BUCKET: messageStoreBucket.bucketName,
-        TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
-        TOPIC: readyForDownloadsTopic.topicArn,
-        DB_NAME: mongoDBDatabase,
-        REFRESH_VOD_TOPIC: vodDataRequested.topicArn,
-      },
-    });
-
-    vodDataRequested.grantPublish(vodPoller);
-    new SnsEventSource(newUserSignup).bind(vodPoller);
 
     const thumbnailGenerator = new DockerImageFunction(this, 'ThumbnailGenerator', {
       code: DockerImageCode.fromImageAsset('./lambdas/thumbnailgenerator'),
@@ -69,34 +45,11 @@ export class SlStack extends Stack {
       environment: {
         BUCKET: thumbnailStoreBucket.bucketName,
         DB_NAME: mongoDBDatabase,
-        TOPIC: thumbnailGeneratorTopic.topicArn,
       },
     });
 
     thumbnailStoreBucket.grantReadWrite(thumbnailGenerator);
     thumbnailStoreBucket.grantPutAcl(thumbnailGenerator);
-
-    new SnsEventSource(thumbnailGeneratorTopic).bind(thumbnailGenerator);
-
-    new Rule(this, 'CheckForVods', {
-      schedule: Schedule.cron({ minute: '*/5', hour: '*', day: '*' }),
-      targets: [new LambdaFunction(vodPoller)],
-    });
-
-    messageStoreBucket.grantRead(vodPoller);
-    // follow below link on how to add new secrets
-    // https://docs.aws.amazon.com/cdk/latest/guide/get_secrets_manager_value.html
-
-    const twitchSecret = Secret.fromSecretAttributes(this, 'TWITCH_CLIENT_SECRET', {
-      secretCompleteArn: TWITCH_CLIENT_SECRET_ARN,
-    });
-
-    const mongoSecret = Secret.fromSecretAttributes(this, 'MONGODB_FULL_URI', {
-      secretCompleteArn: MONGODB_FULL_URI_ARN,
-    });
-
-    twitchSecret.grantRead(vodPoller);
-    mongoSecret.grantRead(vodPoller);
 
     const downloadLambda = new NodejsFunction(this, 'ChatDownloader', {
       description: 'Downloads chat and saves to S3',
@@ -110,10 +63,15 @@ export class SlStack extends Stack {
       },
     });
 
-    readyForDownloadsTopic.grantPublish(vodPoller);
-    vodDataRequested.grantPublish(vodPoller);
+    // follow below link on how to add new secrets
+    // https://docs.aws.amazon.com/cdk/latest/guide/get_secrets_manager_value.html
+    const twitchSecret = Secret.fromSecretAttributes(this, 'TWITCH_CLIENT_SECRET', {
+      secretCompleteArn: TWITCH_CLIENT_SECRET_ARN,
+    });
 
-    new SnsEventSource(readyForDownloadsTopic).bind(downloadLambda);
+    const mongoSecret = Secret.fromSecretAttributes(this, 'MONGODB_FULL_URI', {
+      secretCompleteArn: MONGODB_FULL_URI_ARN,
+    });
 
     const automaticClipGenerator = new PythonFunction(this, 'Automatic Clip Generator', {
       description: 'Finds clips with the Pillar Algorithms',
@@ -128,13 +86,10 @@ export class SlStack extends Stack {
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
         TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
         DB_NAME: mongoDBDatabase,
-        TOPIC: thumbnailGeneratorTopic.topicArn,
       },
     });
 
     twitchSecret.grantRead(automaticClipGenerator);
-    thumbnailGeneratorTopic.grantPublish(automaticClipGenerator);
-    new SnsEventSource(chatMessagesDownloaded).bind(automaticClipGenerator);
 
     const cccGenerator = new PythonFunction(this, 'CCC Generator', {
       description: 'Finds CCC on Twitch',
@@ -170,13 +125,9 @@ export class SlStack extends Stack {
       },
     });
 
-    new SnsEventSource(chatMessagesDownloaded).bind(manualClipGenerator);
-
     twitchSecret.grantRead(manualClipGenerator);
     mongoSecret.grantRead(manualClipGenerator);
     messageStoreBucket.grantRead(manualClipGenerator);
-
-    new SnsEventSource(vodDataRequested).bind(cccGenerator);
 
     messageStoreBucket.grantWrite(downloadLambda);
 
@@ -185,23 +136,11 @@ export class SlStack extends Stack {
 
     mongoSecret.grantRead(thumbnailGenerator);
 
-    messageStoreBucket.addEventNotification(
-      EventType.OBJECT_CREATED,
-      new SnsDestination(chatMessagesDownloaded)
-    );
-
-    const checkForMessages = new LambdaInvoke(this, 'Check for Messages', {
-      lambdaFunction: vodPoller,
-    });
-
     const downloadTwitchChat = new LambdaInvoke(this, 'Download Twitch Chat', {
       lambdaFunction: downloadLambda,
       payloadResponseOnly: true,
       resultPath: '$.chatDownload',
-      // outputPath: '$.chatDownload.Payload',
     });
-
-    // const downloadAllChats = new Map(this, "Download All Twitch Chats").iterator(downloadTwitchChat)
 
     const generateAutomaticClips = new LambdaInvoke(this, 'Generate Clip Timestamps', {
       lambdaFunction: automaticClipGenerator,
@@ -241,5 +180,32 @@ export class SlStack extends Stack {
       definition,
       timeout: Duration.minutes(5),
     });
+
+    const vodPoller = new NodejsFunction(this, 'VodPoller', {
+      description: 'Checks for VODs',
+      runtime: Runtime.NODEJS_14_X,
+      entry: './lambdas/poller/handler.js',
+      memorySize: 256,
+      timeout: Duration.seconds(60),
+      handler: 'main',
+      environment: {
+        BUCKET: messageStoreBucket.bucketName,
+        TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
+        DB_NAME: mongoDBDatabase,
+        PREPROCESSING_STATE_MACHINE_ARN: stateMachine.stateMachineArn,
+      },
+    });
+    stateMachine.grantStartExecution(vodPoller);
+    new SnsEventSource(newUserSignup).bind(vodPoller);
+
+    new Rule(this, 'CheckForVods', {
+      schedule: Schedule.cron({ minute: '*/5', hour: '*', day: '*' }),
+      targets: [new LambdaFunction(vodPoller)],
+    });
+
+    messageStoreBucket.grantRead(vodPoller);
+
+    twitchSecret.grantRead(vodPoller);
+    mongoSecret.grantRead(vodPoller);
   }
 }
