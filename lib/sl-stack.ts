@@ -73,7 +73,7 @@ export class SlStack extends Stack {
       },
     });
 
-    const clipFormatter = new NodejsFunction(this, "Clip Formatter", {
+    const clipMetadataFormatter = new NodejsFunction(this, "Clip Formatter", {
       runtime: Runtime.NODEJS_14_X,
       entry: "./lambdas/formatter/handler.js",
       timeout: Duration.seconds(3),
@@ -132,7 +132,7 @@ export class SlStack extends Stack {
     });
 
     twitchSecret.grantRead(cccGenerator);
-    mongoSecret.grantRead(clipFormatter);
+    mongoSecret.grantRead(clipMetadataFormatter);
 
     const manualClipGenerator = new PythonFunction(
       this,
@@ -212,15 +212,15 @@ export class SlStack extends Stack {
     videoIdHydration.branch(downloadTwitchChat.next(processTwitchChat));
     videoIdHydration.branch(generateCCCs);
 
-    const formatAndUploadClips = new LambdaInvoke(
+    const formatAndUploadClipsMetadata = new LambdaInvoke(
       this,
-      "Format and Store Clips",
+      "Format and Store Clips Metadata",
       {
-        lambdaFunction: clipFormatter,
+        lambdaFunction: clipMetadataFormatter,
         payloadResponseOnly: true,
       }
     );
-    const definition = videoIdHydration.next(formatAndUploadClips);
+    const definition = videoIdHydration.next(formatAndUploadClipsMetadata);
 
     const stateMachine = new StateMachine(this, "PreProcessing", {
       definition,
