@@ -29,8 +29,10 @@ exports.main = async (event) => {
   );
 
   const cccHydratedClips = hydrateClips(cccClips, ClipsTypeEnum.ccc);
+  const allClips = [...aiHydratedClips, ...manualHydratedClips, ...cccHydratedClips];
+  const sortedClips = allClips.sort((a, b) => a.startTime - b.startTime);
   const combinedClips = {
-    clips: [...aiHydratedClips, ...manualHydratedClips, ...cccHydratedClips],
+    clips: sortedClips,
   };
   const result = await setClipData(MONGODB_FULL_URI_ARN, DB_NAME, videoId, combinedClips);
   return result;
