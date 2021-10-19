@@ -40,7 +40,7 @@ const setClipData = async (MONGODB_FULL_URI_ARN, DB_NAME, videoId, data) => {
   };
   const options = { upsert: true };
 
-  const updateResults = await db.collection('timestamps').updateOne(filter, updateDoc, options);
+  const updateResults = await db.collection('clip_metadata').updateOne(filter, updateDoc, options);
   return updateResults;
 };
 exports.setClipData = setClipData;
