@@ -1,15 +1,22 @@
 /* eslint-disable no-console */
 
-const fetch = require('node-fetch');
-const AWS = require('aws-sdk');
+const fetch = require("node-fetch");
+const AWS = require("aws-sdk");
 
-const { connectToDatabase } = require('./db');
-const { getAccessToken } = require('./auth');
+const { connectToDatabase } = require("./db");
+const { getAccessToken } = require("./auth");
 
 const S3 = new AWS.S3();
 const stepFunctions = new AWS.StepFunctions();
 
-const { TWITCH_CLIENT_ID, BUCKET, PREPROCESSING_STATE_MACHINE_ARN } = process.env;
+const {
+  TWITCH_CLIENT_ID,
+  BUCKET,
+  PREPROCESSING_STATE_MACHINE_ARN,
+  TESTING_STR,
+} = process.env;
+
+const TESTING = TESTING_STR === "true";
 
 const VOD_LIMIT = 5;
 
@@ -17,7 +24,7 @@ const getUsersToPoll = async () => {
   try {
     const db = await connectToDatabase();
     const usersToMonitor = await db
-      .collection('users')
+      .collection("users")
       .find({
         twitch_id: { $ne: null },
       })
@@ -35,7 +42,7 @@ const checkS3forMessages = async (videoIds) => {
     try {
       await S3.headObject({ Bucket: BUCKET, Key: videoId }).promise();
     } catch (err) {
-      if (err.code === 'NotFound') {
+      if (err.code === "NotFound") {
         return videoId;
       }
     }
@@ -66,16 +73,19 @@ const getLastVods = async (numOfVodsPerStreamer, userId = null) => {
   console.info(appToken);
   const headers = {
     Authorization: `Bearer ${appToken}`,
-    'Client-ID': TWITCH_CLIENT_ID,
+    "Client-ID": TWITCH_CLIENT_ID,
   };
-  console.info('About to call twitch API for users', { usersToPoll });
+  console.info("About to call twitch API for users", { usersToPoll });
   const videoIds = [];
   const videoPromises = usersToPoll.map(async ({ twitch_id: twitchId }) => {
     const url = `https://api.twitch.tv/helix/videos?user_id=${twitchId}&type=archive&first=${numOfVodsPerStreamer}`;
     const resp = await fetch(url, { headers });
     const singleStreamersVideos = await resp.json();
     const isStreamerOnline = await isStreamerOnlineCheck(twitchId, headers);
-    console.info('got user data from twitch', { singleStreamersVideos, isStreamerOnline });
+    console.info("got user data from twitch", {
+      singleStreamersVideos,
+      isStreamerOnline,
+    });
     singleStreamersVideos.data.forEach(({ id }, i) => {
       // this is fix https://github.com/pillargg/timestamps/issues/2
       // we should not create clips for the vod if the user is still streaming
@@ -97,7 +107,7 @@ const getLastVods = async (numOfVodsPerStreamer, userId = null) => {
 };
 
 const startStepFunctions = async (videoIds) => {
-  console.info('starting step function executions', { videoIds });
+  console.info("starting step function executions", { videoIds });
 
   const stepFunctionPromises = videoIds.map((videoId) =>
     stepFunctions
@@ -114,15 +124,24 @@ const startStepFunctions = async (videoIds) => {
 };
 
 const newUserSignUp = async (userId) => {
-  console.info('started user signup flow', { userId });
+  console.info("started user signup flow", { userId });
   const videoIds = await getLastVods(VOD_LIMIT, userId);
-  console.info('got latest videoIds', { videoIds });
+  console.info("got latest videoIds", { videoIds });
+
+  if (TESTING) {
+    return videoIds;
+  }
+
   return startStepFunctions(videoIds);
 };
 
 const pollVods = async () => {
   const videoIds = await getLastVods(VOD_LIMIT);
   const missingVideoIds = await checkS3forMessages(videoIds);
+
+  if (TESTING) {
+    return {};
+  }
 
   return startStepFunctions(missingVideoIds);
 };
@@ -135,5 +154,4 @@ exports.main = async (event) => {
     return newUserSignUp(userId);
   }
   return pollVods();
-
 };
