@@ -6,6 +6,7 @@ from db import connect_to_db, input_thumbnail_urls
 from bson.json_util import dumps, loads
 import boto3
 from botocore.exceptions import ClientError
+import itertools
 
 AWS_BUCKET = os.getenv('BUCKET')
 
@@ -49,20 +50,15 @@ def get_manifest_url(stream_url):
     high_quality_manifest = s['best']
     return high_quality_manifest.url
 
-def generate_thumbnails(videoId: str):
+def generate_thumbnails(videoId: str, clips: list[dict]):
     os.chdir('/tmp')
-
-    clip_data = get_clips_from_db(videoId)
-    if clip_data is None:
-        print('No clip data found.')
-        return
 
     stream_url = TWITCH_BASE_URL + videoId
     high_quality_manifest_url = get_manifest_url(stream_url)
     thumbnail_urls = {}
 
     # OPTIONAL : to make code more readable, can use this library instead of a subprocess call https://github.com/kkroening/ffmpeg-python/blob/master/examples/README.md#generate-thumbnail-for-video
-    for clip in clip_data:
+    for clip in clips:
         formatted_timestamp = time.strftime('%H:%M:%S', time.gmtime(int(clip["startTime"])))
         clip_id = f"{videoId}-{clip['startTime']}-{clip['endTime']}"
         output_filename = f"{clip_id}.jpg"
@@ -82,7 +78,11 @@ def generate_thumbnails(videoId: str):
 
 def handler(event, context):
     print(json.dumps(event, default=str))
-
     video_id = event['videoId']
-    thumbnail_urls = generate_thumbnails(str(video_id))
+    clips = event['clips']
+    
+    # https://stackoverflow.com/questions/13958998/python-list-comprehension-unpacking-and-multiple-operations
+    all_clips = list(itertools.chain.from_iterable(clips))
+ 
+    thumbnail_urls = generate_thumbnails(video_id, all_clips)
     return thumbnail_urls

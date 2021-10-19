@@ -110,7 +110,6 @@ export class SlStack extends Stack {
       },
     });
 
-
     readyForDownloadsTopic.grantPublish(vodPoller);
     vodDataRequested.grantPublish(vodPoller);
 
@@ -193,45 +192,50 @@ export class SlStack extends Stack {
 
     const checkForMessages = new LambdaInvoke(this, 'Check for Messages', {
       lambdaFunction: vodPoller,
-      outputPath: '$.Payload',
     });
 
     const downloadTwitchChat = new LambdaInvoke(this, 'Download Twitch Chat', {
       lambdaFunction: downloadLambda,
-      outputPath: '$.Payload',
+      payloadResponseOnly: true,
+      resultPath: '$.chatDownload',
+      // outputPath: '$.chatDownload.Payload',
     });
 
     // const downloadAllChats = new Map(this, "Download All Twitch Chats").iterator(downloadTwitchChat)
 
     const generateAutomaticClips = new LambdaInvoke(this, 'Generate Clip Timestamps', {
       lambdaFunction: automaticClipGenerator,
-      outputPath: '$.Payload',
+      payloadResponseOnly: true,
     });
 
     const generateCCCs = new LambdaInvoke(this, 'Generate CCCs', {
       lambdaFunction: cccGenerator,
-      outputPath: '$.Payload',
+      payloadResponseOnly: true,
     });
 
     const generateManualClips = new LambdaInvoke(this, 'Generate Manual Clips', {
       lambdaFunction: manualClipGenerator,
-      outputPath: '$.Payload',
+      payloadResponseOnly: true,
     });
 
     const generateThumbnails = new LambdaInvoke(this, 'Generate Clip Thumbnails', {
       lambdaFunction: thumbnailGenerator,
-      outputPath: '$.Payload',
+      payloadResponseOnly: true,
     });
 
-    const processTwitchChat = new Parallel(this, 'Process Twitch Chat');
-    processTwitchChat.branch(generateAutomaticClips)
-    processTwitchChat.branch(generateManualClips)
+    const processTwitchChat = new Parallel(this, 'Process Twitch Chat', {
+      resultPath: '$.clips',
+      inputPath: '$.chatDownload',
+    });
+    processTwitchChat.branch(generateAutomaticClips);
+    processTwitchChat.branch(generateManualClips);
+    processTwitchChat.next(generateThumbnails);
 
     const videoIdHydration = new Parallel(this, 'Hydrate Video Id');
     videoIdHydration.branch(downloadTwitchChat.next(processTwitchChat));
     videoIdHydration.branch(generateCCCs);
 
-    const definition = videoIdHydration.next(generateThumbnails);
+    const definition = videoIdHydration;
 
     const stateMachine = new StateMachine(this, 'PreProcessing', {
       definition,

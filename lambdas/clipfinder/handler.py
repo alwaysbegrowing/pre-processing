@@ -65,4 +65,4 @@ def handler(event, context):
     print(json.dumps({'found_clips': clips}))
 
     store_in_db(key, clips)
-    return clips
+    return hydrated_brain_results

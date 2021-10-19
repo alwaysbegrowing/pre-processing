@@ -90,7 +90,7 @@ def handler(event, context):
 
     # if the clip_command_timestamps list is empty
     if not clip_command_timestamps:
-        return {}
+        return []
 
     # gets the start time of the stream
     stream_start_time = arrow.get(stream_data['created_at'])
@@ -115,4 +115,4 @@ def handler(event, context):
     print(json.dumps({'num_clips_created': len(clips),
           'clips': clips, 'db_resp': resp.modified_count}))
 
-    return {}
+    return clips
