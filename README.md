@@ -24,7 +24,7 @@ npm run synth
 
 That will set up NPM and AWS SAM for testing locally. You can then run the lambdas locally with the following:
 ```
-npm run clipfinder
+npm run clipgenerator
 npm run poller
 npm run downloader
 npm run cccfinder

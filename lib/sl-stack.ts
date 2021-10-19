@@ -76,11 +76,10 @@ export class SlStack extends Stack {
       runtime: Runtime.PYTHON_3_9,
       handler: 'handler',
       index: 'handler.py',
-      entry: './lambdas/clipfinder',
+      entry: './lambdas/clipgenerator',
       memorySize: 1280,
       timeout: Duration.seconds(900),
       environment: {
-        BUCKET: messageStoreBucket.bucketName,
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
         TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
         DB_NAME: mongoDBDatabase,
