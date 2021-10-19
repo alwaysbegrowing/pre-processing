@@ -76,23 +76,23 @@ jobs:
         with:
           file: ./logs/signup.txt
 
-      - name: CCC Finder Lambda
-        run: |
-          sam local invoke CCCFinder4C010E91 --env-vars env.json --event test_events/cccFinderEvent.json -l logs/cccfinder.txt
+      # - name: CCC Finder Lambda
+      #   run: |
+      #     sam local invoke CCCFinder4C010E91 --env-vars env.json --event test_events/cccFinderEvent.json -l logs/cccfinder.txt
 
-      - name: Test CCC Finder
-        uses: pillargg/sam-ots@master
-        with:
-          file: ./logs/cccfinder.txt
+      # - name: Test CCC Finder
+      #   uses: pillargg/sam-ots@master
+      #   with:
+      #     file: ./logs/cccfinder.txt
 
-      - name: Manual Clip Lambda
-        run: |
-          sam local invoke ManualClipD684F488 --env-vars env.json --event test_events/s3SNSEvent.json -l logs/manualclip.txt
+      # - name: Manual Clip Lambda
+      #   run: |
+      #     sam local invoke ManualClipD684F488 --env-vars env.json --event test_events/s3SNSEvent.json -l logs/manualclip.txt
 
-      - name: Test Manual Clip
-        uses: pillargg/sam-ots@master
-        with:
-          file: ./logs/manualclip.txt
+      # - name: Test Manual Clip
+      #   uses: pillargg/sam-ots@master
+      #   with:
+      #     file: ./logs/manualclip.txt
 
       - name: Downloader Lambda
         run: |
