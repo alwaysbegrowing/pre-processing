@@ -1,14 +1,12 @@
 const { MongoClient } = require('mongodb');
 const { SecretsManager } = require('aws-sdk');
 
-const dbName = process.env.DB_NAME;
-
 // Use cache across lambdas
 // https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html
 let cachedMongoURI;
 let cachedDb;
 
-async function connectToDatabase(MONGODB_FULL_URI_ARN) {
+async function connectToDatabase(MONGODB_FULL_URI_ARN, dbName) {
   if (cachedDb) {
     return cachedDb;
   }
@@ -34,5 +32,15 @@ async function connectToDatabase(MONGODB_FULL_URI_ARN) {
   cachedDb = db;
   return db;
 }
+const setClipData = async (MONGODB_FULL_URI_ARN, videoId, data) => {
+  const db = await connectToDatabase(MONGODB_FULL_URI_ARN);
+  const filter = { videoId };
+  const updateDoc = {
+    $set: data,
+  };
+  const options = { upsert: true };
 
-exports.connectToDatabase = connectToDatabase;
+  const updateResults = await db.collection('timestamps').updateOne(filter, updateDoc, options);
+  return updateResults;
+};
+exports.setClipData = setClipData;

@@ -67,6 +67,7 @@ export class SlStack extends Stack {
       handler: 'main',
       environment: {
         MONGODB_FULL_URI_ARN,
+        DB_NAME: mongoDBDatabase
       },
     });
     // follow below link on how to add new secrets
@@ -159,7 +160,7 @@ export class SlStack extends Stack {
     const generateThumbnails = new LambdaInvoke(this, 'Generate Clip Thumbnails', {
       lambdaFunction: thumbnailGenerator,
       payloadResponseOnly: true,
-      outputPath: '$.thumbnails',
+      resultPath: '$.thumbnails',
     });
 
     const processTwitchChat = new Parallel(this, 'Process Twitch Chat', {
@@ -176,6 +177,7 @@ export class SlStack extends Stack {
 
     const formatAndUploadClips = new LambdaInvoke(this, 'Format and Store Clips', {
       lambdaFunction: clipFormatter,
+      payloadResponseOnly: true,
     });
     const definition = videoIdHydration.next(formatAndUploadClips);
 
@@ -197,6 +199,7 @@ export class SlStack extends Stack {
         PREPROCESSING_STATE_MACHINE_ARN: stateMachine.stateMachineArn,
         TWITCH_CLIENT_SECRET_ARN,
         MONGODB_FULL_URI_ARN,
+        DB_NAME: mongoDBDatabase
       },
     });
     stateMachine.grantStartExecution(vodPoller);

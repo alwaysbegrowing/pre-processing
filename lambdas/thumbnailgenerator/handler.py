@@ -67,10 +67,8 @@ def generate_thumbnails(videoId: str, clips: list[dict]):
 def handler(event, context):
     print(json.dumps(event, default=str))
     video_id = event['videoId']
-    clips = event['clips']
+    clips_by_type = event['clips']
     
-    # https://stackoverflow.com/questions/13958998/python-list-comprehension-unpacking-and-multiple-operations
-    all_clips = list(itertools.chain.from_iterable(clips))
- 
-    thumbnail_urls = generate_thumbnails(video_id, all_clips)
+    
+    thumbnail_urls = [generate_thumbnails(video_id, clips) for clips in clips_by_type]
     return thumbnail_urls
