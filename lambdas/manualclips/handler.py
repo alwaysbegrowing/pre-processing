@@ -5,7 +5,6 @@ import arrow
 import boto3
 
 from twitch import get_info
-from db import save_clips, get_clip_length
 
 s3 = boto3.client('s3')
 
@@ -16,13 +15,6 @@ MAX_CLIP_LENGTH = 180  # In seconds. 3 minutes.
 MIN_CLIP_LENGTH = 15  # In seconds.
 DEFAULT_CLIP_LENGTH = 60
 # generates a clip id
-
-
-def generate_clip_id(key, start_time, end_time):
-    clip_id = f"{key}-{start_time}-{end_time}"
-    return clip_id
-
-# checks if a user is a moderator
 
 
 def is_moderator_or_streamer(message):
@@ -102,17 +94,9 @@ def handler(event, context):
         end_time = round(arrow.get(clip_command['created_at']).timestamp(
         ) - stream_start_time.timestamp(), 2)
         start_time = round(end_time - clip_command['length'], 2)
-        clip_id = generate_clip_id(key, start_time, end_time)
         clips.append({
             'startTime': start_time,
             'endTime': end_time,
-            'id': clip_id
         })
-
-    # save the clips to the database
-    resp = save_clips(key, clips)
-
-    print(json.dumps({'num_clips_created': len(clips),
-          'clips': clips, 'db_resp': resp.modified_count}))
 
     return clips
