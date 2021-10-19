@@ -76,15 +76,6 @@ jobs:
         with:
           file: ./logs/signup.txt
 
-      - name: Clip Finder Lambda
-        run: |
-          sam local invoke AutomaticClipGeneratorDB2A8A32 --env-vars env.json --event test_events/s3SNSEvent.json -l logs/clipgenerator.txt
-
-      - name: Test Clip Finder
-        uses: pillargg/sam-ots@master
-        with:
-          file: ./logs/clipgenerator.txt
-
       - name: CCC Finder Lambda
         run: |
           sam local invoke CCCFinder4C010E91 --env-vars env.json --event test_events/cccFinderEvent.json -l logs/cccfinder.txt
