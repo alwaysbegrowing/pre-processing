@@ -129,7 +129,7 @@ const pollVods = async () => {
 
 exports.main = async (event) => {
   console.log(event);
-  const userId = event?.Records[0]?.Sns?.MessageAttributes?.TwitchId?.Value;
+  const userId = event?.Records?.[0]?.Sns?.MessageAttributes?.TwitchId?.Value;
 
   if (userId) {
     return newUserSignUp(userId);
