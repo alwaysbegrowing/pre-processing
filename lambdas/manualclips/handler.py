@@ -9,12 +9,9 @@ from twitch import get_info
 s3 = boto3.client('s3')
 
 
-# max clip length
-MAX_CLIP_LENGTH = 180  # In seconds. 3 minutes.
-# min clip length
-MIN_CLIP_LENGTH = 15  # In seconds.
-DEFAULT_CLIP_LENGTH = 60
-# generates a clip id
+MAX_CLIP_LENGTH_IN_SECONDS = 180
+MIN_CLIP_LENGTH_IN_SECONDS = 15
+DEFAULT_CLIP_LENGTH_IN_SECONDS = 60
 
 
 def is_moderator_or_streamer(message):
@@ -54,7 +51,7 @@ def handler(event, context):
                 body = message['message']['body']
                 if body.startswith('!clip'):
                     # add the clip end time to the list
-                    current_clip_length = DEFAULT_CLIP_LENGTH
+                    current_clip_length = DEFAULT_CLIP_LENGTH_IN_SECONDS
 
                     # split at the space
                     clip_command_parts = body.split(' ')
@@ -64,14 +61,14 @@ def handler(event, context):
                         try:
                             current_clip_length = int(clip_command_parts[1])
                         except IndexError:
-                            current_clip_length = DEFAULT_CLIP_LENGTH
+                            current_clip_length = DEFAULT_CLIP_LENGTH_IN_SECONDS
 
                     # make sure the clip length is not longer than the max
-                    if current_clip_length > MAX_CLIP_LENGTH:
-                        current_clip_length = MAX_CLIP_LENGTH
+                    if current_clip_length > MAX_CLIP_LENGTH_IN_SECONDS:
+                        current_clip_length = MAX_CLIP_LENGTH_IN_SECONDS
 
-                    if current_clip_length < MIN_CLIP_LENGTH:
-                        current_clip_length = MIN_CLIP_LENGTH
+                    if current_clip_length < MIN_CLIP_LENGTH_IN_SECONDS:
+                        current_clip_length = MIN_CLIP_LENGTH_IN_SECONDS
 
                     clip_command_timestamps.append({
                         'created_at': message['created_at'],
