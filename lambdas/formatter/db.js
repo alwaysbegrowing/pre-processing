@@ -32,8 +32,8 @@ async function connectToDatabase(MONGODB_FULL_URI_ARN, dbName) {
   cachedDb = db;
   return db;
 }
-const setClipData = async (MONGODB_FULL_URI_ARN, videoId, data) => {
-  const db = await connectToDatabase(MONGODB_FULL_URI_ARN);
+const setClipData = async (MONGODB_FULL_URI_ARN, DB_NAME, videoId, data) => {
+  const db = await connectToDatabase(MONGODB_FULL_URI_ARN, DB_NAME);
   const filter = { videoId };
   const updateDoc = {
     $set: data,
