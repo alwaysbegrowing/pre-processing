@@ -1,8 +1,6 @@
-import * as apigateway from '@aws-cdk/aws-apigateway';
 import { DockerImageCode, DockerImageFunction, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack, Construct, StackProps } from '@aws-cdk/core';
-import { Bucket, EventType } from '@aws-cdk/aws-s3';
-import { SnsDestination } from '@aws-cdk/aws-s3-notifications';
+import { Bucket } from '@aws-cdk/aws-s3';
 import { Topic } from '@aws-cdk/aws-sns';
 import { SnsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
@@ -122,6 +120,7 @@ export class SlStack extends Stack {
         TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
         DB_NAME: mongoDBDatabase,
         BUCKET: messageStoreBucket.bucketName,
+        MONGODB_FULL_URI_ARN
       },
     });
 
@@ -193,6 +192,8 @@ export class SlStack extends Stack {
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
         DB_NAME: mongoDBDatabase,
         PREPROCESSING_STATE_MACHINE_ARN: stateMachine.stateMachineArn,
+        TWITCH_CLIENT_SECRET_ARN,
+        MONGODB_FULL_URI_ARN
       },
     });
     stateMachine.grantStartExecution(vodPoller);

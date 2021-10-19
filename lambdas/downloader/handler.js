@@ -43,6 +43,5 @@ exports.main = async (event) => {
     Body: JSON.stringify(allMessages),
   }).promise();
 
-
   return s3resp;
 };
