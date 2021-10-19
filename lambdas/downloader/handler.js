@@ -32,31 +32,16 @@ const getMessages = async (videoId) => {
 };
 
 exports.main = async (event) => {
-  let videoId;
+  console.log(event);
+  const { videoId } = event;
 
-  if(event?.Records)
-    videoId = event.Records[0].Sns.MessageAttributes.VideoId.Value;  
-  else {
-    videoId = event.pathParameters['video_id'];
-  }
-  
-  console.log({ bucketName, videoId });
   const allMessages = await getMessages(videoId);
   console.log({ numberOfMessages: allMessages.length });
-
   const s3resp = await S3.upload({
     Bucket: bucketName,
     Key: videoId,
     Body: JSON.stringify(allMessages),
   }).promise();
 
-  let response = {
-    "statusCode": 200,
-    "headers": {
-      "Content-Type": "application/json"
-    },
-    "isBase64Encoded": false,
-    "body": JSON.stringify(s3resp)
-  }
-  return response
+  return s3resp;
 };

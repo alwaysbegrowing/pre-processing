@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
-// const AWS = require('aws-sdk');
-// const S3 = new AWS.S3();
+
 const fetch = require("node-fetch");
 const AWS = require("aws-sdk");
 
@@ -8,8 +7,16 @@ const { connectToDatabase } = require("./db");
 const { getAccessToken } = require("./auth");
 
 const S3 = new AWS.S3();
+const stepFunctions = new AWS.StepFunctions();
 
-const { TWITCH_CLIENT_ID, TOPIC, BUCKET, REFRESH_VOD_TOPIC } = process.env;
+const {
+  TWITCH_CLIENT_ID,
+  BUCKET,
+  PREPROCESSING_STATE_MACHINE_ARN,
+  TESTING_STR,
+} = process.env;
+
+const TESTING = TESTING_STR === "true";
 
 const VOD_LIMIT = 5;
 
@@ -61,20 +68,24 @@ const getLastVods = async (numOfVodsPerStreamer, userId = null) => {
   } else {
     usersToPoll = await getUsersToPoll();
   }
+
   const appToken = await getAccessToken();
+  console.info(appToken);
   const headers = {
     Authorization: `Bearer ${appToken}`,
     "Client-ID": TWITCH_CLIENT_ID,
   };
-
+  console.info("About to call twitch API for users", { usersToPoll });
   const videoIds = [];
-  // aggregates response from Twitch API containing details of last VOD for each user
-  // https://dev.twitch.tv/docs/api/reference#get-videos
   const videoPromises = usersToPoll.map(async ({ twitch_id: twitchId }) => {
     const url = `https://api.twitch.tv/helix/videos?user_id=${twitchId}&type=archive&first=${numOfVodsPerStreamer}`;
     const resp = await fetch(url, { headers });
     const singleStreamersVideos = await resp.json();
     const isStreamerOnline = await isStreamerOnlineCheck(twitchId, headers);
+    console.info("got user data from twitch", {
+      singleStreamersVideos,
+      isStreamerOnline,
+    });
     singleStreamersVideos.data.forEach(({ id }, i) => {
       // this is fix https://github.com/pillargg/timestamps/issues/2
       // we should not create clips for the vod if the user is still streaming
@@ -87,98 +98,60 @@ const getLastVods = async (numOfVodsPerStreamer, userId = null) => {
     return singleStreamersVideos;
   });
 
-  if (videoPromises === undefined) {
-    console.log("No videos to poll, video promises is undefined");
-    return [];
+  if (!videoPromises) {
+    return videoIds;
   }
 
   await Promise.all(videoPromises);
   return videoIds;
 };
 
-const sendMissingVideosSns = async (missingVideoIds) => {
-  // missingVideoIDs: Video IDs that are not in the S3 bucket.
-  console.log({ missingVideoIds });
-  const SnsTopicsSent = missingVideoIds.map(async (missingVideoId) => {
-    const params = {
-      Message: "The included videoID is missing messages",
-      TopicArn: TOPIC,
-      MessageAttributes: {
-        VideoId: {
-          DataType: "String",
-          StringValue: missingVideoId,
-        },
-      },
-    };
+const startStepFunctions = async (videoIds) => {
+  console.info("starting step function executions", { videoIds });
 
-    const publishTextPromise = await new AWS.SNS().publish(params).promise();
-    return publishTextPromise;
-  });
-  return Promise.all(SnsTopicsSent);
-};
+  const stepFunctionPromises = videoIds.map((videoId) =>
+    stepFunctions
+      .startExecution({
+        stateMachineArn: PREPROCESSING_STATE_MACHINE_ARN,
+        input: JSON.stringify({ videoId }),
+      })
+      .promise()
+  );
+  const functionExecutions = await Promise.all(stepFunctionPromises);
 
-const sendRefreshVodSns = async (vodsToRefresh) => {
-  console.log({ vodsToRefresh });
-  const SnsTopicsSent = vodsToRefresh.map(async (vodToRefresh) => {
-    const params = {
-      Message: "Request to Refresh Data",
-      TopicArn: REFRESH_VOD_TOPIC,
-      MessageAttributes: {
-        VideoId: {
-          DataType: "String",
-          StringValue: vodToRefresh,
-        },
-      },
-    };
-
-    const publishTextPromise = await new AWS.SNS().publish(params).promise();
-    return publishTextPromise;
-  });
-  return Promise.all(SnsTopicsSent);
+  console.info(functionExecutions);
+  return functionExecutions;
 };
 
 const newUserSignUp = async (userId) => {
+  console.info("started user signup flow", { userId });
   const videoIds = await getLastVods(VOD_LIMIT, userId);
+  console.info("got latest videoIds", { videoIds });
 
-  if (videoIds.length === 0) {
-    console.log("No videos to poll.");
-    return {};
+  if (TESTING) {
+    return videoIds;
   }
 
-  // send missing vod sns
-  const missingVideoIds = await sendMissingVideosSns(videoIds);
-  const resp = { missingVideoIds };
-
-  console.log(resp);
-  return resp;
+  return startStepFunctions(videoIds);
 };
 
 const pollVods = async () => {
-  // The event that triggers this lambda isn't relevant,
-  // as long as the lambda gets triggered.
   const videoIds = await getLastVods(VOD_LIMIT);
   const missingVideoIds = await checkS3forMessages(videoIds);
-  const missingVideosResponse = await sendMissingVideosSns(missingVideoIds);
 
-  const refreshVodResponse = await sendRefreshVodSns(videoIds);
+  if (TESTING) {
+    return {};
+  }
 
-  console.log({
-    missingVideoIdsLength: missingVideosResponse.length,
-    missingVideosResponse,
-    refreshVodResponse,
-  });
-  return { missingVideoIdsLength: missingVideosResponse.length };
+  return startStepFunctions(missingVideoIds);
 };
 
 exports.main = async (event) => {
   console.log(event);
-  if (event?.Records) {
-    const userId = event?.Records[0]?.Sns?.MessageAttributes?.TwitchId?.Value;
+  const userId = event?.Records?.[0]?.Sns?.MessageAttributes?.TwitchId?.Value;
 
-    if (userId) {
-      return newUserSignUp(userId);
-    }
+  if (userId) {
+    return newUserSignUp(userId);
   }
-
   return pollVods();
 };
