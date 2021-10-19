@@ -42,7 +42,6 @@ export class SlStack extends Stack {
       memorySize: 1280,
       environment: {
         BUCKET: thumbnailStoreBucket.bucketName,
-        DB_NAME: mongoDBDatabase,
       },
     });
 
@@ -61,6 +60,15 @@ export class SlStack extends Stack {
       },
     });
 
+    const clipFormatter = new NodejsFunction(this, 'Clip Formatter', {
+      runtime: Runtime.NODEJS_14_X,
+      entry: './lambdas/formatter/handler.js',
+      timeout: Duration.seconds(3),
+      handler: 'main',
+      environment: {
+        MONGODB_FULL_URI_ARN,
+      },
+    });
     // follow below link on how to add new secrets
     // https://docs.aws.amazon.com/cdk/latest/guide/get_secrets_manager_value.html
     const twitchSecret = Secret.fromSecretAttributes(this, 'TWITCH_CLIENT_SECRET', {
@@ -82,7 +90,6 @@ export class SlStack extends Stack {
       environment: {
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
         TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
-        DB_NAME: mongoDBDatabase,
       },
     });
 
@@ -99,12 +106,11 @@ export class SlStack extends Stack {
       environment: {
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
         TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
-        DB_NAME: mongoDBDatabase,
       },
     });
 
     twitchSecret.grantRead(cccGenerator);
-    mongoSecret.grantRead(cccGenerator);
+    mongoSecret.grantRead(clipFormatter);
 
     const manualClipGenerator = new PythonFunction(this, 'Manual Clip Generator', {
       description: 'Allows manual clipping',
@@ -117,22 +123,17 @@ export class SlStack extends Stack {
       environment: {
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
         TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
-        DB_NAME: mongoDBDatabase,
         BUCKET: messageStoreBucket.bucketName,
-        MONGODB_FULL_URI_ARN
+        MONGODB_FULL_URI_ARN,
       },
     });
 
     twitchSecret.grantRead(manualClipGenerator);
-    mongoSecret.grantRead(manualClipGenerator);
     messageStoreBucket.grantRead(manualClipGenerator);
 
     messageStoreBucket.grantWrite(downloadLambda);
 
     messageStoreBucket.grantRead(automaticClipGenerator);
-    mongoSecret.grantRead(automaticClipGenerator);
-
-    mongoSecret.grantRead(thumbnailGenerator);
 
     const downloadTwitchChat = new LambdaInvoke(this, 'Download Twitch Chat', {
       lambdaFunction: downloadLambda,
@@ -158,6 +159,7 @@ export class SlStack extends Stack {
     const generateThumbnails = new LambdaInvoke(this, 'Generate Clip Thumbnails', {
       lambdaFunction: thumbnailGenerator,
       payloadResponseOnly: true,
+      outputPath: '$.thumbnails',
     });
 
     const processTwitchChat = new Parallel(this, 'Process Twitch Chat', {
@@ -172,7 +174,10 @@ export class SlStack extends Stack {
     videoIdHydration.branch(downloadTwitchChat.next(processTwitchChat));
     videoIdHydration.branch(generateCCCs);
 
-    const definition = videoIdHydration;
+    const formatAndUploadClips = new LambdaInvoke(this, 'Format and Store Clips', {
+      lambdaFunction: clipFormatter,
+    });
+    const definition = videoIdHydration.next(formatAndUploadClips);
 
     const stateMachine = new StateMachine(this, 'PreProcessing', {
       definition,
@@ -189,10 +194,9 @@ export class SlStack extends Stack {
       environment: {
         BUCKET: messageStoreBucket.bucketName,
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
-        DB_NAME: mongoDBDatabase,
         PREPROCESSING_STATE_MACHINE_ARN: stateMachine.stateMachineArn,
         TWITCH_CLIENT_SECRET_ARN,
-        MONGODB_FULL_URI_ARN
+        MONGODB_FULL_URI_ARN,
       },
     });
     stateMachine.grantStartExecution(vodPoller);
