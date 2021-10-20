@@ -17,7 +17,7 @@
     "manualclip": "sam local invoke ManualClipD684F488 --env-vars env.json --event test_events/downloadOutput.json",
     "signuppoller": "sam local invoke VodPoller741EDAA0 --env-vars env.json --event test_events/signupPollerEvent.json",
     "cdk": "cdk",
-    "deploy": "cdk deploy Dev-Timestamps"
+    "deploy": "cdk deploy preprocessing-dev"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.127.0",
