@@ -14,7 +14,7 @@
     "downloader": "sam local invoke ChatDownloader326B83C0 --env-vars env.json --event test_events/inputEvent.json",
     "ccc": "sam local invoke CCCGenerator1D61232C --env-vars env.json --event test_events/inputEvent.json",
     "thumbnail": "sam local invoke ThumbnailGenerator01BB1F8C --env-vars env.json --event test_events/thumbnailGeneratorEvent.json",
-    "manualclip": "sam local invoke ManualClipD684F488 --env-vars env.json --event test_events/downloadOutput.json",
+    "manualclip": "sam local invoke ManualClipGenerator31B5DAC3 --env-vars env.json --event test_events/downloadOutput.json",
     "signuppoller": "sam local invoke VodPoller741EDAA0 --env-vars env.json --event test_events/signupPollerEvent.json",
     "cdk": "cdk",
     "deploy": "cdk deploy preprocessing-dev"
