@@ -32,12 +32,12 @@ def upload_to_s3(file_name, bucket, object_name=None):
         return False
     return True
 
-
-
 def get_manifest_url(stream_url):
     s = streamlink.streams(stream_url)
-    high_quality_manifest = s['best']
-    return high_quality_manifest.url
+    best = s.get('best')
+    if not best:
+        return s.get('source').url
+    return best.url
 
 def generate_thumbnails(videoId: str, clips: list[dict]):
     os.chdir('/tmp')
