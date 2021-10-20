@@ -8,16 +8,17 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "synth": "cdk synth Dev-Timestamps --no-staging > template.yaml",
+    "synth": "cdk synth preprocessing-dev --no-staging > template.yaml",
     "poller": "sam local invoke VodPoller741EDAA0 --env-vars env.json --no-event",
     "clipgenerator": "sam local invoke AutomaticClipGeneratorDB2A8A32 --env-vars env.json --event test_events/downloadOutput.json",
     "downloader": "sam local invoke ChatDownloader326B83C0 --env-vars env.json --event test_events/inputEvent.json",
-    "cccfinder": "sam local invoke CCCFinder4C010E91 --env-vars env.json --event test_events/inputEvent.json",
+    "ccc": "sam local invoke CCCGenerator1D61232C --env-vars env.json --event test_events/inputEvent.json",
     "thumbnail": "sam local invoke ThumbnailGenerator01BB1F8C --env-vars env.json --event test_events/thumbnailGeneratorEvent.json",
-    "manualclip": "sam local invoke ManualClipD684F488 --env-vars env.json --event test_events/downloadOutput.json",
+    "manualclip": "sam local invoke ManualClipGenerator31B5DAC3 --env-vars env.json --event test_events/downloadOutput.json",
     "signuppoller": "sam local invoke VodPoller741EDAA0 --env-vars env.json --event test_events/signupPollerEvent.json",
+    "formatter": "sam local invoke ClipFormatter2057273B --env-vars env.json --event test_events/formatterEvent.json",
     "cdk": "cdk",
-    "deploy": "cdk deploy Dev-Timestamps"
+    "deploy": "cdk deploy preprocessing-dev"
   },
   "devDependencies": {
     "@aws-cdk/assert": "1.127.0",

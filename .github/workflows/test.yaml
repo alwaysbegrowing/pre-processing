@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node 14
         uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: '14'
 
       - name: Setup Python 3.9
         uses: actions/setup-python@v2
@@ -76,32 +76,40 @@ jobs:
         with:
           file: ./logs/signup.txt
 
-      # - name: CCC Finder Lambda
-      #   run: |
-      #     sam local invoke CCCFinder4C010E91 --env-vars env.json --event test_events/cccFinderEvent.json -l logs/cccfinder.txt
+      - name: CCC Finder Lambda
+        run: |
+          sam local invoke CCCGenerator1D61232C --env-vars env.json --event test_events/inputEvent.json -l logs/cccfinder.txt
 
-      # - name: Test CCC Finder
-      #   uses: pillargg/sam-ots@master
-      #   with:
-      #     file: ./logs/cccfinder.txt
+      - name: Test CCC Finder
+        uses: pillargg/sam-ots@master
+        with:
+          file: ./logs/cccfinder.txt
 
-      # - name: Manual Clip Lambda
-      #   run: |
-      #     sam local invoke ManualClipD684F488 --env-vars env.json --event test_events/s3SNSEvent.json -l logs/manualclip.txt
+      - name: Manual Clip Lambda
+        run: |
+          sam local invoke ManualClipGenerator31B5DAC3 --env-vars env.json --event test_events/downloadOutput.json -l logs/manualclip.txt
 
-      # - name: Test Manual Clip
-      #   uses: pillargg/sam-ots@master
-      #   with:
-      #     file: ./logs/manualclip.txt
+      - name: Test Manual Clip
+        uses: pillargg/sam-ots@master
+        with:
+          file: ./logs/manualclip.txt
 
       - name: Downloader Lambda
         run: |
-          sam local invoke ChatDownloader326B83C0 --env-vars env.json --event test_events/event.json -l logs/downloader.txt
+          sam local invoke ChatDownloader326B83C0 --env-vars env.json --event test_events/inputEvent.json -l logs/downloader.txt
 
       - name: Test Downloader
         uses: pillargg/sam-ots@master
         with:
           file: ./logs/downloader.txt
+
+      - name: Formatter Lambda
+        run: |
+          sam local invoke ClipFormatter2057273B --env-vars env.json --event test_events/formatterEvent.json -l logs/formatter.txt
+      - name: Test Formatter Lambda
+        uses: pillargg/sam-ots@master
+        with:
+          file: ./logs/formatter.txt
 
       - name: Thumbnail Generator Lambda
         run: |
