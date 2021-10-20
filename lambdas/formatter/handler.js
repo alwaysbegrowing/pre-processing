@@ -35,5 +35,6 @@ exports.main = async (event) => {
     clips: sortedClips,
   };
   const result = await setClipData(MONGODB_FULL_URI_ARN, DB_NAME, videoId, combinedClips);
-  return result;
+  console.log(result);
+  return combinedClips;
 };
