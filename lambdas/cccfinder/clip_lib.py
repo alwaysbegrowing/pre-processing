@@ -1,6 +1,9 @@
 import re
+
+import arrow
 import requests
 
+END_DATE_DELTA_DAYS = 7
 
 def twitch_auth(client_id, client_secret):
     queries = {
@@ -31,12 +34,16 @@ def get_video_ccc(twitch_client_id, access_token, video_id):
     data = resp.json()['data'][0]
 
     twitch_id = data['user_id']
-    started_at = data['created_at']
+    created_at = data['created_at']
+
+    started_at = arrow.get(created_at)
+    ended_at = started_at.shift(days=END_DATE_DELTA_DAYS)
 
     query = {
         'broadcaster_id': twitch_id,
-        'first': 100,
-        "started_at": started_at
+        'first': 100, 
+        'started_at': started_at.isoformat(timespec='seconds'),
+        'ended_at': ended_at.isoformat(timespec='seconds') 
     }
 
     resp = requests.get('https://api.twitch.tv/helix/clips', headers=headers, params=query)

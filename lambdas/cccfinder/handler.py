@@ -7,12 +7,9 @@ from get_secret import get_secret
 TWITCH_CLIENT_ID = os.getenv('TWITCH_CLIENT_ID')
 TWITCH_CLIENT_SECRET = get_secret(os.getenv('TWITCH_CLIENT_SECRET_ARN'))
 
-
-
 def handler(event, context):
     print(json.dumps(event, default=str))
     video_id = event['videoId']
-
 
     access_token = twitch_auth(TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET)['access_token']
     ccc_data = get_video_ccc(TWITCH_CLIENT_ID, access_token, video_id)
