@@ -78,7 +78,7 @@ jobs:
 
       - name: CCC Finder Lambda
         run: |
-          sam local invoke CCCFinder4C010E91 --env-vars env.json --event test_events/inputEvent.json -l logs/cccfinder.txt
+          sam local invoke CCCGenerator1D61232C --env-vars env.json --event test_events/inputEvent.json -l logs/cccfinder.txt
 
       - name: Test CCC Finder
         uses: pillargg/sam-ots@master
