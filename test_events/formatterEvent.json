@@ -1,0 +1,96 @@
+[{
+        "videoId": "1169449598",
+        "chatDownload": {
+            "ETag": "\"1050c7b75fb9fa991b05bd221fd17fed\"",
+            "Location": "https://preprocessing-prod-messagestore60e7afc8-r2xwrbzhrckm.s3.amazonaws.com/1169449598",
+            "key": "1169449598",
+            "Key": "1169449598",
+            "Bucket": "preprocessing-prod-messagestore60e7afc8-r2xwrbzhrckm"
+        },
+        "clips": [
+            [{
+                    "startTime": 0,
+                    "endTime": 0
+                },
+                {
+                    "startTime": 101.532,
+                    "endTime": 101.532
+                }
+            ],
+            [{
+                "startTime": 6634.48,
+                "endTime": 6694.48
+            }]
+        ],
+        "thumbnails": [
+            [
+                "https://preprocessing-prod-thumbnailstore34588c07-xourtq1mp9cf.s3.amazonaws.com/4f6ea9a5-cd1a-4165-9f1c-282ec0ab47d4.jpg",
+                "https://preprocessing-prod-thumbnailstore34588c07-xourtq1mp9cf.s3.amazonaws.com/8f62a9ea-7c0d-40eb-a332-b1b17542a79d.jpg"
+            ],
+            [
+                "https://preprocessing-prod-thumbnailstore34588c07-xourtq1mp9cf.s3.amazonaws.com/9e2f09d5-02d4-4cda-853c-aeb5598d61c1.jpg"
+            ]
+        ]
+    },
+    [{
+            "id": "SecretivePunchyRadishWholeWheat-7pwWLOxDkd_5dUn7",
+            "url": "https://clips.twitch.tv/SecretivePunchyRadishWholeWheat-7pwWLOxDkd_5dUn7",
+            "embed_url": "https://clips.twitch.tv/embed?clip=SecretivePunchyRadishWholeWheat-7pwWLOxDkd_5dUn7",
+            "broadcaster_id": "117861016",
+            "broadcaster_name": "chand1012",
+            "creator_id": "117861016",
+            "creator_name": "chand1012",
+            "video_id": "1169449598",
+            "game_id": "514974",
+            "language": "en",
+            "title": "Eric flys a walker.",
+            "view_count": 7,
+            "created_at": "2021-10-07T16:17:35Z",
+            "thumbnail_url": "https://clips-media-assets2.twitch.tv/AT-cm%7CJUvAfu6cFizsQ5Hf-XVJ-w-preview-480x272.jpg",
+            "duration": 14.2,
+            "startTime": 6668,
+            "endTime": 6682.2,
+            "twitchClipId": "SecretivePunchyRadishWholeWheat-7pwWLOxDkd_5dUn7"
+        },
+        {
+            "id": "LivelyConcernedMangetoutBleedPurple-yrmTAzpsL9TUHJs8",
+            "url": "https://clips.twitch.tv/LivelyConcernedMangetoutBleedPurple-yrmTAzpsL9TUHJs8",
+            "embed_url": "https://clips.twitch.tv/embed?clip=LivelyConcernedMangetoutBleedPurple-yrmTAzpsL9TUHJs8",
+            "broadcaster_id": "117861016",
+            "broadcaster_name": "chand1012",
+            "creator_id": "117861016",
+            "creator_name": "chand1012",
+            "video_id": "1169449598",
+            "game_id": "514974",
+            "language": "en",
+            "title": "Flying through a tornado",
+            "view_count": 2,
+            "created_at": "2021-10-07T16:14:01Z",
+            "thumbnail_url": "https://clips-media-assets2.twitch.tv/AT-cm%7CsZblhsq5kwM6bC_U1BybPA-preview-480x272.jpg",
+            "duration": 55.6,
+            "startTime": 3092,
+            "endTime": 3147.6,
+            "twitchClipId": "LivelyConcernedMangetoutBleedPurple-yrmTAzpsL9TUHJs8"
+        },
+        {
+            "id": "SmellyBumblingPeafowlUnSane-zJWiZhz3ulSrF71j",
+            "url": "https://clips.twitch.tv/SmellyBumblingPeafowlUnSane-zJWiZhz3ulSrF71j",
+            "embed_url": "https://clips.twitch.tv/embed?clip=SmellyBumblingPeafowlUnSane-zJWiZhz3ulSrF71j",
+            "broadcaster_id": "117861016",
+            "broadcaster_name": "chand1012",
+            "creator_id": "444632926",
+            "creator_name": "weftin",
+            "video_id": "1169449598",
+            "game_id": "514974",
+            "language": "en",
+            "title": "Time for a new Battlefield!",
+            "view_count": 2,
+            "created_at": "2021-10-07T17:00:13Z",
+            "thumbnail_url": "https://clips-media-assets2.twitch.tv/vod-1169449598-offset-5104-preview-480x272.jpg",
+            "duration": 30,
+            "startTime": 5080,
+            "endTime": 5110,
+            "twitchClipId": "SmellyBumblingPeafowlUnSane-zJWiZhz3ulSrF71j"
+        }
+    ]
+]

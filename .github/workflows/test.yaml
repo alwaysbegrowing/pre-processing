@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node 14
         uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: '14'
 
       - name: Setup Python 3.9
         uses: actions/setup-python@v2
@@ -102,6 +102,14 @@ jobs:
         uses: pillargg/sam-ots@master
         with:
           file: ./logs/downloader.txt
+
+      - name: Formatter Lambda
+        run: |
+          sam local invoke ClipFormatter2057273B --env-vars env.json --event test_events/formatterEvent.json -l logs/formatter.txt
+      - name: Test Formatter Lambda
+        uses: pillargg/sam-ots@master
+        with:
+          file: ./logs/formatter.txt
 
       - name: Thumbnail Generator Lambda
         run: |
