@@ -1,3 +1,4 @@
+# FFMPEG and Python 3.9 on Debian 11
 FROM ghcr.io/pillargg/ffmpeg-lambda-base:latest
 
 COPY . .
