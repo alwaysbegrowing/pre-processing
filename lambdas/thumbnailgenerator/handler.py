@@ -52,6 +52,7 @@ def generate_thumbnails(videoId: str, clips: list[dict]):
         clip_id = str(uuid.uuid4())
         output_filename = f"{clip_id}.jpg"
         ffmpeg_command = f"ffmpeg -ss {formatted_timestamp} -i {high_quality_manifest_url} -vframes 1 -q:v 2 {output_filename}"
+        print(ffmpeg_command)
         os.system(ffmpeg_command)
 
         if(upload_to_s3(output_filename, AWS_BUCKET)):
