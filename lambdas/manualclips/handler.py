@@ -91,6 +91,8 @@ def handler(event, context):
         end_time = round(arrow.get(clip_command['created_at']).timestamp(
         ) - stream_start_time.timestamp(), 2)
         start_time = round(end_time - clip_command['length'], 2)
+        if start_time < 0:
+            start_time = 0
         clips.append({
             'startTime': start_time,
             'endTime': end_time,
