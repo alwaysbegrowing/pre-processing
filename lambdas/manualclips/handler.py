@@ -44,10 +44,10 @@ def handler(event, context):
     # that were sent by a moderator or the broadcaster
     for message in all_messages:
         try:
-            has_acess_to_create_manual_clips = is_moderator_or_streamer(
+            has_access_to_create_manual_clips = is_moderator_or_streamer(
                 message)
 
-            if has_acess_to_create_manual_clips:
+            if has_access_to_create_manual_clips:
                 body = message['message']['body']
                 if body.startswith('!clip'):
                     # add the clip end time to the list
