@@ -136,6 +136,19 @@ export class SlStack extends Stack {
       },
     });
 
+    const slackNotify = new PythonFunction(this, 'Slack Notification', {
+      description: 'Send Slack Notification',
+      runtime: Runtime.PYTHON_3_9,
+      handler: 'handler',
+      index: 'handler.py',
+      entry: './lambdas/slack',
+      memorySize: 128,
+      timeout: Duration.seconds(15),
+      environment: {
+        SLACK_WEBHOOK_URL: 'https://hooks.slack.com/services/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'
+      },
+    });
+
     twitchSecret.grantRead(manualClipGenerator);
     messageStoreBucket.grantRead(manualClipGenerator);
 
@@ -222,7 +235,7 @@ export class SlStack extends Stack {
 
     const stateMachineEventPattern = {
       source: ['aws.states'],
-      'detail-type': ['Step Functions Execution Status Change'],
+      'detail-type': ['Step Functions Execution Failure'],
       detail: {
         status: ['FAILED'],
         stateMachineArn: [stateMachine.stateMachineArn],
@@ -232,7 +245,7 @@ export class SlStack extends Stack {
     const FailureTopic = new Topic(this, 'PreProcessingStateMachineFailure');
 
     new Rule(this, 'GetStateMachineStatus', {
-      targets: [new SnsTopic(FailureTopic)],
+      targets: [new SnsTopic(FailureTopic), new LambdaFunction(slackNotify)],
       eventPattern: stateMachineEventPattern,
     });
 
