@@ -8,6 +8,7 @@ import { Rule, Schedule } from '@aws-cdk/aws-events';
 import { LambdaFunction, SnsTopic } from '@aws-cdk/aws-events-targets';
 import { PythonFunction } from '@aws-cdk/aws-lambda-python';
 import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs';
+import { Function } from '@aws-cdk/aws-lambda';
 import { StateMachine, Parallel } from '@aws-cdk/aws-stepfunctions';
 import type { StateMachineProps } from '@aws-cdk/aws-stepfunctions';
 import { LambdaInvoke } from '@aws-cdk/aws-stepfunctions-tasks';
@@ -18,6 +19,7 @@ const TWITCH_CLIENT_SECRET_ARN =
   'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V';
 const MONGODB_FULL_URI_ARN =
   'arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt';
+const SLACK_NOTIFICATION_LAMBDA_ARN = 'arn:aws:lambda:us-east-1:576758376358:function:SlackNotification';
 export class SlStack extends Stack {
   constructor(
     scope: Construct,
@@ -136,19 +138,6 @@ export class SlStack extends Stack {
       },
     });
 
-    const slackNotify = new PythonFunction(this, 'Slack Notification', {
-      description: 'Send Slack Notification',
-      runtime: Runtime.PYTHON_3_9,
-      handler: 'handler',
-      index: 'handler.py',
-      entry: './lambdas/slack',
-      memorySize: 128,
-      timeout: Duration.seconds(15),
-      environment: {
-        SLACK_WEBHOOK_URL: 'https://hooks.slack.com/services/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'
-      },
-    });
-
     twitchSecret.grantRead(manualClipGenerator);
     messageStoreBucket.grantRead(manualClipGenerator);
 
@@ -242,10 +231,12 @@ export class SlStack extends Stack {
       },
     };
 
+    const slackNotificationFunction = Function.fromFunctionArn(this, 'SlackNotificationLambda', SLACK_NOTIFICATION_LAMBDA_ARN);
+
     const FailureTopic = new Topic(this, 'PreProcessingStateMachineFailure');
 
     new Rule(this, 'GetStateMachineStatus', {
-      targets: [new SnsTopic(FailureTopic), new LambdaFunction(slackNotify)],
+      targets: [new SnsTopic(FailureTopic), new LambdaFunction(slackNotificationFunction)],
       eventPattern: stateMachineEventPattern,
     });
 
