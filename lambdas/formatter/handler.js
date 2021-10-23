@@ -38,8 +38,9 @@ exports.main = async (event) => {
   const cccHydratedClips = hydrateClips(cccClips, ClipsTypeEnum.ccc);
   const allClips = [...aiHydratedClips, ...manualHydratedClips, ...cccHydratedClips];
   const sortedClips = allClips.sort((a, b) => a.startTime - b.startTime);
+  const filteredClips = sortedClips.filter((clip) => clip.endTime - clip.startTime > 5);
   const combinedClips = {
-    clips: sortedClips,
+    clips: filteredClips,
   };
   if (RUN_MONGO) {
     const result = await setClipData(MONGODB_FULL_URI_ARN, DB_NAME, videoId, combinedClips);
