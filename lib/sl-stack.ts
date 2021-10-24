@@ -1,4 +1,4 @@
-import { DockerImageCode, DockerImageFunction, Runtime } from '@aws-cdk/aws-lambda';
+import { DockerImageCode, DockerImageFunction, Runtime, Architecture } from '@aws-cdk/aws-lambda';
 import { Duration, Stack, Construct, StackProps, RemovalPolicy } from '@aws-cdk/core';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Topic } from '@aws-cdk/aws-sns';
@@ -63,6 +63,7 @@ export class SlStack extends Stack {
       environment: {
         BUCKET: messageStoreBucket.bucketName,
       },
+      architecture: Architecture.ARM_64,
     });
 
     const clipMetadataFormatter = new NodejsFunction(this, 'Clip Formatter', {
@@ -75,6 +76,7 @@ export class SlStack extends Stack {
         DB_NAME: mongoDBDatabase,
         TESTING: 'false',
       },
+      architecture: Architecture.ARM_64,
     });
     // follow below link on how to add new secrets
     // https://docs.aws.amazon.com/cdk/latest/guide/get_secrets_manager_value.html
@@ -86,6 +88,7 @@ export class SlStack extends Stack {
       secretCompleteArn: MONGODB_FULL_URI_ARN,
     });
 
+    // NumPy does not play well with ARM, so we will keep this x86 for now.
     const automaticClipGenerator = new PythonFunction(this, 'Automatic Clip Generator', {
       description: 'Finds clips with the Pillar Algorithms',
       runtime: Runtime.PYTHON_3_9,
@@ -110,6 +113,7 @@ export class SlStack extends Stack {
       entry: './lambdas/cccfinder',
       memorySize: 256,
       timeout: Duration.seconds(60),
+      architecture: Architecture.ARM_64,
       environment: {
         TWITCH_CLIENT_ID: TWITCH_CLIENT_ID,
         TWITCH_CLIENT_SECRET_ARN: twitchSecret.secretArn,
@@ -208,6 +212,7 @@ export class SlStack extends Stack {
         DB_NAME: mongoDBDatabase,
         TESTING_STR: 'false',
       },
+      architecture: Architecture.ARM_64,
     });
     stateMachine.grantStartExecution(vodPoller);
     new SnsEventSource(newUserSignup).bind(vodPoller);
