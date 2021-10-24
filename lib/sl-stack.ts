@@ -175,7 +175,12 @@ export class SlStack extends Stack {
     });
     processTwitchChat.branch(generateAutomaticClips);
     processTwitchChat.branch(generateManualClips);
-    processTwitchChat.next(generateThumbnails);
+    processTwitchChat.next(
+      generateThumbnails.addRetry({
+        maxAttempts: 3,
+        interval: Duration.seconds(5),
+      }),
+    );
 
     const videoIdHydration = new Parallel(this, 'Hydrate Video Id');
     videoIdHydration.branch(downloadTwitchChat.next(processTwitchChat));
