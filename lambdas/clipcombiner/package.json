@@ -1,0 +1,17 @@
+{
+  "name": "clipcombiner",
+  "version": "1.0.0",
+  "description": "Combines overlapping clips",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Chandler Lofland",
+  "dependencies": {
+    "aws-sdk": "^2.963.0",
+    "mongodb": "^3.6.5",
+    "mongodb-client-encryption": "^1.2.3",
+    "node-fetch": "^2.6.1",
+    "uuid": "^8.3.2"
+  }
+}
