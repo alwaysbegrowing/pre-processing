@@ -106,10 +106,20 @@ jobs:
       - name: Formatter Lambda
         run: |
           sam local invoke ClipFormatter2057273B --env-vars env.json --event test_events/formatterEvent.json -l logs/formatter.txt
+
       - name: Test Formatter Lambda
         uses: pillargg/sam-ots@master
         with:
           file: ./logs/formatter.txt
+
+      - name: SuperClip Lambda
+        run: |
+          sam local invoke SuperClipGenerator9E661FE2 --env-vars env.json --event test_events/superclipEvent.json -l logs/superclip.txt
+
+      - name: SuperClip Lambda
+        uses: pillargg/sam-ots@master
+        with:
+          file: ./logs/superclip.txt
 
       - name: Thumbnail Generator Lambda
         run: |
