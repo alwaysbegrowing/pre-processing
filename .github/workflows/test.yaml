@@ -116,7 +116,7 @@ jobs:
         run: |
           sam local invoke SuperClipGenerator9E661FE2 --env-vars env.json --event test_events/superclipEvent.json -l logs/superclip.txt
 
-      - name: SuperClip Lambda
+      - name: Test SuperClip Lambda
         uses: pillargg/sam-ots@master
         with:
           file: ./logs/superclip.txt

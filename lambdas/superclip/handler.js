@@ -8,7 +8,6 @@ const RUN_MONGO = TESTING === 'false' || TESTING === undefined;
 
 exports.main = async (event) => {
   const { clips, videoId } = event;
-  let changed = false;
 
   const superClips = [];
 
@@ -19,18 +18,20 @@ exports.main = async (event) => {
       const { startTime: startTime2, endTime: endTime2 } = clip2;
       // check if the clips overlap
       return (
-        (startTime <= startTime2 && endTime >= startTime2) ||
-        (startTime <= endTime2 && endTime >= endTime2)
+        // using >= and <= to account for clips where one time could be the same
+        // but the other is not. Duplicates are handled later in the function.
+        (startTime <= startTime2 && endTime >= startTime2)
+        || (startTime <= endTime2 && endTime >= endTime2)
       );
     });
 
     if (overlaps.length === 0) {
       superClips.push(clip);
     } else {
-      changed = true;
       overlaps.forEach((clip2) => {
         const { startTime: startTime2, endTime: endTime2 } = clip2;
 
+        // skip if the clips are the same
         if (startTime === startTime2 && endTime === endTime2) {
           return;
         }
@@ -97,18 +98,25 @@ exports.main = async (event) => {
     }
   });
 
-  const clipObject = {
-    clips: [...superClips, ...clips].filter(
-      (thing, index, self) =>
-        index ===
-        self.findIndex((t) => t.startTime === thing.startTime && t.endTime === thing.endTime),
-    ),
-  };
+  // only update if there are changes
+  if (superClips.length > 0) {
+    // construct the final clips array and filter duplicates
+    const finalClips = [...superClips, ...clips].filter(
+      (thing, index, self) => index
+        === self.findIndex((t) => t.startTime === thing.startTime && t.endTime === thing.endTime),
+    );
 
-  if (RUN_MONGO && changed) {
-    const result = await setClipData(MONGODB_FULL_URI_ARN, DB_NAME, videoId, clipObject);
-    console.log(result);
+    const clipObject = {
+      clips: finalClips,
+    };
+
+    if (RUN_MONGO) {
+      const result = await setClipData(MONGODB_FULL_URI_ARN, DB_NAME, videoId, clipObject);
+      console.log(result);
+    }
+
+    return clipObject;
   }
 
-  return clipObject;
+  return { clips };
 };

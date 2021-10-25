@@ -147,7 +147,7 @@ export class SlStack extends Stack {
       runtime: Runtime.NODEJS_14_X,
       handler: 'main',
       entry: './lambdas/superclip/handler.js',
-      timeout: Duration.seconds(900),
+      timeout: Duration.seconds(60),
       memorySize: 512,
       environment: {
         MONGODB_FULL_URI_ARN,
