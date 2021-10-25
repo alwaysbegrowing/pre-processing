@@ -6,7 +6,7 @@ const ClipsTypeEnum = Object.freeze({ ai: 'ai', ccc: 'ccc', manual: 'manual' });
 
 const { MONGODB_FULL_URI_ARN, DB_NAME, TESTING } = process.env;
 
-const RUN_MONGO = TESTING === 'false';
+const RUN_MONGO = TESTING === 'false' || TESTING === undefined;
 
 const hydrateClips = (clips, type, thumbnails = []) => {
   console.log({ clips });
@@ -41,6 +41,7 @@ exports.main = async (event) => {
   const filteredClips = sortedClips.filter((clip) => clip.endTime - clip.startTime > 5);
   const combinedClips = {
     clips: filteredClips,
+    videoId,
   };
   if (RUN_MONGO) {
     const result = await setClipData(MONGODB_FULL_URI_ARN, DB_NAME, videoId, combinedClips);
