@@ -112,15 +112,6 @@ jobs:
         with:
           file: ./logs/formatter.txt
 
-      - name: SuperClip Lambda
-        run: |
-          sam local invoke SuperClipGenerator9E661FE2 --env-vars env.json --event test_events/superclipEvent.json -l logs/superclip.txt
-
-      - name: Test SuperClip Lambda
-        uses: pillargg/sam-ots@master
-        with:
-          file: ./logs/superclip.txt
-
       - name: Thumbnail Generator Lambda
         run: |
           cd lambdas/thumbnailgenerator
