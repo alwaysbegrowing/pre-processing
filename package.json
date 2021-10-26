@@ -17,7 +17,6 @@
     "manualclip": "sam local invoke ManualClipGenerator31B5DAC3 --env-vars env.json --event test_events/downloadOutput.json",
     "signuppoller": "sam local invoke VodPoller741EDAA0 --env-vars env.json --event test_events/signupPollerEvent.json",
     "formatter": "sam local invoke ClipFormatter2057273B --env-vars env.json --event test_events/formatterEvent.json",
-    "superclip": "sam local invoke SuperClipGenerator9E661FE2 --env-vars env.json --event test_events/superclipEvent.json",
     "cdk": "cdk",
     "deploy": "cdk deploy preprocessing-dev"
   },

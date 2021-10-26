@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { v4 as uuidv4 } from 'uuid';
 import { setClipData } from './db';
+import doClipsOverlap from './clips';
 
 const ClipsTypeEnum = Object.freeze({ ai: 'ai', ccc: 'ccc', manual: 'manual' });
 
@@ -16,67 +17,6 @@ const hydrateClips = (clips, type, thumbnails = []) => {
     thumbnail_url: thumbnails[i],
     ...clip,
   }));
-};
-
-const doClipsOverlap = (clip, clip2) => {
-  const { startTime, endTime } = clip;
-  const { startTime: startTime2, endTime: endTime2 } = clip2;
-
-  // if the clip is completely contained within the clip2
-  if (startTime >= startTime2 && endTime <= endTime2) {
-    return { ...clip2, type: 'superclip' };
-  }
-
-  // if the clip2 is completely contained within the clip
-  if (startTime2 >= startTime && endTime2 <= endTime) {
-    return { ...clip, type: 'superclip' };
-  }
-
-  // if clip starts before clip2
-  if (startTime < startTime2) {
-    return {
-      ...clip,
-      startTime,
-      endTime: endTime2,
-      type: 'superclip',
-      duration: endTime2 - startTime,
-    };
-  }
-
-  // if clip2 starts before clip
-  if (startTime2 < startTime) {
-    return {
-      ...clip2,
-      startTime: startTime2,
-      endTime,
-      type: 'superclip',
-      duration: endTime - startTime2,
-    };
-  }
-
-  // if clip ends after clip2
-  if (endTime > endTime2) {
-    return {
-      ...clip,
-      startTime: startTime2,
-      endTime,
-      type: 'superclip',
-      duration: endTime - startTime2,
-    };
-  }
-
-  // if clip2 ends after clip
-  if (endTime2 > endTime) {
-    return {
-      ...clip2,
-      startTime,
-      endTime: endTime2,
-      type: 'superclip',
-      duration: endTime2 - startTime,
-    };
-  }
-
-  return null;
 };
 
 exports.main = async (event) => {
@@ -100,16 +40,17 @@ exports.main = async (event) => {
   const cccHydratedClips = hydrateClips(cccClips, ClipsTypeEnum.ccc);
 
   const hydratedClips = [...aiHydratedClips, ...manualHydratedClips, ...cccHydratedClips];
+  const filteredHydratedClips = hydratedClips.filter((clip) => clip.endTime - clip.startTime > 5);
   const superClips = [];
-  hydratedClips.forEach((clip) => {
-    hydratedClips.forEach((clip2) => {
+  filteredHydratedClips.forEach((clip) => {
+    filteredHydratedClips.forEach((clip2) => {
       const overlap = doClipsOverlap(clip, clip2);
       if (overlap) {
         superClips.push(overlap);
       }
     });
   });
-  const allClips = [...superClips, ...clips];
+  const allClips = [...superClips, ...filteredHydratedClips];
   const sortedClips = allClips.sort((a, b) => a.startTime - b.startTime);
   const filteredClips = sortedClips.filter((clip) => clip.endTime - clip.startTime > 5);
   const combinedClips = {

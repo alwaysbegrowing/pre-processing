@@ -142,22 +142,6 @@ export class SlStack extends Stack {
 
     messageStoreBucket.grantRead(automaticClipGenerator);
 
-    const superClipGenerator = new NodejsFunction(this, 'Super Clip Generator', {
-      description: 'Finds clips that overlap and combine them.',
-      runtime: Runtime.NODEJS_14_X,
-      handler: 'main',
-      entry: './lambdas/superclip/handler.js',
-      timeout: Duration.seconds(60),
-      memorySize: 512,
-      environment: {
-        MONGODB_FULL_URI_ARN,
-        DB_NAME: mongoDBDatabase,
-        TESTING: 'false',
-      },
-    });
-
-    mongoSecret.grantRead(superClipGenerator);
-
     const downloadTwitchChat = new LambdaInvoke(this, 'Download Twitch Chat', {
       lambdaFunction: downloadLambda,
       payloadResponseOnly: true,
@@ -185,11 +169,6 @@ export class SlStack extends Stack {
       resultPath: '$.thumbnails',
     });
 
-    const generateSuperClips = new LambdaInvoke(this, 'Generate Super Clips', {
-      lambdaFunction: superClipGenerator,
-      payloadResponseOnly: true,
-    });
-
     const processTwitchChat = new Parallel(this, 'Process Twitch Chat', {
       resultPath: '$.clips',
       inputPath: '$.chatDownload',
@@ -211,7 +190,7 @@ export class SlStack extends Stack {
       lambdaFunction: clipMetadataFormatter,
       payloadResponseOnly: true,
     });
-    const definition = videoIdHydration.next(formatAndUploadClipsMetadata).next(generateSuperClips);
+    const definition = videoIdHydration.next(formatAndUploadClipsMetadata);
 
     const stateMachine = new StateMachine(this, 'PreProcessing', {
       definition,
