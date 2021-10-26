@@ -30,8 +30,9 @@ exports.main = async (event) => {
   const filteredHydratedClips = hydratedClips.filter((clip) => clip.endTime - clip.startTime > 5);
   const superClips = findSuperClips(filteredHydratedClips);
   const allClips = removeSuperClipDuplicates(filteredHydratedClips, superClips);
+  const sortedClips = allClips.sort((a, b) => a.startTime - b.startTime);
   const combinedClips = {
-    clips: allClips,
+    clips: sortedClips,
     videoId,
   };
 

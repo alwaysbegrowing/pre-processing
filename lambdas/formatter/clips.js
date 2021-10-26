@@ -122,5 +122,5 @@ export const removeSuperClipDuplicates = (clips, superClips) => {
     return !isSuperClip;
   });
 
-  return [...noSuperClipOverlaps, ...superClips].sort((a, b) => a.startTime - b.startTime);
+  return [...noSuperClipOverlaps, ...superClips];
 };
