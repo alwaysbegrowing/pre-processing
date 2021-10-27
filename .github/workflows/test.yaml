@@ -106,6 +106,7 @@ jobs:
       - name: Formatter Lambda
         run: |
           sam local invoke ClipFormatter2057273B --env-vars env.json --event test_events/formatterEvent.json -l logs/formatter.txt
+
       - name: Test Formatter Lambda
         uses: pillargg/sam-ots@master
         with:

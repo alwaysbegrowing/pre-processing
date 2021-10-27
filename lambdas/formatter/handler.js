@@ -1,22 +1,11 @@
 /* eslint-disable no-console */
-import { v4 as uuidv4 } from 'uuid';
 import { setClipData } from './db';
-
-const ClipsTypeEnum = Object.freeze({ ai: 'ai', ccc: 'ccc', manual: 'manual' });
+import {
+  findSuperClips, hydrateClips, ClipsTypeEnum, removeSuperClipDuplicates,
+} from './clips';
 
 const { MONGODB_FULL_URI_ARN, DB_NAME, TESTING } = process.env;
 
-const RUN_MONGO = TESTING === 'false';
-
-const hydrateClips = (clips, type, thumbnails = []) => {
-  console.log({ clips });
-  return clips.map((clip, i) => ({
-    type,
-    id: uuidv4(),
-    thumbnail_url: thumbnails[i],
-    ...clip,
-  }));
-};
 exports.main = async (event) => {
   console.log(event);
   const { videoId, clips } = event[0];
@@ -36,15 +25,23 @@ exports.main = async (event) => {
   );
 
   const cccHydratedClips = hydrateClips(cccClips, ClipsTypeEnum.ccc);
-  const allClips = [...aiHydratedClips, ...manualHydratedClips, ...cccHydratedClips];
+
+  const hydratedClips = [...aiHydratedClips, ...manualHydratedClips, ...cccHydratedClips];
+  const filteredHydratedClips = hydratedClips.filter((clip) => clip.endTime - clip.startTime > 5);
+  const superClips = findSuperClips(filteredHydratedClips);
+  const allClips = removeSuperClipDuplicates(filteredHydratedClips, superClips);
   const sortedClips = allClips.sort((a, b) => a.startTime - b.startTime);
-  const filteredClips = sortedClips.filter((clip) => clip.endTime - clip.startTime > 5);
   const combinedClips = {
-    clips: filteredClips,
+    clips: sortedClips,
+    videoId,
   };
-  if (RUN_MONGO) {
-    const result = await setClipData(MONGODB_FULL_URI_ARN, DB_NAME, videoId, combinedClips);
-    console.log(result);
+
+  if (TESTING === 'true') {
+    return combinedClips;
   }
+
+  const result = await setClipData(MONGODB_FULL_URI_ARN, DB_NAME, videoId, combinedClips);
+  console.log(result);
+
   return combinedClips;
 };
