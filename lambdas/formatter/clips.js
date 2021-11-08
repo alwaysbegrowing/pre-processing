@@ -93,7 +93,8 @@ export const findSuperClips = (clips) => {
   clips.forEach((clip) => {
     clips.forEach((clip2) => {
       const overlap = getSuperClip(clip, clip2);
-      if (overlap) {
+      const duplicate = superClips.find((superClip) => superClip?.id === overlap?.id);
+      if (overlap && !duplicate) {
         superClips.push(overlap);
       }
     });
