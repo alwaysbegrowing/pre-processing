@@ -1,5 +1,4 @@
 import { DockerImageCode, DockerImageFunction, Runtime } from '@aws-cdk/aws-lambda';
-import { LambdaRestApi } from '@aws-cdk/aws-apigateway';
 import { Duration, Stack, Construct, StackProps, RemovalPolicy } from '@aws-cdk/core';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Topic } from '@aws-cdk/aws-sns';
@@ -65,6 +64,14 @@ export class SlStack extends Stack {
         BUCKET: messageStoreBucket.bucketName,
       },
     });
+
+    // new sns construct to trigger the chat downloader lambda
+    const downloadChatTrigger = new Topic(this, 'DownloadChatTrigger', {
+      displayName: 'DownloadChatTrigger',
+      topicName: 'DownloadChatTrigger',
+    });
+    
+    new SnsEventSource(downloadChatTrigger).bind(downloadLambda);
 
     const clipMetadataFormatter = new NodejsFunction(this, 'Clip Formatter', {
       runtime: Runtime.NODEJS_14_X,
@@ -148,17 +155,6 @@ export class SlStack extends Stack {
       payloadResponseOnly: true,
       resultPath: '$.chatDownload',
     });
-
-    // used for ML etl pipeline to download chat synchronously
-    const chatDownloaderApi = new LambdaRestApi(this, 'chatdownloader-api', {
-      handler: downloadLambda,
-      proxy: false,
-    });
-
-    const videoIdsResource = chatDownloaderApi.root.addResource('video_id');
-    const videoId = videoIdsResource.addResource('{video_id}');
-    videoId.addMethod('POST');
-    videoId.addMethod('GET');
 
     const generateAutomaticClips = new LambdaInvoke(this, 'Generate Clip Timestamps', {
       lambdaFunction: automaticClipGenerator,
