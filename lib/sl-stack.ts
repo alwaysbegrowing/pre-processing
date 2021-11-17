@@ -66,10 +66,7 @@ export class SlStack extends Stack {
     });
 
     // new sns construct to trigger the chat downloader lambda
-    const downloadChatTrigger = new Topic(this, 'DownloadChatTrigger', {
-      displayName: 'DownloadChatTrigger',
-      topicName: 'DownloadChatTrigger',
-    });
+    const downloadChatTrigger = new Topic(this, 'DownloadChatTrigger');
     
     new SnsEventSource(downloadChatTrigger).bind(downloadLambda);
 
