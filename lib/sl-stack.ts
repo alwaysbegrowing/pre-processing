@@ -17,6 +17,12 @@ const TWITCH_CLIENT_SECRET_ARN =
   'arn:aws:secretsmanager:us-east-1:576758376358:secret:TWITCH_CLIENT_SECRET-OyAp7V';
 const MONGODB_FULL_URI_ARN =
   'arn:aws:secretsmanager:us-east-1:576758376358:secret:MONGODB_FULL_URI-DBSAtt';
+
+// need to be strings because they
+// are being passed to the lambda's environment
+const VOD_LIMIT_PROD = '20';
+const VOD_LIMIT_DEV = '5';
+
 export class SlStack extends Stack {
   constructor(
     scope: Construct,
@@ -217,6 +223,7 @@ export class SlStack extends Stack {
         MONGODB_FULL_URI_ARN,
         DB_NAME: mongoDBDatabase,
         TESTING_STR: 'false',
+        VOD_LIMIT: mongoDBDatabase === 'dev' ? VOD_LIMIT_DEV : VOD_LIMIT_PROD,
       },
     });
     stateMachine.grantStartExecution(vodPoller);
