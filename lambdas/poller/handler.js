@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 
-const fetch = require("node-fetch");
-const AWS = require("aws-sdk");
+const fetch = require('node-fetch');
+const AWS = require('aws-sdk');
 
-const { connectToDatabase } = require("./db");
-const { getAccessToken } = require("./auth");
+const { connectToDatabase } = require('./db');
+const { getAccessToken } = require('./auth');
 
 const S3 = new AWS.S3();
 const stepFunctions = new AWS.StepFunctions();
@@ -14,17 +14,16 @@ const {
   BUCKET,
   PREPROCESSING_STATE_MACHINE_ARN,
   TESTING_STR,
+  VOD_LIMIT,
 } = process.env;
 
-const TESTING = TESTING_STR === "true";
-
-const VOD_LIMIT = 5;
+const TESTING = TESTING_STR === 'true';
 
 const getUsersToPoll = async () => {
   try {
     const db = await connectToDatabase();
     const usersToMonitor = await db
-      .collection("users")
+      .collection('users')
       .find({
         twitch_id: { $ne: null },
       })
@@ -42,7 +41,7 @@ const checkS3forMessages = async (videoIds) => {
     try {
       await S3.headObject({ Bucket: BUCKET, Key: videoId }).promise();
     } catch (err) {
-      if (err.code === "NotFound") {
+      if (err.code === 'NotFound') {
         return videoId;
       }
     }
@@ -73,16 +72,16 @@ const getLastVods = async (numOfVodsPerStreamer, userId = null) => {
   console.info(appToken);
   const headers = {
     Authorization: `Bearer ${appToken}`,
-    "Client-ID": TWITCH_CLIENT_ID,
+    'Client-ID': TWITCH_CLIENT_ID,
   };
-  console.info("About to call twitch API for users", { usersToPoll });
+  console.info('About to call twitch API for users', { usersToPoll });
   const videoIds = [];
   const videoPromises = usersToPoll.map(async ({ twitch_id: twitchId }) => {
     const url = `https://api.twitch.tv/helix/videos?user_id=${twitchId}&type=archive&first=${numOfVodsPerStreamer}`;
     const resp = await fetch(url, { headers });
     const singleStreamersVideos = await resp.json();
     const isStreamerOnline = await isStreamerOnlineCheck(twitchId, headers);
-    console.info("got user data from twitch", {
+    console.info('got user data from twitch', {
       singleStreamersVideos,
       isStreamerOnline,
     });
@@ -107,16 +106,14 @@ const getLastVods = async (numOfVodsPerStreamer, userId = null) => {
 };
 
 const startStepFunctions = async (videoIds) => {
-  console.info("starting step function executions", { videoIds });
+  console.info('starting step function executions', { videoIds });
 
-  const stepFunctionPromises = videoIds.map((videoId) =>
-    stepFunctions
-      .startExecution({
-        stateMachineArn: PREPROCESSING_STATE_MACHINE_ARN,
-        input: JSON.stringify({ videoId }),
-      })
-      .promise()
-  );
+  const stepFunctionPromises = videoIds.map((videoId) => stepFunctions
+    .startExecution({
+      stateMachineArn: PREPROCESSING_STATE_MACHINE_ARN,
+      input: JSON.stringify({ videoId }),
+    })
+    .promise());
   const functionExecutions = await Promise.all(stepFunctionPromises);
 
   console.info(functionExecutions);
@@ -124,9 +121,9 @@ const startStepFunctions = async (videoIds) => {
 };
 
 const newUserSignUp = async (userId) => {
-  console.info("started user signup flow", { userId });
+  console.info('started user signup flow', { userId });
   const videoIds = await getLastVods(VOD_LIMIT, userId);
-  console.info("got latest videoIds", { videoIds });
+  console.info('got latest videoIds', { videoIds });
 
   if (TESTING) {
     return videoIds;
@@ -136,6 +133,7 @@ const newUserSignUp = async (userId) => {
 };
 
 const pollVods = async () => {
+  console.log({ VOD_LIMIT });
   const videoIds = await getLastVods(VOD_LIMIT);
   const missingVideoIds = await checkS3forMessages(videoIds);
 
