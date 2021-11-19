@@ -210,7 +210,7 @@ export class SlStack extends Stack {
 
     const stateMachine = new StateMachine(this, 'PreProcessing', {
       definition,
-      timeout: Duration.minutes(5),
+      timeout: Duration.minutes(10),
       logs: {
         level: LogLevel.ALL,
         destination: preProcessingLogGroup,
