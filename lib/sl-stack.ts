@@ -2,13 +2,14 @@ import { DockerImageCode, DockerImageFunction, Runtime } from '@aws-cdk/aws-lamb
 import { Duration, Stack, Construct, StackProps, RemovalPolicy } from '@aws-cdk/core';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Topic } from '@aws-cdk/aws-sns';
+import { LogGroup, RetentionDays } from '@aws-cdk/aws-logs';
 import { SnsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import { Rule, Schedule } from '@aws-cdk/aws-events';
 import { LambdaFunction } from '@aws-cdk/aws-events-targets';
 import { PythonFunction } from '@aws-cdk/aws-lambda-python';
 import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs';
-import { StateMachine, Parallel } from '@aws-cdk/aws-stepfunctions';
+import { StateMachine, Parallel, LogLevel } from '@aws-cdk/aws-stepfunctions';
 import { LambdaInvoke } from '@aws-cdk/aws-stepfunctions-tasks';
 
 const TWITCH_CLIENT_ID_ARN =
@@ -203,9 +204,18 @@ export class SlStack extends Stack {
     });
     const definition = videoIdHydration.next(formatAndUploadClipsMetadata);
 
+    const preProcessingLogGroup = new LogGroup(this, 'PreProcessingLogGroup', {
+      retention: RetentionDays.ONE_YEAR,
+    });
+
     const stateMachine = new StateMachine(this, 'PreProcessing', {
       definition,
       timeout: Duration.minutes(5),
+      logs: {
+        level: LogLevel.ALL,
+        destination: preProcessingLogGroup,
+        includeExecutionData: true,
+      }
     });
 
     const vodPoller = new NodejsFunction(this, 'VodPoller', {
