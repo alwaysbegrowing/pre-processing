@@ -64,7 +64,7 @@ export class SlStack extends Stack {
       description: 'Downloads chat and saves to S3',
       runtime: Runtime.NODEJS_14_X,
       entry: './lambdas/downloader/handler.js',
-      memorySize: 1280,
+      memorySize: 3072,
       timeout: Duration.seconds(900),
       handler: 'main',
       environment: {
@@ -74,7 +74,7 @@ export class SlStack extends Stack {
 
     // new sns construct to trigger the chat downloader lambda
     const downloadChatTrigger = new Topic(this, 'DownloadChatTrigger');
-    
+
     new SnsEventSource(downloadChatTrigger).bind(downloadLambda);
 
     const clipMetadataFormatter = new NodejsFunction(this, 'Clip Formatter', {
@@ -215,7 +215,7 @@ export class SlStack extends Stack {
         level: LogLevel.ALL,
         destination: preProcessingLogGroup,
         includeExecutionData: true,
-      }
+      },
     });
 
     const vodPoller = new NodejsFunction(this, 'VodPoller', {
