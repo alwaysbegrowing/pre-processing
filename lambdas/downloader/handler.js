@@ -34,8 +34,11 @@ const getMessages = async (videoId) => {
 exports.main = async (event) => {
   console.log(event);
 
-  const videoId = event?.videoId ? event.videoId
+  const videoId = event?.videoId
+    ? event.videoId
     : event.Records[0].Sns.MessageAttributes.VideoId.Value;
+
+  console.log({ videoId });
 
   const allMessages = await getMessages(videoId);
   console.log({ numberOfMessages: allMessages.length });
