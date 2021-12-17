@@ -1,9 +1,9 @@
 import asyncio
 import math
 import os
-import subprocess
 import time
 
+from pymongo import MongoClient
 import cv2
 import numpy
 
@@ -11,7 +11,9 @@ scale_factor = 1.2
 min_neighbors = 3
 min_size = (50, 50)
 
-PREFIX = "thumbs"
+PREFIX = "/tmp"
+MONGO_URI = os.getenv("MONGODB_FULL_URI")
+MONGO_DB_NAME = os.getenv("DB_NAME")
 
 async def detect_faces(frame_path):
     frame = cv2.imread(frame_path)
@@ -22,22 +24,21 @@ async def detect_faces(frame_path):
     faces = cascade.detectMultiScale(gray, scaleFactor=scale_factor, minNeighbors=min_neighbors, minSize=min_size)
     return faces
 
-async def main(video_path, fps):
+async def main(video_id):
 
     print("Clearing directory...")
-    if not os.path.isdir("thumbs"):
-        os.mkdir("thumbs")
 
-    thumbs = os.listdir("thumbs")
+    thumbs = os.listdir("/tmp")
 
     if len(thumbs):
         # clear thumbnails
         for thumb in thumbs:
             os.remove(PREFIX + '/' + thumb)
 
-    print("Generating images...")
-    command = f'ffmpeg -i {video_path} -vf fps={fps} {PREFIX}/%d.jpg'
-    subprocess.run(command, shell=True)
+    print("Getting images...")
+    urls = get_image_urls(video_id)
+
+    # download using requests
 
     frame_paths = [os.path.join(PREFIX, f) for f in os.listdir(PREFIX)]
 
@@ -53,6 +54,33 @@ async def main(video_path, fps):
     end = time.time()
     print(f"Finished OpenCV Tasks in {round(end - start, 2)} seconds")
     return results
+
+def get_image_urls(video_id):
+    # open a database connection
+    client = MongoClient(MONGO_URI)
+    
+    # connect to the database
+    db = client[MONGO_DB_NAME]
+
+    # get the data from the clip_metadata collection
+    clip_metadata = db.clip_metadata
+
+    # get the clip metadata
+    clip_data = clip_metadata.find_one({"videoId": video_id})
+
+    clips = clip_data["clips"]
+
+    urls = []
+
+    for clip in clips:
+        url = clip.get('thumbnail_url')
+        if url:
+            # makes sure its one of our
+            # s3 URLS
+            if 'amazon' in url:
+                urls.append(url)
+    
+    return urls
 
 def point_median(points):
     xs = [x for (x, _, _, _) in points]
@@ -101,9 +129,9 @@ def remove_outliers(points, iterations=1):
 
     return remove_outliers(final, iterations - 1)
 
-def async_handler(video_path, fps):
+def async_handler(video_path):
     loop = asyncio.get_event_loop()
-    results = loop.run_until_complete(main(video_path, fps))
+    results = loop.run_until_complete(main(video_path))
     
     points = [box for boxes in results for box in boxes]
 
