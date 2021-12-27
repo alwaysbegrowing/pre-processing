@@ -1,4 +1,0 @@
-python-opencv
-numpy
-pymongo
-dnspython

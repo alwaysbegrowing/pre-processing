@@ -154,6 +154,20 @@ export class SlStack extends Stack {
 
     messageStoreBucket.grantRead(automaticClipGenerator);
 
+    // auto generate lambda
+    const mobileAutoExporter = new DockerImageFunction(this, 'Mobile Auto Exporter', {
+      description: 'Finds clips with the Pillar Algorithms',
+      code: DockerImageCode.fromImageAsset('./lambdas/mobileautoexporter'),
+      memorySize: 512,
+      timeout: Duration.seconds(900),
+      environment: {
+        MONGODB_FULL_URI_ARN,
+        DB_NAME: mongoDBDatabase,
+      },
+    });
+
+    mongoSecret.grantRead(mobileAutoExporter);
+
     const downloadTwitchChat = new LambdaInvoke(this, 'Download Twitch Chat', {
       lambdaFunction: downloadLambda,
       payloadResponseOnly: true,

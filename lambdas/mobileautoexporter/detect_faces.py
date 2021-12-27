@@ -6,29 +6,43 @@ import time
 from pymongo import MongoClient
 import cv2
 import numpy
+import httpx
+
+from get_secret import get_secret
 
 scale_factor = 1.2
 min_neighbors = 3
 min_size = (50, 50)
 
-PREFIX = "/tmp"
-MONGO_URI = os.getenv("MONGODB_FULL_URI")
-MONGO_DB_NAME = os.getenv("DB_NAME")
-
+# async processing of images
 async def detect_faces(frame_path):
     frame = cv2.imread(frame_path)
     if frame is None:
         return []
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    cascade = cv2.CascadeClassifier('data/haarcascade/haarcascade_frontalface_alt2.xml')
+    cascade = cv2.CascadeClassifier(os.path.join(cv2.data.haarcascades, 'haarcascade_frontalface_alt2.xml'))
     faces = cascade.detectMultiScale(gray, scaleFactor=scale_factor, minNeighbors=min_neighbors, minSize=min_size)
     return faces
 
-async def main(video_id):
+# async file downloader
+async def download_file(url, name):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        with open(name, 'wb') as f:
+            f.write(response.content)
 
+async def detect_video_faces(video_id):
+
+    PREFIX = "/tmp"
+
+    if os.getenv("TESTING") == "true":
+        if not os.path.isdir('./tmp'):
+            os.mkdir("./tmp")
+        PREFIX = "./tmp"
+    
     print("Clearing directory...")
 
-    thumbs = os.listdir("/tmp")
+    thumbs = os.listdir(PREFIX)
 
     if len(thumbs):
         # clear thumbnails
@@ -38,7 +52,14 @@ async def main(video_id):
     print("Getting images...")
     urls = get_image_urls(video_id)
 
-    # download using requests
+    print("Downloading images...")
+    download_tasks = []
+    for url in urls:
+        download_tasks.append(download_file(url, PREFIX + '/' + url.split('/')[-1]))
+    
+    await asyncio.gather(*download_tasks)
+
+    print("Detecting faces...")
 
     frame_paths = [os.path.join(PREFIX, f) for f in os.listdir(PREFIX)]
 
@@ -53,9 +74,22 @@ async def main(video_id):
 
     end = time.time()
     print(f"Finished OpenCV Tasks in {round(end - start, 2)} seconds")
+
+    # make sure directory is empty before finish
+    thumbs = os.listdir(PREFIX)
+    if len(thumbs):
+        # clear thumbnails
+        for thumb in thumbs:
+            os.remove(PREFIX + '/' + thumb)
+
     return results
 
 def get_image_urls(video_id):
+    # environment variables loaded here to make
+    # debugging locally easier
+    MONGO_URI = get_secret(os.getenv("MONGODB_FULL_URI_ARN"))
+    MONGO_DB_NAME = os.getenv("DB_NAME")
+
     # open a database connection
     client = MongoClient(MONGO_URI)
     
@@ -101,14 +135,10 @@ def point_range(points):
 
     min_x = min(xs)
     min_y = min(ys)
-    max_x = max(xs)
-    max_y = max(ys)
-    min_w = min(ws)
-    min_h = min(hs)
     max_w = max(ws)
     max_h = max(hs)
 
-    return (min_x, min_y, max_x, max_y, min_w, min_h, max_w, max_h)
+    return (min_x, min_y, max_w, max_h)
 
 def remove_outliers(points, iterations=1):
     xs = [x for (x, _, _, _) in points]
@@ -128,24 +158,3 @@ def remove_outliers(points, iterations=1):
         return final
 
     return remove_outliers(final, iterations - 1)
-
-def async_handler(video_path):
-    loop = asyncio.get_event_loop()
-    results = loop.run_until_complete(main(video_path))
-    
-    points = [box for boxes in results for box in boxes]
-
-    filtered_points = remove_outliers(points, iterations=3)
-
-    min_x, min_y, max_x, _, _, _, max_w, max_h = point_range(filtered_points)
-
-    cam_box_x = min_x - (max_w / 1.5)
-    cam_box_y = min_y - (max_h / 4)
-    cam_box_x2 = max_x + max_w + (max_w / 1.5)
-
-    width = cam_box_x2 - cam_box_x
-    height = width * 0.75
-
-    cam_box_y2 = cam_box_y + height
-
-    return (math.floor(cam_box_x), math.floor(cam_box_y), math.floor(cam_box_x2), math.floor(cam_box_y2))

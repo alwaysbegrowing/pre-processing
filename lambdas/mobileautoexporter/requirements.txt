@@ -1,0 +1,6 @@
+opencv-python
+numpy
+pymongo
+dnspython
+boto3
+httpx
