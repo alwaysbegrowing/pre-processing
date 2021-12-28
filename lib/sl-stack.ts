@@ -155,9 +155,9 @@ export class SlStack extends Stack {
     messageStoreBucket.grantRead(automaticClipGenerator);
 
     // auto generate lambda
-    const mobileAutoExporter = new DockerImageFunction(this, 'Mobile Auto Exporter', {
+    const faceDetect = new DockerImageFunction(this, 'Facial Detection', {
       description: 'Finds clips with the Pillar Algorithms',
-      code: DockerImageCode.fromImageAsset('./lambdas/mobileautoexporter'),
+      code: DockerImageCode.fromImageAsset('./lambdas/facedetect'),
       memorySize: 512,
       timeout: Duration.seconds(900),
       environment: {
@@ -166,7 +166,7 @@ export class SlStack extends Stack {
       },
     });
 
-    mongoSecret.grantRead(mobileAutoExporter);
+    mongoSecret.grantRead(faceDetect);
 
     const downloadTwitchChat = new LambdaInvoke(this, 'Download Twitch Chat', {
       lambdaFunction: downloadLambda,
